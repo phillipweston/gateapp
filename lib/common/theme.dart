@@ -5,13 +5,31 @@
 import 'package:flutter/material.dart';
 
 final appTheme = ThemeData(
-  primarySwatch: Colors.yellow,
+  primarySwatch: Colors.pink,
   textTheme: TextTheme(
     display4: TextStyle(
-      fontFamily: 'Corben',
+      fontFamily: '',
       fontWeight: FontWeight.w700,
-      fontSize: 24,
-      color: Colors.black,
+      fontSize: 20,
+      color: Colors.black
     ),
-  ),
+    display2: TextStyle(
+        fontFamily: '',
+        fontWeight: FontWeight.w400,
+        fontSize: 18,
+        color: Colors.black
+    ),
+    caption: TextStyle(
+        fontFamily: '',
+        fontWeight: FontWeight.w400,
+        fontSize: 18,
+        color: Colors.black
+    ),
+    title: TextStyle(
+      fontFamily: 'RedRock',
+      fontWeight: FontWeight.w700,
+      fontSize: 40,
+      color: Colors.white
+    )
+  )
 );

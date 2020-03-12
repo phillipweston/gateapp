@@ -1,9 +1,5 @@
-// Copyright 2019 The Flutter team. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
 import 'dart:collection';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -27,8 +23,8 @@ class User {
 }
 
 class UserModel with ChangeNotifier {
-
   List<User> _users = [];
+  List<User> _allUsers = [];
 
   notifyListeners();
 
@@ -45,9 +41,22 @@ class UserModel with ChangeNotifier {
     if (_users.isNotEmpty) {
       return _users[index];
     }
-    else {
-      return null;
-    }
+  }
+
+  Future<void> filterUsers(String search) async {
+    search = search.toLowerCase();
+    var users = _allUsers.where((user) {
+      var userString = "";
+      if (user.name != null) userString += user.name.toLowerCase();
+      if (user.email != null) userString += user.email.toLowerCase();
+      if (user.phone != null) userString += user.phone.toLowerCase();
+      return userString.contains(search);
+    }).toList();
+    setUsers(users);
+  }
+
+  int size() {
+    return _users.length - 1;
   }
 
   Future<List<User>> fetchUsers() async {
@@ -61,7 +70,9 @@ class UserModel with ChangeNotifier {
 
         users.sort((a, b) => a.name.compareTo(b.name));
 
-        this.setUsers(users);
+        _allUsers = users;
+
+        setUsers(users);
         return users;
       } else {
         throw Exception('Failed to load users');
@@ -71,13 +82,7 @@ class UserModel with ChangeNotifier {
       throw Exception("Failed to fetch users ${e.toString()}");
     }
   }
-  /// An unmodifiable view of the items in the cart.
-  UnmodifiableListView<User> get users => UnmodifiableListView(_users);
 
-//  /// Adds [item] to cart. This is the only way to modify the cart from outside.
-//  void select(User user) {
-//    selectedUser.add(item);
-//    // This call tells the widgets that are listening to this model to rebuild.
-//    notifyListeners();
-//  }
+  /// An unmodifiable view of the users
+  UnmodifiableListView<User> get users => UnmodifiableListView(_users);
 }

@@ -11,7 +11,7 @@ import 'package:provider_shopper/models/user.dart';
 import 'package:provider_shopper/screens/cart.dart';
 import 'package:provider_shopper/screens/catalog.dart';
 import 'package:provider_shopper/screens/login.dart';
-import 'package:provider_shopper/screens/allusers.dart';
+import 'package:provider_shopper/screens/guestList.dart';
 
 void main() {
   runApp(MyApp());
@@ -49,12 +49,11 @@ class _MyAppState extends State<MyApp> {
       child: MaterialApp(
         title: 'FNF GATE',
         theme: appTheme,
-        initialRoute: '/users',
+        initialRoute: '/',
         routes: {
-          '/': (context) => MyLogin(),
+          '/': (context) => GuestList(),
           '/catalog': (context) => MyCatalog(),
-          '/cart': (context) => MyCart(),
-          '/users': (context) => AllUsers(),
+          '/cart': (context) => MyCart()
         },
       ),
     );

@@ -1,6 +1,6 @@
 {
-    "name": "provider_shopper",
-    "short_name": "provider_shopper",
+    "name": "fnf_guest_list",
+    "short_name": "fnf_guest_list",
     "start_url": ".",
     "display": "minimal-ui",
     "background_color": "#0175C2",

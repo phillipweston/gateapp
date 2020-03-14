@@ -1,4 +1,4 @@
-# provider_shopper
+# fnf_guest_list
 
 A Flutter sample app that shows a state management approach using the [Provider][] package.
 This is the app discussed in the [Simple app state management][simple] section of

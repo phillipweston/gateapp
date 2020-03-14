@@ -1,4 +1,4 @@
-package dev.flutter.provider_shopper
+package dev.flutter.fnf_guest_list
 
 import androidx.annotation.NonNull;
 import io.flutter.embedding.android.FlutterActivity

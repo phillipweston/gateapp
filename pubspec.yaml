@@ -1,4 +1,4 @@
-name: FnF_GuestList
+name: fnf_guest_list
 description: A flutter app
 
 version: 1.0.0+1
@@ -29,6 +29,8 @@ flutter:
   uses-material-design: true
   assets:
     - assets/gearhead-heart.svg
+    - assets/gearhead-ticket.svg
+    - assets/gearhead-pink.svg
     - assets/gearhead-white.png
   fonts:
     - family: Corben

@@ -4,9 +4,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:provider_shopper/models/Guest.dart';
+import 'package:fnf_guest_list/models/Guest.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:provider_shopper/screens/GuestDetails.dart';
+import 'package:fnf_guest_list/screens/GuestDetails.dart';
+
+var searchController = new TextEditingController();
 
 class GuestList extends StatelessWidget {
   @override
@@ -17,53 +19,69 @@ class GuestList extends StatelessWidget {
         builder: (context, guests, child) {
           return Scaffold(
               body: CustomScrollView(
-                slivers: [
-                  SliverAppBar(
-                    title: Center(
-                      child: RefreshIndicator(
-                        onRefresh: () => guests.fetchGuests(),
-                        child: Row(
-                          children: <Widget>[
-                            SvgPicture.asset(
-                                'assets/gearhead-heart.svg',
-                                color: Colors.white,
-                                height: 60,
-                                width: 60,
-                                semanticsLabel: 'A heart with gearheads'
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-                              child: Text('FnF Guest List', style: Theme.of(context).textTheme.title)
+                  slivers: [
+                    SliverAppBar(
+                        title: Center(
+                            child: RefreshIndicator(
+                                onRefresh: () => guests.refreshAll(),
+                                child: GestureDetector(
+                                    onTap: () {
+                                      searchController.value =
+                                          TextEditingValue(text: "");
+                                      guests.refreshAll();
+                                    },
+                                    child: Row(
+                                        children: <Widget>[
+                                          SvgPicture.asset(
+                                              'assets/gearhead-heart.svg',
+                                              color: Colors.white,
+                                              height: 60,
+                                              width: 60,
+                                              semanticsLabel: 'A heart with gearheads'
+                                          ),
+                                          Padding(
+                                              padding: const EdgeInsets
+                                                  .symmetric(
+                                                  horizontal: 12, vertical: 0),
+                                              child: Text(
+                                                  'FnF Guest List', style: Theme
+                                                  .of(context)
+                                                  .textTheme
+                                                  .title)
+                                          )
+                                        ]
+                                    )
+                                )
                             )
-                          ]
-                        )
-                      )
+                        ),
+                        floating: true,
+                        actions: [
+                          IconButton(
+                              icon: Icon(Icons.refresh),
+                              onPressed: () => guests.refreshAll()
+                          )
+                        ]
                     ),
-                    floating: true,
-                    actions: [
-                      IconButton(
-                          icon: Icon(Icons.refresh),
-                          onPressed: () => guests.fetchGuests()
-                      )
-                    ],
-                  ),
-                  SliverAppBar(
-                    backgroundColor: Theme.of(context).dialogBackgroundColor,
-                    elevation: 0.0,
-                    automaticallyImplyLeading: false,
-                    pinned: true,
-                    floating: false,
-                    title: TextField(
-                      onChanged: (value) => guests.filterGuests(value),
-                      style: Theme.of(context).textTheme.caption,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(8.0))),
-                        suffixIcon: Icon(Icons.search),
-                        hintText: 'Search by name, email, or phone (possibly)',
+          
+
+                    SliverAppBar(
+                      backgroundColor: Theme.of(context).dialogBackgroundColor,
+                      elevation: 0.0,
+                      automaticallyImplyLeading: false,
+                      pinned: true,
+                      floating: false,
+                      title: TextField(
+                        onChanged: (value) => guests.filterGuests(value),
+                        controller: searchController,
+                        style: Theme.of(context).textTheme.caption,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(Radius.circular(8.0))),
+                          suffixIcon: Icon(Icons.search),
+                          hintText: 'Search by name, email, or phone (possibly)',
+                        ),
                       ),
                     ),
-                  ),
 
                   SliverToBoxAdapter(child: SizedBox(height: 12)),
                   SliverList(
@@ -117,8 +135,17 @@ class GuestListRow extends StatelessWidget {
                       child: Text(guest.name, style: Theme.of(context).textTheme.display2),
                     ),
                     SizedBox(width: 24),
-                    Row(children: guest.tickets.map((ticket) => new IconButton(icon: Icon(Icons.person))).toList())
-    ],
+                    Row(children: guest.tickets.map((ticket) =>
+                        new Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                          child: SvgPicture.asset(
+                            'assets/gearhead-pink.svg',
+                            height: 40,
+                            width: 40,
+                            semanticsLabel: 'An FnF Ticket'
+                        ))).toList()
+                        )
+                      ],
                 )
           )
         )

@@ -4,8 +4,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:provider_shopper/models/cart.dart';
-import 'package:provider_shopper/models/catalog.dart';
+import 'package:fnf_guest_list/models/cart.dart';
+import 'package:fnf_guest_list/models/catalog.dart';
 
 class MyCatalog extends StatelessWidget {
   @override

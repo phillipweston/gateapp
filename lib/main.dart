@@ -4,15 +4,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:provider_shopper/common/theme.dart';
-import 'package:provider_shopper/models/cart.dart';
-import 'package:provider_shopper/models/catalog.dart';
-import 'package:provider_shopper/models/Guest.dart';
-import 'package:provider_shopper/screens/cart.dart';
-import 'package:provider_shopper/screens/catalog.dart';
-import 'package:provider_shopper/screens/login.dart';
-import 'package:provider_shopper/screens/GuestList.dart';
-import 'package:provider_shopper/screens/GuestDetails.dart';
+import 'package:fnf_guest_list/common/theme.dart';
+import 'package:fnf_guest_list/models/cart.dart';
+import 'package:fnf_guest_list/models/catalog.dart';
+import 'package:fnf_guest_list/models/Guest.dart';
+import 'package:fnf_guest_list/screens/cart.dart';
+import 'package:fnf_guest_list/screens/GuestList.dart';
 
 void main() {
   runApp(MyApp());
@@ -54,7 +51,7 @@ class _MyAppState extends State<MyApp> {
         routes: {
           '/': (context) => GuestList(),
 //          '/guest': (context) => GuestDetails(gu),
-          '/cart': (context) => MyCart()
+//          '/cart': (context) => MyCart()
         },
       ),
     );

@@ -4,7 +4,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:provider_shopper/models/Guest.dart';
+import 'package:fnf_guest_list/models/Guest.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class GuestDetails extends StatelessWidget {
@@ -28,7 +28,7 @@ class GuestDetails extends StatelessWidget {
                   SliverAppBar(
                     title: Center(
                       child: RefreshIndicator(
-                        onRefresh: () => guests.fetchGuests(),
+                        onRefresh: () => guests.refreshAll(),
                         child: Row(
                           children: <Widget>[
 //                            SvgPicture.asset(
@@ -50,7 +50,7 @@ class GuestDetails extends StatelessWidget {
                     actions: [
                       IconButton(
                           icon: Icon(Icons.refresh),
-                          onPressed: () => guests.fetchGuests()
+                          onPressed: () => guests.refreshAll()
                       )
                     ],
                   ),

@@ -8,10 +8,10 @@ class Ticket {
   final int ticketId;
   final int userId;
   final bool redeemed;
-  final String updatedAt;
+  final String redeemedAt;
   final String createdAt;
 
-  Ticket(this.ticketId, this.userId, this.redeemed, this.updatedAt, this.createdAt);
+  Ticket(this.ticketId, this.userId, this.redeemed, this.redeemedAt, this.createdAt);
 
   factory Ticket.fromJson(dynamic json) {
     return Ticket(
@@ -42,13 +42,10 @@ class Guest {
       return tickets[index];
     }
   }
-//    var tickets = ticketsJson.map((dynamic ticket) => Ticket.fromJson(ticket)).toList();
-//  var ticketsJson = json['tickets'] as List<dynamic>;
-
 
   factory Guest.fromJson(dynamic json) {
     var _tickets = json['tickets'].map((dynamic ticketJson) => Ticket.fromJson(ticketJson)).toList() as List<dynamic>;
-    List<Ticket> tickets = _tickets.cast<Ticket>().toList() as List<Ticket>;
+    List<Ticket> tickets = _tickets.cast<Ticket>().toList();
 
 
     return Guest(
@@ -73,7 +70,7 @@ class GuestModel with ChangeNotifier {
   }
 
   GuestModel() {
-    fetchGuests();
+    refreshAll();
   }
 
   Guest getByPosition(int index) {
@@ -81,6 +78,7 @@ class GuestModel with ChangeNotifier {
       return _guests[index];
     }
   }
+
 
   Future<void> filterGuests(String search) async {
     search = search.toLowerCase();
@@ -98,7 +96,7 @@ class GuestModel with ChangeNotifier {
     return _guests.length - 1;
   }
 
-  Future<void> fetchGuests() async {
+  Future<void> refreshAll() async {
     try {
       final response = await http.get('http://10.0.0.9:7777/users');
 

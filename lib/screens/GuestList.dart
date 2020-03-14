@@ -117,7 +117,8 @@ class GuestListRow extends StatelessWidget {
                       child: Text(guest.name, style: Theme.of(context).textTheme.display2),
                     ),
                     SizedBox(width: 24),
-                  ],
+                    Row(children: guest.tickets.map((ticket) => new IconButton(icon: Icon(Icons.person))).toList())
+    ],
                 )
           )
         )

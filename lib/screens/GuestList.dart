@@ -4,45 +4,46 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:provider_shopper/models/user.dart';
+import 'package:provider_shopper/models/Guest.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
-final String gearheadHeart = 'assets/gearhead-heart.svg';
+import 'package:provider_shopper/screens/GuestDetails.dart';
 
 class GuestList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<UserModel>(
-      create: (context) => UserModel(),
-      child: Consumer<UserModel>(
-        builder: (context, users, child) {
-            return Scaffold(
+    return ChangeNotifierProvider<GuestModel>(
+      create: (context) => GuestModel(),
+      child: Consumer<GuestModel>(
+        builder: (context, guests, child) {
+          return Scaffold(
               body: CustomScrollView(
                 slivers: [
                   SliverAppBar(
                     title: Center(
-                      child: Row(
-                        children: <Widget>[
-                          SvgPicture.asset(
-                              gearheadHeart,
-                              color: Colors.white,
-                              height: 60,
-                              width: 60,
-                              semanticsLabel: 'A heart with gearheads'
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-                            child: Text('FnF Guest List', style: Theme.of(context).textTheme.title)
-                          )
-                        ]
+                      child: RefreshIndicator(
+                        onRefresh: () => guests.fetchGuests(),
+                        child: Row(
+                          children: <Widget>[
+                            SvgPicture.asset(
+                                'assets/gearhead-heart.svg',
+                                color: Colors.white,
+                                height: 60,
+                                width: 60,
+                                semanticsLabel: 'A heart with gearheads'
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+                              child: Text('FnF Guest List', style: Theme.of(context).textTheme.title)
+                            )
+                          ]
+                        )
                       )
                     ),
                     floating: true,
                     actions: [
-
                       IconButton(
                           icon: Icon(Icons.refresh),
-                          onPressed: () => users.fetchUsers()
+                          onPressed: () => guests.fetchGuests()
                       )
                     ],
                   ),
@@ -53,8 +54,7 @@ class GuestList extends StatelessWidget {
                     pinned: true,
                     floating: false,
                     title: TextField(
-
-                      onChanged: (value) => users.filterUsers(value),
+                      onChanged: (value) => guests.filterGuests(value),
                       style: Theme.of(context).textTheme.caption,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
@@ -64,13 +64,14 @@ class GuestList extends StatelessWidget {
                       ),
                     ),
                   ),
+
                   SliverToBoxAdapter(child: SizedBox(height: 12)),
                   SliverList(
                     delegate: SliverChildBuilderDelegate(
                       (context, index) {
-                        if (users.size() == -1 && index == 0) return Center(child: CircularProgressIndicator());
-                        if (index > users.size()) return null;
-                        return _MyListItem(users.getByPosition(index));
+                        if (guests.size() == -1 && index == 0) return Center(child: CircularProgressIndicator());
+                        if (index > guests.size()) return null;
+                        return GuestListRow(guests.getByPosition(index));
                       }
                     )
                   ),
@@ -83,17 +84,24 @@ class GuestList extends StatelessWidget {
   }
 }
 
-class _MyListItem extends StatelessWidget {
-  final User user;
+class GuestListRow extends StatelessWidget {
+  final Guest guest;
 
-  _MyListItem(this.user, {Key key}) : super(key: key);
+  GuestListRow(this.guest, {Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     var textTheme = Theme.of(context).textTheme.title;
 
     return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: GestureDetector(
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute<void>(
+              builder: (context) => GuestDetails(guest: guest),
+            ),
+          ),
           child: LimitedBox(
                 maxHeight: 48,
                 child: Row(
@@ -101,18 +109,18 @@ class _MyListItem extends StatelessWidget {
                     AspectRatio(
                       aspectRatio: 1,
                       child: Container(
-          //                color: user.color,
+          //                color: guest.color,
                       ),
                     ),
                     SizedBox(width: 24),
                     Expanded(
-                      child: Text(user.name, style: Theme.of(context).textTheme.display2),
+                      child: Text(guest.name, style: Theme.of(context).textTheme.display2),
                     ),
-                    SizedBox(width: 24)
-          //            _AddButton(user: user),
+                    SizedBox(width: 24),
                   ],
                 )
           )
+        )
     );
   }
 }

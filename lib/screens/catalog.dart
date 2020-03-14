@@ -17,7 +17,7 @@ class MyCatalog extends StatelessWidget {
           SliverToBoxAdapter(child: SizedBox(height: 12)),
           SliverList(
             delegate: SliverChildBuilderDelegate(
-                (context, index) => _MyListItem(index)),
+                (context, index) => GuestListRow(index)),
           ),
         ],
       ),
@@ -60,10 +60,10 @@ class _MyAppBar extends StatelessWidget {
   }
 }
 
-class _MyListItem extends StatelessWidget {
+class GuestListRow extends StatelessWidget {
   final int index;
 
-  _MyListItem(this.index, {Key key}) : super(key: key);
+  GuestListRow(this.index, {Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

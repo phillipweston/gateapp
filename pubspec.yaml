@@ -13,6 +13,9 @@ dependencies:
   # Import the provider package.
   provider: ^4.0.2
   http: ^0.12.0+4
+  battery: ^0.3.1+9
+  row_collection: ^0.2.4
+  flutter_typeahead: ^1.8.0
 
 dev_dependencies:
   flutter_test:
@@ -23,7 +26,7 @@ dev_dependencies:
 flutter_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/gearhead-white.png"
+  image_path: "assets/gearhead-pink.png"
 
 flutter:
   uses-material-design: true

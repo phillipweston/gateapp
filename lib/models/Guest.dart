@@ -34,12 +34,18 @@ class Guest {
   Guest(this.userId, this.name, this.email, this.phone, this.tickets);
 
   int numTickets() {
-    return tickets.length - 1;
+    return tickets.length;
   }
 
   Ticket getTicketByPosition(int index) {
     if (tickets.isNotEmpty) {
       return tickets[index];
+    }
+  }
+
+  String firstName() {
+    if (this.name != null) {
+      return this.name.split(" ")[0];
     }
   }
 
@@ -79,6 +85,12 @@ class GuestModel with ChangeNotifier {
     }
   }
 
+  Guest getById(int id) {
+    if (_guests.isNotEmpty) {
+      var guest = _guests.firstWhere((guest) => guest.userId == id, orElse: () => null);
+      return guest;
+    }
+  }
 
   Future<void> filterGuests(String search) async {
     search = search.toLowerCase();
@@ -90,6 +102,17 @@ class GuestModel with ChangeNotifier {
       return guestString.contains(search);
     }).toList();
     setGuests(guests);
+  }
+
+  Future<List<Guest>> searchGuests(String search) async {
+    if (search == "") return null;
+    var lowerSearch = search.toLowerCase();
+    var guests = _allGuests.where((guest) {
+      var guestString = "";
+      if (guest.name != null) guestString += guest.name.toLowerCase();
+      return guestString.contains(lowerSearch);
+    }).toList();
+    return guests;
   }
 
   int size() {

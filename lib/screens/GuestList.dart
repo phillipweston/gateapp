@@ -89,7 +89,14 @@ class GuestList extends StatelessWidget {
                       (context, index) {
                         if (guests.size() == -1 && index == 0) return Center(child: CircularProgressIndicator());
                         if (index > guests.size()) return null;
-                        return GuestListRow(guests.getByPosition(index));
+                        return Container(
+                            child: Column(
+                                children: <Widget>[
+                                  GuestListRow(guests.getByPosition(index)),
+                                  Divider()
+                                ]
+                            )
+                        );
                       }
                     )
                   ),

@@ -3,43 +3,38 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import './ticket.dart';
+import './record-contract.dart';
+import 'package:equatable/equatable.dart';
 
-class Ticket {
-  final int ticketId;
-  final int userId;
-  final bool redeemed;
-  final String redeemedAt;
-  final String createdAt;
 
-  Ticket(this.ticketId, this.userId, this.redeemed, this.redeemedAt, this.createdAt);
-
-  factory Ticket.fromJson(dynamic json) {
-    return Ticket(
-      json['ticket_id'] as int,
-      json['user_id'] as int,
-      json['redeemed'] as bool,
-      json['updated_at'] as String,
-      json['created_at'] as String
-    );
-  }
-}
-
-class Guest {
+class Guest extends Equatable  {
   final int userId;
   final String name;
   final String email;
   final String phone;
   final List<Ticket> tickets;
+  final Contract contract;
 
-  Guest(this.userId, this.name, this.email, this.phone, this.tickets);
+  Guest(this.userId, this.name, this.email, this.phone, this.tickets, this.contract);
+
+  @override
+  List<Object> get props => [
+    userId,
+    name,
+    email,
+    phone,
+    tickets,
+    contract
+  ];
 
   int numTickets() {
     return tickets.length;
   }
 
-  Ticket getTicketByPosition(int index) {
+  Record getTicketRecordByPosition(int index) {
     if (tickets.isNotEmpty) {
-      return tickets[index];
+      return this.contract.records[index];
     }
   }
 
@@ -50,16 +45,23 @@ class Guest {
   }
 
   factory Guest.fromJson(dynamic json) {
+    var name = json['name'] as String;
+
     var _tickets = json['tickets'].map((dynamic ticketJson) => Ticket.fromJson(ticketJson)).toList() as List<dynamic>;
     List<Ticket> tickets = _tickets.cast<Ticket>().toList();
 
+    var records = _tickets.map<Record>((dynamic ticket) => Record(ticket as Ticket)).toList();
+    var contract = Contract(records);
+
+    contract.records.elementAt(0).setName(name);
 
     return Guest(
         json['user_id'] as int,
-        json['name'] as String,
+        name,
         json['email'] as String,
         json['phone'] as String,
-        tickets as List<Ticket>
+        tickets as List<Ticket>,
+        contract as Contract
     );
   }
 }
@@ -83,6 +85,10 @@ class GuestModel with ChangeNotifier {
     if (_guests.isNotEmpty) {
       return _guests[index];
     }
+  }
+
+  void triggerNotifiers() {
+    notifyListeners();
   }
 
   Guest getById(int id) {

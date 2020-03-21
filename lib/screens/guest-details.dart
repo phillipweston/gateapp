@@ -4,12 +4,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:fnf_guest_list/models/Guest.dart';
+import 'package:fnf_guest_list/models/guest.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:row_collection/row_collection.dart';
 import 'package:fnf_guest_list/common/theme.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
-import 'package:flutter_typeahead/cupertino_flutter_typeahead.dart';
+import '../models/record-contract.dart';
 
 class GuestDetails extends StatelessWidget {
   final Guest guest;
@@ -23,32 +22,31 @@ class GuestDetails extends StatelessWidget {
       create: (context) => GuestModel(),
       child: Consumer<GuestModel>(
         builder: (context, guests, child) {
-          var name = guest.name != null ? guest.name : "";
-          var email = guest.email != null ? guest.email : "";
-          var phone = guest.phone != null ? guest.phone : "";
+
+          var GUEST_NAME = guest.name != null ? guest.name : "";
+
+
+
           var isConfirmed = false;
 
           return Scaffold(
               body: CustomScrollView(
                 slivers: [
                   SliverAppBar(
-                    title: Center(
-                        child: RefreshIndicator(
-                            onRefresh: () => guests.refreshAll(),
-                            child: Row(
-                                children: <Widget>[
-                                  Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 12, vertical: 0),
-                                      child: Text(name, style: Theme
-                                          .of(context)
-                                          .textTheme
-                                          .title)
-                                  )
-                                ]
+                    title: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                            Center(
+                              child: Text(GUEST_NAME, style: Theme.of(context).textTheme.title)
                             )
-                        )
-                    ),
+                        ]
+                      )
+                    ]),
                     floating: true,
                     actions: [
                       IconButton(
@@ -64,7 +62,7 @@ class GuestDetails extends StatelessWidget {
                         return Container(
                           child: Column(
                             children: <Widget>[
-                              TicketListRow(guest.getTicketByPosition(index), index),
+                              TicketListRow(guest.getTicketRecordByPosition(index), index),
                               Divider()
                             ]
                           )
@@ -113,28 +111,38 @@ class GuestDetails extends StatelessWidget {
 
 
 class TicketListRow extends StatelessWidget {
-  final Ticket ticket;
+  final Record record;
   final int index;
 
-  TicketListRow(this.ticket, this.index, {Key key}) : super(key: key);
+  TicketListRow(this.record, this.index, {Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
 
     var nameFieldController = new TextEditingController();
 
+
+    if (index == 0) {
+      if (record.name != null) nameFieldController.text = record.name;
+    }
+
     return ChangeNotifierProvider<GuestModel>(
       create: (context) => GuestModel(),
       child: Consumer<GuestModel>(
         builder: (context, guests, child) {
-          var owner = guests.getById(ticket.userId);
+          var owner = guests.getById(record.ticket.userId);
 
-          if (this.index == 0) {
-            if (owner != null) nameFieldController.text = owner.name;
+          _setGuestName() {
+            record.setName(nameFieldController.text);
+            guests.triggerNotifiers();
+            print("valid: ${owner.contract.valid()}");
+          }
+
+          if (owner != null) {
+            nameFieldController.addListener(_setGuestName);
           }
 
           var ticketLabel = "";
-
           if (owner != null) {
             switch (index) {
               case 0:
@@ -162,8 +170,6 @@ class TicketListRow extends StatelessWidget {
                 break;
             }
           }
-
-          var isSwitched = true;
 
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),

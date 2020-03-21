@@ -16,6 +16,8 @@ dependencies:
   battery: ^0.3.1+9
   row_collection: ^0.2.4
   flutter_typeahead: ^1.8.0
+  equatable: ^1.1.1
+  flutter_bloc: ^3.2.0
 
 dev_dependencies:
   flutter_test:

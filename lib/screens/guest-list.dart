@@ -92,7 +92,10 @@ class GuestList extends StatelessWidget {
                         automaticallyImplyLeading: false,
                         pinned: true,
                         floating: false,
-                        title: SearchInputField()
+                        title: SizedBox(
+                            height: 80,
+                            child: SearchInputField()
+                        )
                     ),
                     SliverToBoxAdapter(child: SizedBox(height: 12)),
 //                    BlocListener<GuestBloc, GuestState>(
@@ -133,8 +136,10 @@ class SearchInputField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
       child: TextField(
+        textAlign: TextAlign.center,
+
         onChanged: (value) => _filterGuests(context, value),
         controller: searchController,
         style: Theme.of(context).textTheme.caption,
@@ -142,7 +147,9 @@ class SearchInputField extends StatelessWidget {
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(8.0))),
           suffixIcon: Icon(Icons.search),
-          hintText: 'Search by name, email, or phone (possibly)',
+          hintStyle: TextStyle(),
+          labelText:'Search by name, email, or phone (possibly)',
+//          hintText: 'Search by name, email, or phone (possibly)',
         ),
       ),
     );

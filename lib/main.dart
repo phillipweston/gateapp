@@ -3,21 +3,15 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:fnf_guest_list/common/theme.dart';
-import 'package:fnf_guest_list/models/guest.dart';
 import 'package:fnf_guest_list/screens/guest-list.dart';
 import 'package:battery/battery.dart';
 import 'package:fnf_guest_list/blocs/guest.dart';
-import 'package:fnf_guest_list/blocs/navigator.dart' as navigator;
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 
 void main() {
   runApp(MyApp());
 }
-
-
 
 class MyApp extends StatefulWidget {
   MyApp({Key key}) : super(key: key);
@@ -27,37 +21,41 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  GuestRepository guestRepository;
 
-  final GlobalKey<NavigatorState> _navigatorKey = GlobalKey();
-
+  @override
+  void initState() {
+    this.guestRepository = GuestRepository();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<navigator.NavigatorBloc>(
-      create: (BuildContext context) => navigator.NavigatorBloc(navigatorKey: _navigatorKey),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<GuestListBloc>(
+          create: (BuildContext context) {
+            var guestBloc = GuestListBloc(this.guestRepository);
+            guestBloc.add(GetGuests());
+            return guestBloc;
+          }
+        ),
+        BlocProvider<GuestDetailsBloc>(
+          create: (BuildContext context) {
+            var guestBloc = GuestDetailsBloc(this.guestRepository);
+            return guestBloc;
+          }
+        )
+      ],
       child: MaterialApp(
-        navigatorKey: _navigatorKey,
         debugShowCheckedModeBanner: false,
         theme: appTheme,
         title: 'FnF Guest List',
-        home: GuestList()
+        initialRoute: '/',
+        routes: {
+          '/': (context) => GuestList(),
+        }
       )
     );
-
-
-//    return MultiProvider(
-//      providers: [
-//        Provider(create: (context) => GuestModel())
-//      ],
-//      child: MaterialApp(
-//        title: 'FNF GATE',
-//        debugShowCheckedModeBanner: false,
-//        theme: appTheme,
-//        initialRoute: '/',
-//        routes: {
-//          '/': (context) => GuestList(),
-//        }
-//      ),
-//    );
   }
 }

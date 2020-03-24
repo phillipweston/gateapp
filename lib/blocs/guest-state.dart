@@ -11,8 +11,20 @@ class GuestsInitial extends GuestState {
   List<Object> get props => [];
 }
 
+class GuestInitial extends GuestState {
+  const GuestInitial();
+  @override
+  List<Object> get props => [];
+}
+
 class GuestsLoading extends GuestState {
   const GuestsLoading();
+  @override
+  List<Object> get props => [];
+}
+
+class GuestLoading extends GuestState {
+  const GuestLoading();
   @override
   List<Object> get props => [];
 }
@@ -40,6 +52,13 @@ class GuestsError extends GuestState {
 class GuestLoaded extends GuestState {
   final Guest guest;
   const GuestLoaded(this.guest);
+  @override
+  List<Object> get props => [guest];
+}
+
+class GuestTicketsAssigned extends GuestState {
+  final Guest guest;
+  const GuestTicketsAssigned(this.guest);
   @override
   List<Object> get props => [guest];
 }

@@ -12,81 +12,89 @@ import 'package:fnf_guest_list/blocs/guest.dart';
 
 var searchController = new TextEditingController();
 
-void fetchGuests(BuildContext context) {
-  final guestBloc = BlocProvider.of<GuestBloc>(context);
+void _fetchGuests (BuildContext context) {
+  final guestBloc = BlocProvider.of<GuestListBloc>(context);
   guestBloc.add(GetGuests());
 }
 
-void filterGuests(BuildContext context, String search) {
-  final guestBloc = BlocProvider.of<GuestBloc>(context);
+void _filterGuests (BuildContext context, String search) {
+  final guestBloc = BlocProvider.of<GuestListBloc>(context);
   guestBloc.add(FilterGuests(search));
 }
+
+var guestRepository = GuestRepository();
 
 class GuestList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-        providers: [
-          BlocProvider<GuestBloc>(
-            create: (BuildContext context) {
-              var guestBloc = GuestBloc(GuestRepository());
-              guestBloc.add(GetGuests());
-              return guestBloc;
+        return BlocConsumer<GuestListBloc, GuestState>(
+            listener: (context, state) {
+              if (state is GuestsInitial) {
+                _fetchGuests(context);
+              }
             },
-          ),
-          BlocProvider<NavigatorBloc>(
-            create: (BuildContext context) => NavigatorBloc(),
-          ),
-        ],
-        child: Scaffold(
-          body: CustomScrollView(
-            slivers: [
-              SliverAppBar(
-                  title: Center(
-                      child: BlocBuilder<GuestBloc, GuestState>(
-                        builder: (context, state) {
-                          return GestureDetector(
-                              onTap: () {
+            builder: (context, state) {
+              return Scaffold(
+                body: CustomScrollView(
+                  slivers: [
+                    SliverAppBar(
+                      title: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              Center(
+                                child: GestureDetector(
+                                    onTap: () {
+                                      searchController.value = TextEditingValue(
+                                          text: "");
+                                      _fetchGuests(context);
+                                    },
+                                    child: Row(children: <Widget>[
+                                      SvgPicture.asset('assets/gearhead-heart.svg',
+                                          color: Colors.white,
+                                          height: 60,
+                                          width: 60,
+                                          semanticsLabel: 'A heart with gearheads'),
+                                      Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 12, vertical: 0),
+                                          child: Text('FnF Guest List',
+                                              style: Theme
+                                                  .of(context)
+                                                  .textTheme
+                                                  .title))
+                                    ])
+                                )
+                              ),
+                            ],
+                        )]),
+                        floating: true,
+                        actions: [
+                          IconButton(
+                              icon: Icon(Icons.refresh),
+                              onPressed: () {
                                 searchController.value = TextEditingValue(
                                     text: "");
-                                fetchGuests(context);
-                              },
-                              child: Row(children: <Widget>[
-                                SvgPicture.asset('assets/gearhead-heart.svg',
-                                    color: Colors.white,
-                                    height: 60,
-                                    width: 60,
-                                    semanticsLabel: 'A heart with gearheads'),
-                                Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 12, vertical: 0),
-                                    child: Text('FnF Guest List',
-                                        style: Theme
-                                            .of(context)
-                                            .textTheme
-                                            .title))
-                              ]
-//                                    )
-                              )
-                          );
-                        })
-          ),
-                  floating: true,
-                  actions: [
-                    IconButton(
-                      icon: Icon(Icons.refresh),
-//                              onPressed: () => guests.refreshAll()
-                    )
-                  ]),
-              SliverAppBar(
-                backgroundColor: Theme.of(context).dialogBackgroundColor,
-                elevation: 0.0,
-                automaticallyImplyLeading: false,
-                pinned: true,
-                floating: false,
-                title: SearchInputField()
-              ),
-              SliverToBoxAdapter(child: SizedBox(height: 12)),
+                                _fetchGuests(context);
+                              }
+                          )
+                        ]
+                    ),
+                    SliverAppBar(
+                        backgroundColor: Theme
+                            .of(context)
+                            .dialogBackgroundColor,
+                        elevation: 0.0,
+                        automaticallyImplyLeading: false,
+                        pinned: true,
+                        floating: false,
+                        title: SearchInputField()
+                    ),
+                    SliverToBoxAdapter(child: SizedBox(height: 12)),
 //                    BlocListener<GuestBloc, GuestState>(
 //                      listener: (context, state) {
 //                        if (state is GuestsError) {
@@ -98,26 +106,27 @@ class GuestList extends StatelessWidget {
 //                        }
 //                      }
 //                    ),
-              BlocBuilder<GuestBloc, GuestState>(
-                builder: (context, state) {
-                  if (state is GuestsInitial) {
-                    return buildLoading();
-                  } else if (state is GuestsLoading) {
-                    return buildLoading();
-                  } else if (state is GuestsLoaded) {
-                    return buildGuestList(context, state.guests);
-                  } else if (state is NoGuestsMatchSearch) {
-                    return buildNoGuests();
-                  } else if (state is GuestsError) {
-                    return buildError();
-                  }
-                },
-              ),
-            ],
-          ),
-        ));
-  }
-//    );
+                    BlocBuilder<GuestListBloc, GuestState>(
+                      builder: (context, state) {
+                        if (state is GuestsInitial) {
+                          return buildLoading();
+                        } else if (state is GuestsLoading) {
+                          return buildLoading();
+                        } else if (state is GuestsLoaded) {
+                          return buildGuestList(context, state.guests);
+                        } else if (state is NoGuestsMatchSearch) {
+                          return buildNoGuests();
+                        } else if (state is GuestsError) {
+                          return buildError();
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              );
+            }
+          );
+    }
 }
 
 class SearchInputField extends StatelessWidget {
@@ -126,7 +135,7 @@ class SearchInputField extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5),
       child: TextField(
-        onChanged: (value) => filterGuests(context, value),
+        onChanged: (value) => _filterGuests(context, value),
         controller: searchController,
         style: Theme.of(context).textTheme.caption,
         decoration: InputDecoration(

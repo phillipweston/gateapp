@@ -17,9 +17,31 @@ class FilterGuests extends GuestEvent {
   List<Object> get props => [search];
 }
 
+class FilterGuestsByName extends GuestEvent {
+  final String search;
+  const FilterGuestsByName(this.search);
+  @override
+  List<Object> get props => [search];
+}
+
 class GetGuest extends GuestEvent {
   final int userId;
   const GetGuest(this.userId);
   @override
   List<Object> get props => [userId];
 }
+
+class GetGuestLocal extends GuestEvent {
+  final int userId;
+  const GetGuestLocal(this.userId);
+  @override
+  List<Object> get props => [userId];
+}
+
+class CheckGuestTicketsAssigned extends GuestEvent {
+  final int userId;
+  const CheckGuestTicketsAssigned(this.userId);
+  @override
+  List<Object> get props => [userId];
+}
+

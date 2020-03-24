@@ -6,6 +6,7 @@ import '../models/guest.dart';
 abstract class GuestRepositoryInterface {
   Future<List<Guest>> refreshAll();
   Future<Guest> getById(int id);
+  Guest getByIdLocal(int id);
   Future<List<Guest>> filterGuests(String search);
 }
 
@@ -14,9 +15,19 @@ class GuestRepository implements GuestRepositoryInterface {
   List<Guest> _all;
 
   @override
+  Guest getByIdLocal(int id)  {
+    try {
+      return _all.firstWhere((guest) { guest.userId == id; });
+    }
+    catch (e) {
+      throw Exception("Failed to lookup local guest $id ${e.toString()}");
+    }
+  }
+
+  @override
   Future<Guest> getById(int id) async {
     try {
-      final response = await http.get("http://10.0.0.9:7777/users/$id");
+      final response = await http.get("http://10.0.0.155:7777/users/$id");
 
       if (response.statusCode == 200 && response.body.isNotEmpty == true) {
         var guestJson = jsonDecode(response.body) as Map<String, dynamic>;
@@ -40,11 +51,20 @@ class GuestRepository implements GuestRepositoryInterface {
     }).toList();
   }
 
+  Future<List<Guest>> filterGuestsByName (String search) async {
+    search = search.toLowerCase();
+    return _all.where((guest) {
+      var guestString = "";
+      if (guest.name != null) guestString += guest.name.toLowerCase();
+      return guestString.contains(search);
+    }).toList();
+  }
+
   @override
   Future<List<Guest>> refreshAll() async {
     try {
       print("in refreshAll");
-      final response = await http.get('http://10.0.0.9:7777/users');
+      final response = await http.get('http://10.0.0.155:7777/users');
 
       if (response.statusCode == 200 && response.body.isNotEmpty == true) {
         var guestsJson = jsonDecode(response.body) as List<dynamic>;

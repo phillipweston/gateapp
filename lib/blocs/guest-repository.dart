@@ -1,3 +1,4 @@
+import 'package:fnf_guest_list/models/record-contract.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 

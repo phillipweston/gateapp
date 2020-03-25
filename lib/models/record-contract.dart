@@ -7,20 +7,21 @@ class Record {
 
   void setName (String name) {
     this.name = name;
-    if (name.split(" ").length > 1) this.valid = true;
+
+    var names = name.trim().split(" ");
+
+    if (names.length > 1) {
+      var first = names.elementAt(0);
+      var last = names.elementAt(1);
+      if (first.length > 1 && last.length > 1) {
+        this.valid = true;
+      }
+    }
   }
 
   bool willCall;
   Record(this.ticket);
 }
-
-//class RecordModel with ChangeNotifier {
-//  notifyListeners();
-//
-//  Record getByIndex(int index) {
-//
-//  }
-//}
 
 class Contract {
   final List<Record> records;

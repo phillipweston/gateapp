@@ -36,10 +36,11 @@ class GuestDetailsBloc extends Bloc<GuestEvent, GuestState> {
 
     else if (event is CheckGuestTicketsAssigned) {
       try {
-        final guest = guestRepository.getByIdLocal(event.userId as int);
-        // if validate function
-        var valid = true;
-        if (valid) {
+        Guest guest = event.owner; //
+        var valid = guest.contract.valid();
+        // updates record and saves it locally
+
+        if (valid) { // validates whether contract is valid, all fields have two words at least
           yield GuestTicketsAssigned(guest);
         }
         else {

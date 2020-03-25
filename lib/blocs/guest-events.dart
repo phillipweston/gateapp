@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:fnf_guest_list/models/guest.dart';
 
 abstract class GuestEvent extends Equatable {
   const GuestEvent();
@@ -39,9 +40,9 @@ class GetGuestLocal extends GuestEvent {
 }
 
 class CheckGuestTicketsAssigned extends GuestEvent {
-  final int userId;
-  const CheckGuestTicketsAssigned(this.userId);
+  final Guest owner;
+  const CheckGuestTicketsAssigned(this.owner);
   @override
-  List<Object> get props => [userId];
+  List<Object> get props => [owner];
 }
 

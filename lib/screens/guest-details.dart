@@ -18,9 +18,10 @@ void _fetchGuest (BuildContext context, int userId) {
   _bloc.add(GetGuest(userId));
 }
 
-void _validateGuestTickets (BuildContext context, int userId) {
+void _validateGuestTickets (BuildContext context, Guest owner) {
   final _bloc = BlocProvider.of<GuestDetailsBloc>(context);
-  _bloc.add(CheckGuestTicketsAssigned(userId));
+  _bloc.add(CheckGuestTicketsAssigned(owner));
+  _bloc.add(CheckGuestTicketsAssigned(owner));
 }
 
 Future<List<Guest>> _filterGuestsByName (BuildContext context, String search) {
@@ -92,17 +93,7 @@ class _GuestDetailsState extends State<GuestDetails> {
                       ],
                     ),
                     SliverToBoxAdapter(child: SizedBox(height: 20)),
-                    BlocListener<GuestDetailsBloc, GuestState>(
-                      listener: (context, state) {
-                        print("state in guest-detail listener is $state");
-                        if (state is GuestInitial) {
-                          _fetchGuest(context, guest.userId);
-                        }
-                      },
-                      child: SliverToBoxAdapter(child: SizedBox(height: 0))
-                    ),
                     BlocBuilder<GuestDetailsBloc, GuestState>(
-
                       builder: (context, state) {
                         if (state is GuestLoaded) {
                           return buildGuestTickets(context, state.guest);
@@ -118,67 +109,44 @@ class _GuestDetailsState extends State<GuestDetails> {
                         }
                       },
                     ),
-                    SliverToBoxAdapter(child: SizedBox(height: 2)),
-                    BlocBuilder<GuestListBloc, GuestState>(
-                      builder: (context, state) {
-                        if (state is GuestTicketsAssigned) {
-                          return buildTransferTicketsButton();
-                        }
-                        else {
-                          return buildDisabledButton();
-                        }
-                      },
-                    ),
-                  ],
+                  ]
+                ),
+                bottomNavigationBar: BlocBuilder<GuestDetailsBloc, GuestState>(
+                  builder: (context, state) {
+                    if (state is GuestTicketsAssigned) {
+                      return buildTransferTicketsButton();
+                    }
+                    else {
+                      return buildDisabledButton();
+                    }
+                  }
                 )
-            );
-          });
+              );
+          }
+        );
   }
 }
 
 
-SliverToBoxAdapter buildDisabledButton () {
-  return SliverToBoxAdapter(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-            horizontal: 25, vertical: 10),
-        child: ButtonBar(
-            alignment: MainAxisAlignment.center,
-            children: <Widget>[
-              RaisedButton(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 100, vertical: 30),
-                onPressed: null,
-                textColor: Colors.white,
-                child: Text('Confirm Ticket Assignments'),
-                disabledColor: Colors.black12,
-                disabledTextColor: Colors.white,
-              )
-            ]
-        ),
-      )
+MaterialButton buildDisabledButton () {
+  return MaterialButton(
+          onPressed: null,
+          height: 80,
+          disabledColor: Colors.black12,
+          textColor: Colors.white,
+          child: Text('TRANSFER TICKETS'),
   );
 }
 
-SliverToBoxAdapter buildTransferTicketsButton () {
-  return SliverToBoxAdapter(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-            horizontal: 25, vertical: 10),
-        child: ButtonBar(
-            alignment: MainAxisAlignment.center,
-            children: <Widget>[
-              RaisedButton(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 100, vertical: 30),
-                onPressed: () => null,
-                color: appTheme.primaryColor,
-                textColor: Colors.white,
-                child: Text('Confirm Ticket Assignments'),
-              )
-            ]
-        ),
-      )
+
+MaterialButton buildTransferTicketsButton () {
+  return MaterialButton(
+    onPressed: () {},
+    height: 80,
+    color: superPink,
+    disabledColor: Colors.black12,
+    textColor: Colors.white,
+    child: Text('TRANSFER TICKETS')
   );
 }
 
@@ -204,6 +172,7 @@ SliverToBoxAdapter buildError() {
 }
 
 SliverFixedExtentList buildGuestTickets (BuildContext context, Guest guest) {
+
   return SliverFixedExtentList(
       itemExtent: 80.0,
       delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
@@ -213,7 +182,7 @@ SliverFixedExtentList buildGuestTickets (BuildContext context, Guest guest) {
             alignment: Alignment.center,
             child: Column(
                 children: <Widget>[
-                  TicketListRow(guest.contract.records[index], index, guest),
+                  TicketListRow(guest, index),
                   Divider()
                 ]));
       })
@@ -222,120 +191,106 @@ SliverFixedExtentList buildGuestTickets (BuildContext context, Guest guest) {
 
 
 class TicketListRow extends StatelessWidget {
-  final Record record;
-  final int index;
   final Guest owner;
+  final int index;
 
-  TicketListRow(this.record, this.index, this.owner, {Key key}) : super(key: key);
+  TicketListRow(this.owner, this.index, {Key key}) : super(key: key);
+
+  var textFieldController = new TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    var textFieldController = new TextEditingController();
+      Record record = owner.contract.records.elementAt(index);
 
-    if (index == 0) {
-      if (record.name != null) textFieldController.text = record.name;
-    }
-
-    var ticketLabel = "";
-    if (owner != null) {
-      switch (index) {
-        case 0:
-          ticketLabel = "${owner.firstName()}'s ticket";
-          break;
-        case 1:
-          ticketLabel = "${owner.firstName()}'s 1st Guest";
-          break;
-        case 2:
-          ticketLabel = "${owner.firstName()}'s 2nd Guest";
-          break;
-        case 3:
-          ticketLabel = "${owner.firstName()}'s 3rd Guest";
-          break;
-        case 4: case 5: case 6: case 7: case 8:case 9: case 10: case 11: case 12:
-        ticketLabel = "${owner.firstName()}'s ${index}th Guest";
-        break;
+      if (record.name != null) {
+        textFieldController.text = record.name;
       }
-    }
 
-    return BlocBuilder<GuestDetailsBloc, GuestState>(
-        builder: (context, state) {
-          return Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: <Widget>[
-                                  SvgPicture.asset(
-                                      'assets/gearhead-pink.svg',
-                                      height: 40,
-                                      width: 40,
-                                      semanticsLabel: 'An FnF Ticket'
-                                  ),
-                                  Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 16, vertical: 5),
-                                      child: Container(
-                                          width: 300,
-                                          height: 45,
-                                          child: TypeAheadField(
-                                            hideOnEmpty: true,
-                                            textFieldConfiguration: TextFieldConfiguration<
-                                                Guest>(
-                                                autofocus: this.index == 1,
-                                                controller: textFieldController,
-                                                style: appTheme.textTheme
-                                                    .display2,
-                                                textCapitalization: TextCapitalization
-                                                    .words,
-                                                decoration: InputDecoration(
-                                                  border: OutlineInputBorder(),
-                                                  labelText: ticketLabel,
-                                                )
-                                            ),
-                                            suggestionsCallback: (search) async {
-                                              return _filterGuestsByName(context, search);
-                                            },
-                                            itemBuilder: (context,
-                                                Guest guest) {
-                                              return ListTile(
-                                                  title: Text(guest.name,
-                                                      style: appTheme.textTheme
-                                                          .display2)
-                                              );
-                                            },
-                                            onSuggestionSelected: (
-                                                Guest guest) {
-                                              textFieldController.text =
-                                                  guest.name;
-                                            },
-                                          )
+      var ticketLabel = "";
+      if (owner != null) {
+        switch (index) {
+          case 0:
+            ticketLabel = "${owner.firstName()}'s ticket"; break;
+          case 1:
+            ticketLabel = "${owner.firstName()}'s 1st guest"; break;
+          case 2:
+            ticketLabel = "${owner.firstName()}'s 2nd guest"; break;
+          case 3:
+            ticketLabel = "${owner.firstName()}'s 3rd guest"; break;
+          case 4: case 5: case 6: case 7: case 8:case 9: case 10: case 11: case 12:
+          ticketLabel = "${owner.firstName()}'s ${index}th guest"; break;
+        }
+      }
+
+      return BlocBuilder<GuestDetailsBloc, GuestState>(
+          builder: (context, state) {
+            return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        SvgPicture.asset(
+                            'assets/gearhead-pink.svg',
+                            height: 40,
+                            width: 40,
+                            semanticsLabel: 'An FnF Ticket'
+                        ),
+                        Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 5),
+                            child: Container(
+                                width: 300,
+                                height: 45,
+                                child: TypeAheadField(
+                                  hideOnEmpty: true,
+                                  textFieldConfiguration: TextFieldConfiguration<Guest>(
+//                                                autofocus: this.index == 1,
+                                      controller: textFieldController,
+                                      onSubmitted: (dynamic value) {
+                                        record.setName(value.toString());
+                                        if (owner.contract.valid()) {
+                                          _validateGuestTickets(context, owner);
+                                        }
+                                      },
+                                      style: appTheme.textTheme
+                                          .display2,
+                                      textCapitalization: TextCapitalization
+                                          .words,
+                                      decoration: InputDecoration(
+                                        border: OutlineInputBorder(),
+                                        labelText: ticketLabel,
                                       )
                                   ),
-                                  //                                )
-
-
-                                  //                                Padding(
-//                                  padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 5),
-//                                  child: Switch(
-//                                    value: isSwitched,
-//                                    onChanged: (value) {
-//                                      isSwitched = value;
-//                                    },
-//                                    activeTrackColor: Colors.black12,
-//                                    activeColor: appTheme.primaryColor,
-//
-//                                    )
-//                                  )
-                                ]
+                                  suggestionsCallback: (search) async {
+                                    return _filterGuestsByName(context, search);
+                                  },
+                                  itemBuilder: (context,
+                                      Guest guest) {
+                                    return ListTile(
+                                        title: Text(guest.name,
+                                            style: appTheme.textTheme
+                                                .display2)
+                                    );
+                                  },
+                                  onSuggestionSelected: (Guest guest) {
+                                      record.setName(guest.name);
+                                      textFieldController.text = guest.name;
+                                      if (owner.contract.valid()) {
+                                        _validateGuestTickets(context, owner);
+                                      }
+                                  },
+                                )
                             )
-                          ]
-//              )
-          );
-        }
-
-    );
+                        ),
+                      ]
+                  )
+                ]
+            );
+          }
+      );
   }
 }
 

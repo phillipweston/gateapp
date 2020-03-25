@@ -251,9 +251,9 @@ class TicketListRow extends StatelessWidget {
                                       controller: textFieldController,
                                       onSubmitted: (dynamic value) {
                                         record.setName(value.toString());
-                                        if (owner.contract.valid()) {
-                                          _validateGuestTickets(context, owner);
-                                        }
+//                                        if (owner.contract.valid()) {
+                                        _validateGuestTickets(context, owner);
+//                                        }
                                       },
                                       style: appTheme.textTheme
                                           .display2,

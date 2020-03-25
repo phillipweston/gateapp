@@ -7,15 +7,13 @@ class Record {
 
   void setName (String name) {
     this.name = name;
+    this.valid = false;
 
     var names = name.trim().split(" ");
-
     if (names.length > 1) {
       var first = names.elementAt(0);
       var last = names.elementAt(1);
-      if (first.length > 1 && last.length > 1) {
-        this.valid = true;
-      }
+      this.valid = (first.length > 1 && last.length > 1);
     }
   }
 

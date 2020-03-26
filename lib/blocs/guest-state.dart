@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:fnf_guest_list/models/assigned-ticket.dart';
 import 'package:fnf_guest_list/models/ticket.dart';
 import '../models/guest.dart';
 
@@ -65,7 +66,7 @@ class GuestTicketsAssigned extends GuestState {
 }
 
 class TransferSuccessful extends GuestState {
-  final List<Ticket> tickets;
+  final List<AssignedTicket> tickets;
   const TransferSuccessful(this.tickets);
   @override
   List<Object> get props => [tickets];

@@ -1,4 +1,5 @@
-import 'package:fnf_guest_list/models/record-contract.dart';
+import 'package:fnf_guest_list/models/assigned-ticket.dart';
+import 'package:fnf_guest_list/models/contract.dart';
 import 'package:fnf_guest_list/models/ticket.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -10,7 +11,7 @@ abstract class GuestRepositoryInterface {
   Future<Guest> getById(int id);
   Guest getByIdLocal(int id);
   Future<List<Guest>> filterGuests(String search);
-  Future<List<Ticket>> transferTickets(Guest owner);
+  Future<List<AssignedTicket>> transferTickets(Guest owner);
 }
 
 class GuestRepository implements GuestRepositoryInterface {
@@ -111,7 +112,7 @@ class GuestRepository implements GuestRepositoryInterface {
   }
 
   @override
-  Future<List<Ticket>> transferTickets(Guest owner) async {
+  Future<List<AssignedTicket>> transferTickets(Guest owner) async {
     try {
       print("in transferTickets ${owner.contract.records.toString()}");
       var body = jsonEncode(owner.contract);
@@ -123,7 +124,7 @@ class GuestRepository implements GuestRepositoryInterface {
 
       if (response.statusCode == 200 && response.body.isNotEmpty == true) {
         var ticketsJson = jsonDecode(response.body) as List<dynamic>;
-        var tickets = ticketsJson.map((dynamic ticketJson) => Ticket.fromJson(ticketJson)).toList();
+        var tickets = ticketsJson.map((dynamic ticketJson) => AssignedTicket.fromJson(ticketJson)).toList();
         print(tickets);
         return tickets;
       } else {

@@ -3,13 +3,17 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+
+import 'package:fnf_guest_list/models/assigned-ticket.dart';
 import 'package:fnf_guest_list/models/guest.dart';
 import 'package:fnf_guest_list/blocs/guest.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fnf_guest_list/common/theme.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:fnf_guest_list/models/record.dart';
 import 'package:fnf_guest_list/models/ticket.dart';
-import '../models/record-contract.dart';
+import '../models/contract.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 void _fetchGuest (BuildContext context, int userId) {
@@ -100,25 +104,15 @@ class _GuestDetailsState extends State<GuestDetails> {
                         )
                       ],
                     ),
-                    SliverToBoxAdapter(
-                        child: Container(
-                          height: 80,
-                          width: 300,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: <Widget>[
-                                  Center(
-                                      child: Text("Assign all tickets and the CONFIRM TICKETS button below will become active.", style: appTheme.textTheme.display1))
-                                ]
-                              )
-                            ]
-                          )
-                        )
+                    BlocBuilder<GuestDetailsBloc, GuestState>(
+                      builder: (context, state) {
+                        if (state is GuestLoaded || state is GuestTicketsAssigned) {
+                          return mustAssignTicketsText();
+                        }
+                        else {
+                          return SliverToBoxAdapter(child: SizedBox(height: 30));
+                        }
+                      }
                     ),
                     BlocBuilder<GuestDetailsBloc, GuestState>(
                       builder: (context, state) {
@@ -190,7 +184,7 @@ MaterialButton buildCheckInButton () {
       color: superPink,
       disabledColor: Colors.black12,
       textColor: Colors.white,
-      child: Text('Check in now!', style: appTheme.textTheme.button)
+      child: Text('Click here to continue', style: appTheme.textTheme.button)
   );
 }
 
@@ -215,33 +209,133 @@ SliverToBoxAdapter buildError() {
       ));
 }
 
-SliverFixedExtentList buildGuestTickets (BuildContext context, Guest guest) {
+AnimationLimiter buildGuestTickets (BuildContext context, Guest guest) {
+  return AnimationLimiter(
 
-  return SliverFixedExtentList(
-      itemExtent: 80.0,
-      delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
+      child: SliverFixedExtentList(
+        itemExtent: 80.0,
+        delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
 
-        if (index > guest.tickets.length - 1) return SizedBox(height: 0);
-        return Container(
-            alignment: Alignment.center,
-            child: Column(
-                children: <Widget>[
-                  TicketListRow(guest, index),
-                  Divider()
-                ]));
-      })
-  );
-}
+          if (index > guest.tickets.length - 1) return SizedBox(height: 0);
 
-SliverToBoxAdapter buildTransferSuccess (BuildContext context, List<Ticket> tickets) {
-  return SliverToBoxAdapter(
-    child: Container(
-      height: 200,
-      child: Text("Successfully transferred tickets!")
+          return AnimationConfiguration.staggeredList(
+            position: index,
+            duration: const Duration(milliseconds: 120),
+            child: SlideAnimation(
+              horizontalOffset: -10.0,
+              verticalOffset: 0.0,
+              child: FadeInAnimation(
+                child: Container(
+                    alignment: Alignment.center,
+                    child: Column(
+                        children: <Widget>[
+                          TicketListRow(guest, index),
+                          Divider()
+                        ]
+                    )
+                )
+              ),
+            ),
+          );
+
+
+        })
     )
   );
 }
 
+SliverToBoxAdapter buildTransferSuccess (BuildContext context, List<AssignedTicket> tickets) {
+
+  return SliverToBoxAdapter(
+    child: Container(
+      height: 700,
+      width: 400,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          SizedBox(height: 2),
+          Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Center(
+                    child: SvgPicture.asset(
+                        'assets/gearhead-pink.svg',
+                        height: 300,
+                        width: 300,
+                        semanticsLabel: 'An FnF Ticket'
+                    ),
+                )
+              ]
+          ),
+          Padding(
+              padding: const EdgeInsets.all(8),
+              child: Text("Success!", style: appTheme.textTheme.subhead)
+          ),
+          Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+
+              children: <Widget>[
+
+                ConstrainedBox(
+                  constraints: new BoxConstraints(
+                    minHeight: 30.0,
+                    maxHeight: 800.0,
+                    minWidth: 30.0,
+                    maxWidth: 500.0
+                  ),
+                  child: ListView.builder(
+                      shrinkWrap: true,
+                      padding: const EdgeInsets.all(8),
+                      itemCount: tickets.length,
+                      itemExtent: 36.0,
+                      itemBuilder: (BuildContext context, int index) {
+                        return Container(
+                          height: 35,
+                          width: 300,
+                          child: Center(child: Text('Ticket ${tickets[index].ticketId} => ${tickets[index].owner.name}')),
+                        );
+                      }
+                  )
+                )
+              ]
+          ),
+        ]
+      )
+    )
+  );
+}
+
+SliverToBoxAdapter mustAssignTicketsText () {
+  return SliverToBoxAdapter(
+      child: Container(
+          height: 80,
+          width: 300,
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment
+                  .center,
+              children: <Widget>[
+                Row(
+                    mainAxisAlignment: MainAxisAlignment
+                        .center,
+                    crossAxisAlignment: CrossAxisAlignment
+                        .center,
+                    children: <Widget>[
+                      Center(
+                          child: Text(
+                              "Assign all tickets and the CONFIRM TICKETS button below will become active.",
+                              style: appTheme.textTheme
+                                  .display1))
+                    ]
+                )
+              ]
+          )
+      )
+  );
+}
 
 class TicketListRow extends StatelessWidget {
   final Guest owner;

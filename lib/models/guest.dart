@@ -1,12 +1,8 @@
-import 'dart:collection';
-import 'dart:convert';
-
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import './ticket.dart';
-import './record-contract.dart';
 import 'package:equatable/equatable.dart';
 
+import 'ticket.dart';
+import 'contract.dart';
+import 'record.dart';
 
 class Guest extends Equatable  {
   final int userId;
@@ -56,6 +52,7 @@ class Guest extends Equatable  {
     var name = json['name'] as String;
 
     var _tickets = json['tickets'].map((dynamic ticketJson) => Ticket.fromJson(ticketJson)).toList() as List<dynamic>;
+
     List<Ticket> tickets = _tickets.cast<Ticket>().toList();
 
     var records = _tickets.map<Record>((dynamic ticket) => Record(ticket as Ticket)).toList();

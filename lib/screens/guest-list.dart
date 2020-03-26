@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+
 import 'package:fnf_guest_list/blocs/navigator.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -184,16 +186,35 @@ SliverToBoxAdapter buildNoGuests() {
       ));
 }
 
-SliverFixedExtentList buildGuestList(BuildContext context, List<Guest> guests) {
-  return SliverFixedExtentList(
+AnimationLimiter buildGuestList(BuildContext context, List<Guest> guests) {
+  return AnimationLimiter(
+    child: SliverFixedExtentList(
       itemExtent: 80.0,
       delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
         if (index > guests.length - 1) return null;
-        return Container(
-            alignment: Alignment.center,
-            child: Column(
-                children: <Widget>[GuestListRow(guests[index]), Divider()]));
+
+        return AnimationConfiguration.staggeredList(
+          position: index,
+          duration: const Duration(milliseconds: 175),
+          child: SlideAnimation(
+//            verticalOffset: -50.0,
+            horizontalOffset: -30.0,
+
+            child: FadeInAnimation(
+              child: Container(
+                  alignment: Alignment.center,
+                  child: Column(
+                      children: <Widget>[
+                        GuestListRow(guests[index]),
+                        Divider()
+                      ]
+                  )
+              )
+            ),
+          ),
+        );
       })
+    )
   );
 }
 

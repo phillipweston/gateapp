@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:fnf_guest_list/models/ticket.dart';
 import '../models/guest.dart';
 
 abstract class GuestState extends Equatable {
@@ -61,4 +62,11 @@ class GuestTicketsAssigned extends GuestState {
   const GuestTicketsAssigned(this.guest);
   @override
   List<Object> get props => [guest];
+}
+
+class TransferSuccessful extends GuestState {
+  final List<Ticket> tickets;
+  const TransferSuccessful(this.tickets);
+  @override
+  List<Object> get props => [tickets];
 }

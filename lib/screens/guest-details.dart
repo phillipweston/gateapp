@@ -3,15 +3,14 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:fnf_guest_list/models/guest.dart';
 import 'package:fnf_guest_list/blocs/guest.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fnf_guest_list/common/theme.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:fnf_guest_list/models/ticket.dart';
 import '../models/record-contract.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fnf_guest_list/blocs/navigator.dart';
 
 void _fetchGuest (BuildContext context, int userId) {
   final _bloc = BlocProvider.of<GuestDetailsBloc>(context);
@@ -21,7 +20,8 @@ void _fetchGuest (BuildContext context, int userId) {
 void _validateGuestTickets (BuildContext context, Guest owner) {
   final _bloc = BlocProvider.of<GuestDetailsBloc>(context);
   _bloc.add(CheckGuestTicketsAssigned(owner));
-  _bloc.add(CheckGuestTicketsAssigned(owner));
+  // unfocus textbox to remove keyboard and show CONFIRM TICKETS button
+  FocusScope.of(context).unfocus();
 }
 
 Future<List<Guest>> _filterGuestsByName (BuildContext context, String search) {
@@ -29,6 +29,10 @@ Future<List<Guest>> _filterGuestsByName (BuildContext context, String search) {
   return _bloc.guestRepository.filterGuestsByName(search);
 }
 
+void _transferTickets (BuildContext context, Guest guest) {
+  final _bloc = BlocProvider.of<GuestDetailsBloc>(context);
+  _bloc.add(TransferTickets(guest));
+}
 
 class GuestDetails extends StatefulWidget {
   final Guest guest;
@@ -49,6 +53,9 @@ class _GuestDetailsState extends State<GuestDetails> {
   void didChangeDependencies() {
     final _bloc = BlocProvider.of<GuestDetailsBloc>(context);
     _bloc.add(GetGuest(guest.userId));
+    if (guest.contract.valid()) {
+      _validateGuestTickets(context, guest);
+    }
     super.didChangeDependencies();
   }
 
@@ -57,6 +64,7 @@ class _GuestDetailsState extends State<GuestDetails> {
         return BlocBuilder<GuestDetailsBloc, GuestState>(
           builder: (context, state) {
             var GUEST_NAME = guest.name != null ? guest.name : "";
+
             return Scaffold(
                 body: CustomScrollView(
                   slivers: [
@@ -92,7 +100,26 @@ class _GuestDetailsState extends State<GuestDetails> {
                         )
                       ],
                     ),
-                    SliverToBoxAdapter(child: SizedBox(height: 20)),
+                    SliverToBoxAdapter(
+                        child: Container(
+                          height: 80,
+                          width: 300,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  Center(
+                                      child: Text("Assign all tickets and the CONFIRM TICKETS button below will become active.", style: appTheme.textTheme.display1))
+                                ]
+                              )
+                            ]
+                          )
+                        )
+                    ),
                     BlocBuilder<GuestDetailsBloc, GuestState>(
                       builder: (context, state) {
                         if (state is GuestLoaded) {
@@ -100,6 +127,9 @@ class _GuestDetailsState extends State<GuestDetails> {
                         }
                         else if (state is GuestTicketsAssigned) {
                           return buildGuestTickets(context, state.guest);
+                        }
+                        else if (state is TransferSuccessful) {
+                          return buildTransferSuccess(context, state.tickets);
                         }
                         else if (state is GuestsError) {
                           return buildError();
@@ -114,7 +144,10 @@ class _GuestDetailsState extends State<GuestDetails> {
                 bottomNavigationBar: BlocBuilder<GuestDetailsBloc, GuestState>(
                   builder: (context, state) {
                     if (state is GuestTicketsAssigned) {
-                      return buildTransferTicketsButton();
+                      return buildTransferTicketsButton(context, state.guest);
+                    }
+                    else if (state is TransferSuccessful) {
+                      return buildCheckInButton();
                     }
                     else {
                       return buildDisabledButton();
@@ -134,19 +167,30 @@ MaterialButton buildDisabledButton () {
           height: 80,
           disabledColor: Colors.black12,
           textColor: Colors.white,
-          child: Text('TRANSFER TICKETS'),
+          child: Text('Confirm Tickets', style: appTheme.textTheme.button)
   );
 }
 
 
-MaterialButton buildTransferTicketsButton () {
+MaterialButton buildTransferTicketsButton (BuildContext context, Guest guest) {
   return MaterialButton(
-    onPressed: () {},
+    onPressed: () => _transferTickets(context, guest),
     height: 80,
     color: superPink,
     disabledColor: Colors.black12,
     textColor: Colors.white,
-    child: Text('TRANSFER TICKETS')
+    child: Text('Confirm Tickets', style: appTheme.textTheme.button)
+  );
+}
+
+MaterialButton buildCheckInButton () {
+  return MaterialButton(
+      onPressed: () {},
+      height: 80,
+      color: superPink,
+      disabledColor: Colors.black12,
+      textColor: Colors.white,
+      child: Text('Check in now!', style: appTheme.textTheme.button)
   );
 }
 
@@ -186,6 +230,15 @@ SliverFixedExtentList buildGuestTickets (BuildContext context, Guest guest) {
                   Divider()
                 ]));
       })
+  );
+}
+
+SliverToBoxAdapter buildTransferSuccess (BuildContext context, List<Ticket> tickets) {
+  return SliverToBoxAdapter(
+    child: Container(
+      height: 200,
+      child: Text("Successfully transferred tickets!")
+    )
   );
 }
 
@@ -249,16 +302,17 @@ class TicketListRow extends StatelessWidget {
                                   textFieldConfiguration: TextFieldConfiguration<Guest>(
 //                                                autofocus: this.index == 1,
                                       controller: textFieldController,
-                                      onSubmitted: (dynamic value) {
+                                      onChanged: (dynamic value) {
                                         record.setName(value.toString());
-//                                        if (owner.contract.valid()) {
-                                        _validateGuestTickets(context, owner);
-//                                        }
                                       },
-                                      style: appTheme.textTheme
-                                          .display2,
-                                      textCapitalization: TextCapitalization
-                                          .words,
+                                      onSubmitted: (dynamic value) {
+                                        _validateGuestTickets(context, owner);
+                                      },
+                                      onEditingComplete: () {
+                                        _validateGuestTickets(context, owner);
+                                      },
+                                      style: appTheme.textTheme.display2,
+                                      textCapitalization: TextCapitalization.words,
                                       decoration: InputDecoration(
                                         border: OutlineInputBorder(),
                                         labelText: ticketLabel,

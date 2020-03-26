@@ -50,5 +50,26 @@ class GuestDetailsBloc extends Bloc<GuestEvent, GuestState> {
         yield GuestsError("Couldn't fetch guest. Is the device online?");
       }
     }
+
+    else if (event is TransferTickets) {
+      try {
+        Guest guest = event.owner;
+        var valid = guest.contract.valid();
+        if (valid) {
+          var tickets = await guestRepository.transferTickets(guest);
+          if (tickets.isNotEmpty) {
+            yield TransferSuccessful(tickets);
+          }
+          else {
+            yield GuestLoaded(guest);
+          }
+        }
+        else {
+          yield GuestLoaded(guest);
+        }
+      } on NetworkError {
+        yield GuestsError("Couldn't transfer tickets.");
+      }
+    }
   }
 }

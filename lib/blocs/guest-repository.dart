@@ -1,4 +1,5 @@
 import 'package:fnf_guest_list/models/record-contract.dart';
+import 'package:fnf_guest_list/models/ticket.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -9,6 +10,7 @@ abstract class GuestRepositoryInterface {
   Future<Guest> getById(int id);
   Guest getByIdLocal(int id);
   Future<List<Guest>> filterGuests(String search);
+  Future<List<Ticket>> transferTickets(Guest owner);
 }
 
 class GuestRepository implements GuestRepositoryInterface {
@@ -43,29 +45,51 @@ class GuestRepository implements GuestRepositoryInterface {
 
   Future<List<Guest>> filterGuests(String search) async {
     search = search.toLowerCase();
-    return _all.where((guest) {
+    var guests = _all.where((guest) {
       var guestString = "";
       if (guest.name != null) guestString += guest.name.toLowerCase();
-      if (guest.email != null) guestString += guest.email.toLowerCase();
-      if (guest.phone != null) guestString += guest.phone.toLowerCase();
+//      if (guest.email != null) guestString += guest.email.toLowerCase();
+//      if (guest.phone != null) guestString += guest.phone.toLowerCase();
       return guestString.contains(search);
     }).toList();
+    guests.sort((Guest a, Guest b) {
+      var aYes = a.lastName().toLowerCase().startsWith(search) ? 1 : 0;
+      var bYes = b.lastName().toLowerCase().startsWith(search) ? 1 : 0;
+      return bYes - aYes;
+    });
+    guests.sort((Guest a, Guest b) {
+      var aYes = a.firstName().toLowerCase().startsWith(search) ? 1 : 0;
+      var bYes = b.firstName().toLowerCase().startsWith(search) ? 1 : 0;
+      return bYes - aYes;
+    });
+    return guests;
   }
 
   Future<List<Guest>> filterGuestsByName (String search) async {
     search = search.toLowerCase();
-    return _all.where((guest) {
+    var guests = _all.where((guest) {
       var guestString = "";
       if (guest.name != null) guestString += guest.name.toLowerCase();
       return guestString.contains(search);
     }).toList();
+    guests.sort((Guest a, Guest b) {
+      var aYes = a.lastName().toLowerCase().startsWith(search) ? 1 : 0;
+      var bYes = b.lastName().toLowerCase().startsWith(search) ? 1 : 0;
+      return bYes - aYes;
+    });
+    guests.sort((Guest a, Guest b) {
+      var aYes = a.firstName().toLowerCase().startsWith(search) ? 1 : 0;
+      var bYes = b.firstName().toLowerCase().startsWith(search) ? 1 : 0;
+      return bYes - aYes;
+    });
+    return guests;
   }
 
   @override
   Future<List<Guest>> refreshAll() async {
     try {
       print("in refreshAll");
-      final response = await http.get('http://10.0.0.155:7777/users');
+      final response = await http.get('http://10.0.0.155:7777/users', headers: { 'Content-Type' : 'application/json' });
 
       if (response.statusCode == 200 && response.body.isNotEmpty == true) {
         var guestsJson = jsonDecode(response.body) as List<dynamic>;
@@ -85,6 +109,32 @@ class GuestRepository implements GuestRepositoryInterface {
       throw Exception("Failed to fetch guests ${e.toString()}");
     }
   }
+
+  @override
+  Future<List<Ticket>> transferTickets(Guest owner) async {
+    try {
+      print("in transferTickets ${owner.contract.records.toString()}");
+      var body = jsonEncode(owner.contract);
+      var response = await http.post('http://10.0.0.155:7777/tickets/transfer',
+          headers: { 'Content-Type' : 'application/json' },
+          body: body
+      );
+
+
+      if (response.statusCode == 200 && response.body.isNotEmpty == true) {
+        var ticketsJson = jsonDecode(response.body) as List<dynamic>;
+        var tickets = ticketsJson.map((dynamic ticketJson) => Ticket.fromJson(ticketJson)).toList();
+        print(tickets);
+        return tickets;
+      } else {
+        throw Exception('Failed to transfer tickets');
+      }
+    }
+    catch (e) {
+      throw Exception("Failed to transfer tickets ${e.toString()}");
+    }
+  }
 }
+
 
 class NetworkError extends Error {}

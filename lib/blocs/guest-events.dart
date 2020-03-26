@@ -46,3 +46,10 @@ class CheckGuestTicketsAssigned extends GuestEvent {
   List<Object> get props => [owner];
 }
 
+class TransferTickets extends GuestEvent {
+  final Guest owner;
+  const TransferTickets(this.owner);
+  @override
+  List<Object> get props => [owner];
+}
+

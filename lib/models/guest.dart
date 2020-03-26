@@ -44,6 +44,14 @@ class Guest extends Equatable  {
     }
   }
 
+  String lastName() {
+    if (this.name != null) {
+      var names = this.name.split(" ");
+      if (names.length > 1) return names[names.length - 1];
+      else return "";
+    }
+  }
+
   factory Guest.fromJson(dynamic json) {
     var name = json['name'] as String;
 
@@ -53,7 +61,9 @@ class Guest extends Equatable  {
     var records = _tickets.map<Record>((dynamic ticket) => Record(ticket as Ticket)).toList();
     var contract = Contract(records);
 
-    contract.records.elementAt(0).setName(name);
+    if (contract.records.isNotEmpty) {
+      contract.records.elementAt(0).setName(name);
+    }
 
     return Guest(
         json['user_id'] as int,
@@ -64,90 +74,4 @@ class Guest extends Equatable  {
         contract as Contract
     );
   }
-}
-
-class GuestModel with ChangeNotifier {
-  List<Guest> _guests = [];
-  List<Guest> _allGuests = [];
-
-  notifyListeners();
-
-  void setGuests(List<Guest> newGuests) {
-    _guests = newGuests;
-    notifyListeners();
-  }
-
-  GuestModel() {
-    refreshAll();
-  }
-
-  Guest getByPosition(int index) {
-    if (_guests.isNotEmpty) {
-      return _guests[index];
-    }
-  }
-
-  void triggerNotifiers() {
-    notifyListeners();
-  }
-
-  Guest getById(int id) {
-    if (_guests.isNotEmpty) {
-      var guest = _guests.firstWhere((guest) => guest.userId == id, orElse: () => null);
-      return guest;
-    }
-  }
-
-  Future<void> filterGuests(String search) async {
-    search = search.toLowerCase();
-    var guests = _allGuests.where((guest) {
-      var guestString = "";
-      if (guest.name != null) guestString += guest.name.toLowerCase();
-      if (guest.email != null) guestString += guest.email.toLowerCase();
-      if (guest.phone != null) guestString += guest.phone.toLowerCase();
-      return guestString.contains(search);
-    }).toList();
-    setGuests(guests);
-  }
-
-  Future<List<Guest>> searchGuests(String search) async {
-    if (search == "") return null;
-    var lowerSearch = search.toLowerCase();
-    var guests = _allGuests.where((guest) {
-      var guestString = "";
-      if (guest.name != null) guestString += guest.name.toLowerCase();
-      return guestString.contains(lowerSearch);
-    }).toList();
-    return guests;
-  }
-
-  int size() {
-    return _guests.length - 1;
-  }
-
-  Future<void> refreshAll() async {
-    try {
-      final response = await http.get('http://10.0.0.155:7777/users');
-
-      if (response.statusCode == 200 && response.body.isNotEmpty) {
-        var usersJson = jsonDecode(response.body) as List<dynamic>;
-        List<Guest> guests = usersJson.map((dynamic userJson) =>
-            Guest.fromJson(userJson)).toList();
-
-        guests.sort((a, b) => a.name.compareTo(b.name));
-
-        _allGuests = guests;
-
-        setGuests(guests);
-      } else {
-        throw Exception('Failed to load guests');
-      }
-    }
-    catch (e) {
-      throw Exception("Failed to fetch guests ${e.toString()}");
-    }
-  }
-
-  /// An unmodifiable view of the guests
-  UnmodifiableListView<Guest> get guests => UnmodifiableListView(_guests);
 }

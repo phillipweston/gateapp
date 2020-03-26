@@ -49,6 +49,12 @@ final appTheme = ThemeData(
         fontSize: 18,
         color: Colors.black
     ),
+    button: TextStyle(
+        fontFamily: 'RedRock',
+        fontWeight: FontWeight.w700,
+        fontSize: 28,
+        color: Colors.white
+    ),
     title: TextStyle(
       fontFamily: 'RedRock',
       fontWeight: FontWeight.w700,

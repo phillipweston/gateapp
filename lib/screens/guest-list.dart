@@ -138,7 +138,7 @@ class SearchInputField extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
       child: TextField(
-        textAlign: TextAlign.center,
+        textAlign: TextAlign.left,
 
         onChanged: (value) => _filterGuests(context, value),
         controller: searchController,
@@ -148,7 +148,7 @@ class SearchInputField extends StatelessWidget {
               borderRadius: BorderRadius.all(Radius.circular(8.0))),
           suffixIcon: Icon(Icons.search),
           hintStyle: TextStyle(),
-          labelText:'Search by name, email, or phone (possibly)',
+          labelText:'Search by guest name',
 //          hintText: 'Search by name, email, or phone (possibly)',
         ),
       ),

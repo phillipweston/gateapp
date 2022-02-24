@@ -1,6 +1,6 @@
+// ignore_for_file: missing_return, unnecessary_statements
+
 import 'package:fnf_guest_list/models/assigned-ticket.dart';
-import 'package:fnf_guest_list/models/contract.dart';
-import 'package:fnf_guest_list/models/ticket.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -53,12 +53,12 @@ class GuestRepository implements GuestRepositoryInterface {
 //      if (guest.phone != null) guestString += guest.phone.toLowerCase();
       return guestString.contains(search);
     }).toList();
-    guests.sort((Guest a, Guest b) {
+    guests.sort((a, b) {
       var aYes = a.lastName().toLowerCase().startsWith(search) ? 1 : 0;
       var bYes = b.lastName().toLowerCase().startsWith(search) ? 1 : 0;
       return bYes - aYes;
     });
-    guests.sort((Guest a, Guest b) {
+    guests.sort((a, b) {
       var aYes = a.firstName().toLowerCase().startsWith(search) ? 1 : 0;
       var bYes = b.firstName().toLowerCase().startsWith(search) ? 1 : 0;
       return bYes - aYes;
@@ -73,12 +73,12 @@ class GuestRepository implements GuestRepositoryInterface {
       if (guest.name != null) guestString += guest.name.toLowerCase();
       return guestString.contains(search);
     }).toList();
-    guests.sort((Guest a, Guest b) {
+    guests.sort((a, b) {
       var aYes = a.lastName().toLowerCase().startsWith(search) ? 1 : 0;
       var bYes = b.lastName().toLowerCase().startsWith(search) ? 1 : 0;
       return bYes - aYes;
     });
-    guests.sort((Guest a, Guest b) {
+    guests.sort((a, b) {
       var aYes = a.firstName().toLowerCase().startsWith(search) ? 1 : 0;
       var bYes = b.firstName().toLowerCase().startsWith(search) ? 1 : 0;
       return bYes - aYes;

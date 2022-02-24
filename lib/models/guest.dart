@@ -38,13 +38,19 @@ class Guest extends Equatable  {
     if (this.name != null) {
       return this.name.split(" ")[0];
     }
+    return "";
   }
 
   String lastName() {
     if (this.name != null) {
       var names = this.name.split(" ");
-      if (names.length > 1) return names[names.length - 1];
-      else return "";
+      if (names.length > 1) {
+        return names[names.length - 1];
+      } else {
+        return "";
+      }
+    } else {
+      return "";
     }
   }
 
@@ -67,8 +73,8 @@ class Guest extends Equatable  {
         name,
         json['email'] as String,
         json['phone'] as String,
-        tickets as List<Ticket>,
-        contract as Contract
+        tickets,
+        contract
     );
   }
 }

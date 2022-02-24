@@ -21,23 +21,24 @@ Map<int, Color> color =
 
 MaterialColor superPink = MaterialColor(0xFFf302d3, color);
 
-
 final appTheme = ThemeData(
-  primarySwatch: superPink,
+  colorScheme: {
+    primarySwatch: superPink
+  },
   textTheme: TextTheme(
-    display3: TextStyle(
+    headline1: TextStyle(
         fontFamily: '',
         fontWeight: FontWeight.w700,
         fontSize: 20,
         color: Colors.white
     ),
-    display4: TextStyle(
+    headline2: TextStyle(
       fontFamily: '',
       fontWeight: FontWeight.w700,
       fontSize: 20,
       color: Colors.black
     ),
-    display2: TextStyle(
+    headline3: TextStyle(
         fontFamily: '',
         fontWeight: FontWeight.w400,
         fontSize: 18,
@@ -55,13 +56,13 @@ final appTheme = ThemeData(
         fontSize: 28,
         color: Colors.white
     ),
-    title: TextStyle(
+    headline6: TextStyle(
       fontFamily: 'RedRock',
       fontWeight: FontWeight.w700,
       fontSize: 40,
       color: Colors.white
     ),
-    subhead: TextStyle(
+    subtitle1: TextStyle(
       fontFamily: 'RedRock',
       fontWeight: FontWeight.w700,
       fontSize: 40,

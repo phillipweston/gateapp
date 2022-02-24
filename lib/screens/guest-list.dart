@@ -68,7 +68,7 @@ class GuestList extends StatelessWidget {
                                               style: Theme
                                                   .of(context)
                                                   .textTheme
-                                                  .title))
+                                                  .headline6))
                                     ])
                                 )
                               ),
@@ -247,7 +247,7 @@ class GuestListRow extends StatelessWidget {
                     SizedBox(width: 24),
                     Expanded(
                       child: Text(guest.name,
-                          style: Theme.of(context).textTheme.display2),
+                          style: Theme.of(context).textTheme.headline1),
                     ),
                     SizedBox(width: 24),
                     Row(

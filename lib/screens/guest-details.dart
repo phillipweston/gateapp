@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// ignore_for_file: close_sinks
+
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
@@ -84,10 +86,10 @@ class _GuestDetailsState extends State<GuestDetails> {
                                 Center(
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
-                                    child: Text(GUEST_NAME, style: Theme.of(context).textTheme.title)
+                                    child: Text(GUEST_NAME, style: Theme.of(context).textTheme.headline1)
                                   )
                                 ),
-                                SvgPicture.asset('assets/gearhead-heart.svg',
+                                 SvgPicture.asset('assets/gearhead-heart.svg',
                                     color: Colors.white,
                                     height: 60,
                                     width: 60,
@@ -271,7 +273,7 @@ SliverToBoxAdapter buildTransferSuccess (BuildContext context, List<AssignedTick
           ),
           Padding(
               padding: const EdgeInsets.all(8),
-              child: Text("Success!", style: appTheme.textTheme.subhead)
+              child: Text("Success!", style: appTheme.textTheme.subtitle1)
           ),
           Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -328,7 +330,7 @@ SliverToBoxAdapter mustAssignTicketsText () {
                           child: Text(
                               "Assign all tickets and the CONFIRM TICKETS button below will become active.",
                               style: appTheme.textTheme
-                                  .display1))
+                                  .headline1))
                     ]
                 )
               ]
@@ -405,7 +407,7 @@ class TicketListRow extends StatelessWidget {
                                       onEditingComplete: () {
                                         _validateGuestTickets(context, owner);
                                       },
-                                      style: appTheme.textTheme.display2,
+                                      style: appTheme.textTheme.headline1,
                                       textCapitalization: TextCapitalization.words,
                                       decoration: InputDecoration(
                                         border: OutlineInputBorder(),
@@ -420,7 +422,7 @@ class TicketListRow extends StatelessWidget {
                                     return ListTile(
                                         title: Text(guest.name,
                                             style: appTheme.textTheme
-                                                .display2)
+                                                .headline2)
                                     );
                                   },
                                   onSuggestionSelected: (Guest guest) {

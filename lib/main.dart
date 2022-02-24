@@ -34,14 +34,14 @@ class _MyAppState extends State<MyApp> {
     return MultiBlocProvider(
       providers: [
         BlocProvider<GuestListBloc>(
-          create: (BuildContext context) {
+          create: (context) {
             var guestBloc = GuestListBloc(this.guestRepository);
             guestBloc.add(GetGuests());
             return guestBloc;
           }
         ),
         BlocProvider<GuestDetailsBloc>(
-          create: (BuildContext context) {
+          create: (context) {
             var guestBloc = GuestDetailsBloc(this.guestRepository);
             return guestBloc;
           }

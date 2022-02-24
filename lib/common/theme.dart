@@ -21,10 +21,26 @@ Map<int, Color> color =
 
 MaterialColor superPink = MaterialColor(0xFFf302d3, color);
 
+final ColorScheme _customColorScheme = ColorScheme(
+  primary: Colors.black,
+  secondary: Colors.white,
+  surface: Colors.purpleAccent,
+  background: superPink,
+  error: Colors.redAccent,
+  onPrimary: Colors.red,
+  onSecondary: Colors.deepOrange,
+  onSurface: superPink,
+  onBackground: superPink,
+  onError: Colors.redAccent,
+  brightness: Brightness.light,
+);
+
 final appTheme = ThemeData(
-  colorScheme: {
-    primarySwatch: superPink
-  },
+  colorScheme: _customColorScheme,
+  backgroundColor: superPink,
+  appBarTheme: AppBarTheme(
+    backgroundColor: superPink
+  ),
   textTheme: TextTheme(
     headline1: TextStyle(
         fontFamily: '',

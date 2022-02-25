@@ -82,7 +82,8 @@ class GuestList extends StatelessWidget {
                                 searchController.value = TextEditingValue(
                                     text: "");
                                 _fetchGuests(context);
-                              }
+                              },
+                              color: Colors.white
                           )
                         ]
                     ),

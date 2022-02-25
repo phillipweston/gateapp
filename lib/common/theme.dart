@@ -24,14 +24,14 @@ MaterialColor superPink = MaterialColor(0xFFf302d3, color);
 final ColorScheme _customColorScheme = ColorScheme(
   primary: Colors.black,
   secondary: Colors.black,
-  surface: Colors.purpleAccent,
+  surface: Colors.white,
   background: superPink,
-  error: Colors.redAccent,
-  onPrimary: Colors.red,
-  onSecondary: Colors.deepOrange,
+  error: Colors.white,
+  onPrimary: Colors.white,
+  onSecondary: Colors.white,
   onSurface: superPink,
   onBackground: superPink,
-  onError: Colors.redAccent,
+  onError: Colors.white,
   brightness: Brightness.light,
 );
 
@@ -39,7 +39,9 @@ final appTheme = ThemeData(
   colorScheme: _customColorScheme,
   backgroundColor: superPink,
   appBarTheme: AppBarTheme(
-    backgroundColor: superPink
+    backgroundColor: superPink,
+    iconTheme: IconThemeData(color: Colors.white),
+    actionsIconTheme: IconThemeData(color: Colors.white)
   ),
   textTheme: TextTheme(
     headline1: TextStyle(

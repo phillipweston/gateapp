@@ -86,7 +86,7 @@ class _GuestDetailsState extends State<GuestDetails> {
                                 Center(
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
-                                    child: Text(GUEST_NAME, style: Theme.of(context).textTheme.headline1)
+                                    child: Text(GUEST_NAME, style: appTheme.textTheme.button)
                                   )
                                 ),
                                  SvgPicture.asset('assets/gearhead-heart.svg',
@@ -102,7 +102,8 @@ class _GuestDetailsState extends State<GuestDetails> {
                       actions: [
                         IconButton(
                             icon: Icon(Icons.refresh),
-                            onPressed: () => _fetchGuest(context, guest.userId)
+                            onPressed: () => _fetchGuest(context, guest.userId),
+                            color: Colors.white
                         )
                       ],
                     ),
@@ -422,7 +423,7 @@ class TicketListRow extends StatelessWidget {
                                     return ListTile(
                                         title: Text(guest.name,
                                             style: appTheme.textTheme
-                                                .headline2)
+                                                .headline3)
                                     );
                                   },
                                   onSuggestionSelected: (Guest guest) {

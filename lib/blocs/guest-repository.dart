@@ -31,7 +31,7 @@ class GuestRepository implements GuestRepositoryInterface {
   @override
   Future<Guest> getById(int id) async {
     try {
-      final response = await http.get("http://10.0.0.155:7777/users/$id");
+      final response = await http.get("http://localhost:7777/users/$id");
 
       if (response.statusCode == 200 && response.body.isNotEmpty == true) {
         var guestJson = jsonDecode(response.body) as Map<String, dynamic>;
@@ -90,7 +90,7 @@ class GuestRepository implements GuestRepositoryInterface {
   Future<List<Guest>> refreshAll() async {
     try {
       print("in refreshAll");
-      final response = await http.get('http://10.0.0.155:7777/users', headers: { 'Content-Type' : 'application/json' });
+      final response = await http.get('http://localhost:7777/users', headers: { 'Content-Type' : 'application/json' });
 
       if (response.statusCode == 200 && response.body.isNotEmpty == true) {
         var guestsJson = jsonDecode(response.body) as List<dynamic>;
@@ -116,7 +116,7 @@ class GuestRepository implements GuestRepositoryInterface {
     try {
       print("in transferTickets ${owner.contract.records.toString()}");
       var body = jsonEncode(owner.contract);
-      var response = await http.post('http://10.0.0.155:7777/tickets/transfer',
+      var response = await http.post('http://localhost:7777/tickets/transfer',
           headers: { 'Content-Type' : 'application/json' },
           body: body
       );

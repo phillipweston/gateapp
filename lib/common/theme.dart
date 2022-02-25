@@ -23,7 +23,7 @@ MaterialColor superPink = MaterialColor(0xFFf302d3, color);
 
 final ColorScheme _customColorScheme = ColorScheme(
   primary: Colors.black,
-  secondary: Colors.white,
+  secondary: Colors.black,
   surface: Colors.purpleAccent,
   background: superPink,
   error: Colors.redAccent,
@@ -44,9 +44,9 @@ final appTheme = ThemeData(
   textTheme: TextTheme(
     headline1: TextStyle(
         fontFamily: '',
-        fontWeight: FontWeight.w700,
-        fontSize: 20,
-        color: Colors.white
+        fontWeight: FontWeight.w400,
+        fontSize: 18,
+        color: Colors.black
     ),
     headline2: TextStyle(
       fontFamily: '',

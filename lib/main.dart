@@ -4,9 +4,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:fnf_guest_list/common/theme.dart';
+import 'package:fnf_guest_list/screens/audit-list.dart';
 import 'package:fnf_guest_list/screens/guest-list.dart';
 import 'package:battery/battery.dart';
 import 'package:fnf_guest_list/blocs/guest.dart';
+import 'package:fnf_guest_list/blocs/audit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() {
@@ -22,10 +24,12 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   GuestRepository guestRepository;
+  AuditRepository auditRepository;
 
   @override
   void initState() {
     this.guestRepository = GuestRepository();
+    this.auditRepository = AuditRepository();
     super.initState();
   }
 
@@ -45,15 +49,23 @@ class _MyAppState extends State<MyApp> {
             var guestBloc = GuestDetailsBloc(this.guestRepository);
             return guestBloc;
           }
-        )
+        ),
+        BlocProvider<AuditListBloc>(
+            create: (context) {
+              var auditBloc = AuditListBloc(this.auditRepository);
+              auditBloc.add(GetAudits());
+              return auditBloc;
+            }
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        theme: appTheme,
+          theme: appTheme,
         title: 'FnF Guest List',
-        initialRoute: '/',
+        initialRoute: '/audit',
         routes: {
           '/': (context) => GuestList(),
+          '/audit': (context) => AuditList()
         }
       )
     );

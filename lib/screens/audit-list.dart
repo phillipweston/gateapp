@@ -10,6 +10,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fnf_guest_list/blocs/audit.dart';
 import 'package:fnf_guest_list/models/audit.dart';
 
+import '../common/theme.dart';
+
 var searchController = new TextEditingController();
 
 void _fetchAudits (BuildContext context) {
@@ -244,11 +246,29 @@ class AuditListRow extends StatelessWidget {
                       ),
                     ),
                     SizedBox(width: 24),
+
+                    Expanded(
+                      child: Text(audit.from.name,
+                          style: Theme.of(context).textTheme.headline1),
+                    ),
                     Expanded(
                       child: Text(audit.action,
                           style: Theme.of(context).textTheme.headline1),
                     ),
                     SizedBox(width: 24),
+
+                    Icon(
+                      Icons.arrow_right_alt,
+                      color: superPink,
+                      size: 50.0,
+                      semanticLabel: 'Text to announce in accessibility modes',
+                    ),
+                    SizedBox(width: 24),
+
+                    Expanded(
+                      child: Text(audit.to.name,
+                          style: Theme.of(context).textTheme.headline1),
+                    ),
                 //     Row(
                 //         children: guest.tickets
                 //             .map((ticket) => new Padding(

@@ -62,7 +62,7 @@ class _MyAppState extends State<MyApp> {
         debugShowCheckedModeBanner: false,
           theme: appTheme,
         title: 'FnF Guest List',
-        initialRoute: '/audit',
+        initialRoute: '/',
         routes: {
           '/': (context) => GuestList(),
           '/audit': (context) => AuditList()

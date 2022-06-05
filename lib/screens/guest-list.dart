@@ -125,6 +125,7 @@ class GuestList extends StatelessWidget {
                         } else if (state is GuestsError) {
                           return buildError();
                         }
+                        return Container();
                       },
                     ),
                   ],
@@ -252,16 +253,17 @@ class GuestListRow extends StatelessWidget {
                     ),
                     SizedBox(width: 24),
                     Row(
-                        children: guest.tickets
-                            .map((ticket) => new Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 4, vertical: 8),
-                                child: SvgPicture.asset(
-                                    'assets/gearhead-pink.svg',
-                                    height: 40,
-                                    width: 40,
-                                    semanticsLabel: 'An FnF Ticket')))
-                            .toList())
+                      children: guest.tickets
+                          .map((ticket) => 
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                              child: SvgPicture.asset(
+                                'assets/gearhead-pink.svg',
+                                height: 40,
+                                width: 40,
+                                semanticsLabel: 'An FnF Ticket')
+                            )
+                          ).toList())
                   ],
                 ))));
   }

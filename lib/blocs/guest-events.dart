@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
+import 'package:fnf_guest_list/models/ticket.dart';
 import 'package:fnf_guest_list/models/guest.dart';
-
+import 'package:fnf_guest_list/models/record.dart';
 abstract class GuestEvent extends Equatable {
   const GuestEvent();
 }
@@ -46,9 +47,41 @@ class CheckGuestTicketsAssigned extends GuestEvent {
   List<Object> get props => [owner];
 }
 
-class TransferTickets extends GuestEvent {
+class CheckGuestTicketAssigned extends GuestEvent {
   final Guest owner;
-  const TransferTickets(this.owner);
+  final Record record;
+  const CheckGuestTicketAssigned(this.owner, this.record);
+  @override
+  List<Object> get props => [owner];
+}
+
+class TransferTicket extends GuestEvent {
+  final Guest owner;
+  final Record record;
+  const TransferTicket(this.owner, this.record);
+  @override
+  List<Object> get props => [owner, record];
+}
+
+class PrepareToRedeem extends GuestEvent {
+  final Ticket ticket;
+  final Guest owner;
+  final bool redeem;
+  const PrepareToRedeem(this.owner, this.ticket, this.redeem);
+  @override
+  List<Object> get props => [ticket, owner, redeem];
+}
+
+class RedeemTicket extends GuestEvent {
+  final Ticket ticket;
+  const RedeemTicket(this.ticket);
+  @override
+  List<Object> get props => [ticket];
+}
+
+class RedeemTickets extends GuestEvent {
+  final Guest owner;
+  const RedeemTickets(this.owner);
   @override
   List<Object> get props => [owner];
 }

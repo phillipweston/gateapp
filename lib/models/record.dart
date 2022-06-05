@@ -4,6 +4,14 @@ class Record {
   final Ticket ticket;
   String name;
   bool valid = false;
+  bool shoudRedeem = false;
+
+  Map<String, dynamic> toJson() {
+    return <String,dynamic>{
+       "name" : name, 
+       "ticket_id" : ticket.ticketId
+    };
+  }
 
   void setName (String name) {
     this.name = name;
@@ -24,6 +32,10 @@ class Record {
     else if (names.length > 3) {
       this.valid = true;
     }
+  }
+
+  void setShouldRedeem(bool shouldRedeem) {
+    this.shoudRedeem = shouldRedeem;
   }
 
   bool willCall;

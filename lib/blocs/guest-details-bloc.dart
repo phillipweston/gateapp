@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:fnf_guest_list/models/guest.dart';
+import 'package:fnf_guest_list/models/record.dart';
+import 'package:fnf_guest_list/models/ticket.dart';
 import './guest.dart';
 
 class GuestDetailsBloc extends Bloc<GuestEvent, GuestState> {
@@ -13,8 +15,6 @@ class GuestDetailsBloc extends Bloc<GuestEvent, GuestState> {
 
   @override
   Stream<GuestState> mapEventToState(GuestEvent event) async* {
-    yield GuestLoading();
-    print("event $event");
 
     if (event is GetGuest) {
       try {
@@ -34,40 +34,57 @@ class GuestDetailsBloc extends Bloc<GuestEvent, GuestState> {
       }
     }
 
-    else if (event is CheckGuestTicketsAssigned) {
+    else if (event is TransferTicket) {
       try {
-        Guest guest = event.owner; //
-        var valid = guest.contract.valid();
-        // updates record and saves it locally
-
-        if (valid) { // validates whether contract is valid, all fields have two words at least
-          yield GuestTicketsAssigned(guest);
-        }
-        else {
-          yield GuestLoaded(guest);
-        }
+        var ticket = await guestRepository.transferTicket(event.record);
+          if (ticket != null) {
+            final Guest guest = await guestRepository.getById(ticket.userId);
+            yield TransferSuccessful(ticket);
+          }
+          else {
+            yield GuestLoaded(event.owner);
+          }
       } on NetworkError {
-        yield GuestsError("Couldn't fetch guest. Is the device online?");
+        yield GuestsError("Couldn't transfer tickets.");
       }
     }
 
-    else if (event is TransferTickets) {
+    else if (event is PrepareToRedeem) {
       try {
-        Guest guest = event.owner;
-        var valid = guest.contract.valid();
-        if (valid) {
-          var tickets = await guestRepository.transferTickets(guest);
-          if (tickets.isNotEmpty) {
-            yield TransferSuccessful(tickets);
+        Ticket ticket = Ticket(event.ticket.ticketId, event.ticket.userId, event.redeem, event.ticket.redeemedAt, event.ticket.createdAt);
+        event.owner.contract.records.forEach((element) {
+          if(element.ticket == event.ticket) {
+            element.setShouldRedeem(event.redeem);
           }
           else {
-            yield GuestLoaded(guest);
+            // ensure that only one ticket can be redeemed at a time
+            element.setShouldRedeem(false);
           }
+        });
+        final Guest guest = Guest(event.owner.userId, event.owner.name, event.owner.email, event.owner.phone, event.owner.tickets, event.owner.contract);
+        if(event.redeem) {
+          yield TicketReadyToRedeem(guest, ticket);
         }
         else {
           yield GuestLoaded(guest);
         }
-      } on NetworkError {
+      } catch (e) {
+      throw Exception("Couldn't prepare to redeem ticket: ${e.toString()}");
+      }
+    }
+
+    else if (event is RedeemTicket) {
+      try {
+        Ticket updatedTicket = await guestRepository.redeemTicket(event.ticket);
+        if(updatedTicket != null && updatedTicket.redeemed) {
+          yield TicketRedeemed(updatedTicket);
+        }
+        else {
+          Guest guest = await guestRepository.getById(event.ticket.userId);
+          yield GuestLoaded(guest);
+        }
+      } 
+      on NetworkError {
         yield GuestsError("Couldn't transfer tickets.");
       }
     }

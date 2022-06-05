@@ -73,22 +73,5 @@ class GuestListBloc extends Bloc<GuestEvent, GuestState> {
         yield GuestsError("Couldn't fetch guests. Is the device online?");
       }
     }
-
-
-
-    else if (event is CheckGuestTicketsAssigned) {
-      try {
-        final guest = event.owner;
-        var valid = guest.contract.valid();
-        if (valid) {
-          yield GuestTicketsAssigned(guest);
-        }
-        else {
-          yield GuestLoaded(guest);
-        }
-      } on NetworkError {
-        yield GuestsError("Couldn't fetch guest. Is the device online?");
-      }
-    }
-  }
+   }
 }

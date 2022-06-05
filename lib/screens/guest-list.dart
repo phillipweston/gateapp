@@ -12,6 +12,8 @@ import 'package:fnf_guest_list/models/guest.dart';
 import 'package:fnf_guest_list/screens/guest-details.dart';
 import 'package:fnf_guest_list/blocs/guest.dart';
 
+import '../common/theme.dart';
+
 var searchController = new TextEditingController();
 
 void _fetchGuests (BuildContext context) {
@@ -44,10 +46,24 @@ class GuestList extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
+
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: <Widget>[
+                              IconButton(
+                                padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
+                                onPressed: () {
+                                  // Navigate to the second screen using a named route.
+                                  Navigator.pushNamed(context, '/audit');
+                                },
+                                icon: Icon(
+                                  Icons.settings,
+                                  color: Colors.white,
+                                  size: 30.0,
+                                  semanticLabel: 'Look at the audit list',
+                                ),
+                              ),
                               Center(
                                 child: GestureDetector(
                                     onTap: () {
@@ -71,7 +87,7 @@ class GuestList extends StatelessWidget {
                                                   .headline6))
                                     ])
                                 )
-                              ),
+                              )
                             ],
                         )]),
                         floating: true,
@@ -98,7 +114,10 @@ class GuestList extends StatelessWidget {
                         title: SizedBox(
                             height: 80,
                             child: SearchInputField()
-                        )
+                        ),
+                      actions: [
+                        Text("hi")
+                      ]
                     ),
                     SliverToBoxAdapter(child: SizedBox(height: 12)),
 //                    BlocListener<GuestBloc, GuestState>(

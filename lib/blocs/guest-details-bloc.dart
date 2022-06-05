@@ -39,6 +39,8 @@ class GuestDetailsBloc extends Bloc<GuestEvent, GuestState> {
         var ticket = await guestRepository.transferTicket(event.record);
           if (ticket != null) {
             final Guest guest = await guestRepository.getById(ticket.userId);
+            // load guest info for newly assigned ticket
+            // yield GuestLoaded(guest);
             yield TransferSuccessful(ticket);
           }
           else {

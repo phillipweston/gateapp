@@ -187,7 +187,7 @@ class GuestRepository implements GuestRepositoryInterface {
   Future<Ticket> redeemTicket(Ticket ticket) async {
     try {
       final int id = ticket.ticketId;
-      final response = await http.get("http://localhost:7777/tickets/redeem?ticketId=$id");
+      final response = await http.get("http://localhost:7777/tickets/redeem/$id");
 
       if (response.statusCode == 200 && response.body.isNotEmpty == true) {
         var ticketJson = jsonDecode(response.body) as Map<String, dynamic>;

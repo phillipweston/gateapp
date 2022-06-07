@@ -41,7 +41,7 @@ class GuestDetailsBloc extends Bloc<GuestEvent, GuestState> {
             final Guest guest = await guestRepository.getById(ticket.userId);
             // load guest info for newly assigned ticket
             // yield GuestLoaded(guest);
-            yield TransferSuccessful(ticket);
+            yield TransferSuccessful(ticket, guest);
           }
           else {
             yield GuestLoaded(event.owner);
@@ -53,7 +53,7 @@ class GuestDetailsBloc extends Bloc<GuestEvent, GuestState> {
 
     else if (event is PrepareToRedeem) {
       try {
-        Ticket ticket = Ticket(event.ticket.ticketId, event.ticket.userId, event.redeem, event.ticket.redeemedAt, event.ticket.createdAt);
+        Ticket ticket = Ticket(event.ticket.ticketId, event.ticket.userId, event.redeem, event.ticket.updatedAt, event.ticket.createdAt);
         event.owner.contract.records.forEach((element) {
           if(element.ticket == event.ticket) {
             element.setShouldRedeem(event.redeem);

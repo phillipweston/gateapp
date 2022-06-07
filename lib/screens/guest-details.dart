@@ -54,7 +54,14 @@ class _GuestDetailsState extends State<GuestDetails> {
     Widget build(BuildContext context) {
         return BlocBuilder<GuestDetailsBloc, GuestState>(
           builder: (context, state) {
-            var GUEST_NAME = guest.name != null ? guest.name : "";
+            final _bloc = BlocProvider.of<GuestDetailsBloc>(context);
+            if(state is TransferSuccessful) {
+              _bloc.add(GetGuest(state.guest.userId));
+            }
+            else if(state is TicketRedeemed) {
+              _bloc.add(GetGuest(state.ticket.userId));
+            }
+            var guestName = guest.name ?? "";
             return Scaffold(
                 body: CustomScrollView(
                   slivers: [
@@ -70,7 +77,7 @@ class _GuestDetailsState extends State<GuestDetails> {
                                 Center(
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
-                                    child: Text(GUEST_NAME, style: appTheme.textTheme.button)
+                                    child: Text(guestName, style: appTheme.textTheme.button)
                                   )
                                 ),
                                  SvgPicture.asset('assets/gearhead-heart.svg',
@@ -243,7 +250,7 @@ SliverToBoxAdapter buildTransferSuccess (BuildContext context, List<AssignedTick
               children: <Widget>[
 
                 ConstrainedBox(
-                  constraints: new BoxConstraints(
+                  constraints: BoxConstraints(
                     minHeight: 30.0,
                     maxHeight: 800.0,
                     minWidth: 30.0,
@@ -333,6 +340,8 @@ class TicketListRow extends StatelessWidget {
       
       Record record = owner.contract.records.elementAt(index);
       final String ticketLabel = "${owner.firstName()}'s ticket (#$index)";
+      final String ticketName = record.ticket.redeemed ? owner.name : record.name ?? "Assign Ticket";
+      final bool canReassign = owner.name != record.name;
       final GuestDetailsBloc bloc = BlocProvider.of<GuestDetailsBloc>(context);
       return Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -351,21 +360,23 @@ class TicketListRow extends StatelessWidget {
                     child: TextButton(
                         child: Center(
                           child: Text(
-                            record.name ?? "Assign Ticket", 
-                            style: record.name != null ? appTheme.textTheme.headline2 : appTheme.textTheme.headline1,
+                            ticketName, 
+                            style: ticketName != "Assign Ticket" ? appTheme.textTheme.headline2 : appTheme.textTheme.headline1,
                             textAlign: TextAlign.center,)
                           ),
                         onPressed: () async {
-                          await showDialog<ReassignModal>(
-                          context: context,
-                          builder: (BuildContext dialogContext) {
-                            return ReassignModal(
-                              owner: owner,
-                              record: record,
-                              inputDecoration: ticketLabel
+                          if(canReassign) {
+                            await showDialog<ReassignModal>(
+                            context: context,
+                            builder: (BuildContext dialogContext) {
+                              return ReassignModal(
+                                owner: owner,
+                                record: record,
+                                inputDecoration: ticketLabel
+                              );
+                            },
                             );
-                          },
-                          );
+                          } 
                         },
                       )
                   ),

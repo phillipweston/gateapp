@@ -77,7 +77,8 @@ class TicketRedeemed extends GuestState {
 class TransferSuccessful extends GuestState {
   final Ticket ticket;
   final Guest guest;
-  const TransferSuccessful(this.ticket, this.guest);
+  final Guest owner;
+  const TransferSuccessful(this.ticket, this.guest, this.owner);
   @override
-  List<Object> get props => [ticket, guest];
+  List<Object> get props => [ticket, guest, owner];
 }

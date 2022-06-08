@@ -56,7 +56,8 @@ class _GuestDetailsState extends State<GuestDetails> {
           builder: (context, state) {
             final _bloc = BlocProvider.of<GuestDetailsBloc>(context);
             if(state is TransferSuccessful) {
-              _bloc.add(GetGuest(state.guest.userId));
+
+              _bloc.add(GetGuest(state.owner.userId));
             }
             else if(state is TicketRedeemed) {
               _bloc.add(GetGuest(state.ticket.userId));

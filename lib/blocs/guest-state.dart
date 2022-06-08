@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:fnf_guest_list/models/assigned-ticket.dart';
+import 'package:fnf_guest_list/models/record.dart';
 import 'package:fnf_guest_list/models/ticket.dart';
 import '../models/guest.dart';
 
@@ -58,16 +59,25 @@ class GuestLoaded extends GuestState {
   List<Object> get props => [guest];
 }
 
-class GuestTicketsAssigned extends GuestState {
+class TicketReadyToRedeem extends GuestState {
   final Guest guest;
-  const GuestTicketsAssigned(this.guest);
+  final Ticket ticket;
+  const TicketReadyToRedeem(this.guest, this.ticket);
   @override
-  List<Object> get props => [guest];
+  List<Object> get props => [guest, ticket];
+}
+
+class TicketRedeemed extends GuestState {
+  final Ticket ticket;
+  const TicketRedeemed(this.ticket);
+  @override
+  List<Object> get props => [ticket];
 }
 
 class TransferSuccessful extends GuestState {
-  final List<AssignedTicket> tickets;
-  const TransferSuccessful(this.tickets);
+  final Ticket ticket;
+  final Guest guest;
+  const TransferSuccessful(this.ticket, this.guest);
   @override
-  List<Object> get props => [tickets];
+  List<Object> get props => [ticket, guest];
 }

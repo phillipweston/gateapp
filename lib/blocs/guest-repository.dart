@@ -1,17 +1,23 @@
 // ignore_for_file: missing_return, unnecessary_statements
 
 import 'package:fnf_guest_list/models/assigned-ticket.dart';
+import 'package:fnf_guest_list/models/record.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import '../models/guest.dart';
+import '../models/ticket.dart';
+import '../models/contract.dart';
 
 abstract class GuestRepositoryInterface {
   Future<List<Guest>> refreshAll();
   Future<Guest> getById(int id);
+  Future<Ticket> getTicketById(int id);
   Guest getByIdLocal(int id);
   Future<List<Guest>> filterGuests(String search);
-  Future<List<AssignedTicket>> transferTickets(Guest owner);
+  Future<List<Ticket>> transferTickets(Guest owner);
+  Future<Ticket> transferTicket(Record record);
+  Future<Ticket> redeemTicket(Ticket ticket);
 }
 
 class GuestRepository implements GuestRepositoryInterface {
@@ -37,6 +43,22 @@ class GuestRepository implements GuestRepositoryInterface {
         var guestJson = jsonDecode(response.body) as Map<String, dynamic>;
         var guest = Guest.fromJson(guestJson);
         return guest;
+      }
+    }
+    catch (e) {
+      throw Exception("Failed to fetch guests ${e.toString()}");
+    }
+  }
+
+  @override
+  Future<Ticket> getTicketById(int id) async {
+    try {
+      final response = await http.get("http://localhost:7777/tickets/$id");
+
+      if (response.statusCode == 200 && response.body.isNotEmpty == true) {
+        var ticketJson = jsonDecode(response.body) as Map<String, dynamic>;
+        var ticket = Ticket.fromJson(ticketJson);
+        return ticket;
       }
     }
     catch (e) {
@@ -112,7 +134,7 @@ class GuestRepository implements GuestRepositoryInterface {
   }
 
   @override
-  Future<List<AssignedTicket>> transferTickets(Guest owner) async {
+  Future<List<Ticket>> transferTickets(Guest owner) async {
     try {
       print("in transferTickets ${owner.contract.records.toString()}");
       var body = jsonEncode(owner.contract);
@@ -124,7 +146,7 @@ class GuestRepository implements GuestRepositoryInterface {
 
       if (response.statusCode == 200 && response.body.isNotEmpty == true) {
         var ticketsJson = jsonDecode(response.body) as List<dynamic>;
-        var tickets = ticketsJson.map((dynamic ticketJson) => AssignedTicket.fromJson(ticketJson)).toList();
+        var tickets = ticketsJson.map((dynamic ticketJson) => Ticket.fromJson(ticketJson)).toList();
         print(tickets);
         return tickets;
       } else {
@@ -135,6 +157,49 @@ class GuestRepository implements GuestRepositoryInterface {
       throw Exception("Failed to transfer tickets ${e.toString()}");
     }
   }
+
+    @override
+  Future<Ticket> transferTicket(Record record) async {
+    try {
+      print("in transferTickets ${record.toString()}");
+      Contract contract = Contract(<Record>[record]);
+      var body = jsonEncode(contract);
+      var response = await http.post('http://localhost:7777/tickets/transfer',
+          headers: { 'Content-Type' : 'application/json' },
+          body: body
+      );
+
+
+      if (response.statusCode == 200 && response.body.isNotEmpty == true) {
+        var ticketsJson = jsonDecode(response.body) as List<dynamic>;
+        var tickets = ticketsJson.map((dynamic ticketJson) => Ticket.fromJson(ticketJson)).toList();
+        return tickets[0];
+      } else {
+        throw Exception('Failed to transfer tickets');
+      }
+    }
+    catch (e) {
+      throw Exception("Failed to transfer tickets ${e.toString()}");
+    }
+  }
+
+        @override
+  Future<Ticket> redeemTicket(Ticket ticket) async {
+    try {
+      final int id = ticket.ticketId;
+      final response = await http.get("http://localhost:7777/tickets/redeem/$id");
+
+      if (response.statusCode == 200 && response.body.isNotEmpty == true) {
+        var ticketJson = jsonDecode(response.body) as Map<String, dynamic>;
+        var ticket = Ticket.fromJson(ticketJson);
+        return ticket;
+      }
+    }
+    catch (e) {
+      throw Exception("Failed to transfer tickets ${e.toString()}");
+    }
+  }
+
 }
 
 

@@ -9,10 +9,10 @@ class Audit extends Equatable  {
   final String action;
   final AuditGuest to;
   final AuditGuest from;
-  final Ticket ticket;
-  final String created_at;
+  // final Ticket ticket;
+  final String created_at ;
 
-  Audit(this.id, this.action, this.to, this.from, this.ticket, this.created_at);
+  Audit(this.id, this.action, this.to, this.from, this.created_at);
 
   @override
   List<Object> get props => [
@@ -20,7 +20,7 @@ class Audit extends Equatable  {
     action,
     to,
     from,
-    ticket,
+    // ticket,
     created_at
   ];
 
@@ -30,7 +30,7 @@ class Audit extends Equatable  {
     var action = json['action'] as String;
     var created_at = json['created_at'] as String;
 
-    Ticket ticket = Ticket.fromJson(json['ticket']) as Ticket;
+    // Ticket ticket = Ticket.fromJson(json['ticket']) as Ticket;
     AuditGuest to = AuditGuest.fromJson(json['to']) as AuditGuest;
     AuditGuest from = AuditGuest.fromJson(json['from']) as AuditGuest;
 
@@ -39,7 +39,7 @@ class Audit extends Equatable  {
         action,
         to,
         from,
-        ticket,
+        // ticket,
         created_at
     );
   }

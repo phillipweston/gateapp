@@ -7,6 +7,9 @@ import '../models/audit.dart';
 
 abstract class AuditRepositoryInterface {
   Future<List<Audit>> refreshAll();
+  List<Audit> _all;
+  List<Audit> audits;
+
 }
 
 class AuditRepository implements AuditRepositoryInterface {
@@ -21,8 +24,8 @@ class AuditRepository implements AuditRepositoryInterface {
 
       if (response.statusCode == 200 && response.body.isNotEmpty == true) {
         var auditsJson = jsonDecode(response.body) as List<dynamic>;
-        audits = auditsJson.map((dynamic guestJson) =>
-            Audit.fromJson(guestJson)).toList();
+        audits = auditsJson.map((dynamic auditJson) =>
+            Audit.fromJson(auditJson)).toList();
 
         print(audits);
         _all = audits;

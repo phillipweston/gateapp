@@ -152,45 +152,45 @@ MaterialButton buildCheckInButton (BuildContext context, Ticket ticket, Guest gu
   return MaterialButton(
       onPressed: () async {
         if(!waiver) {
-          await showModalBottomSheet<void>(
-            context: context,
-            isScrollControlled:true,
-            builder: (BuildContext modalContext) {
-              return Column(
-                children: [
-                  Text(
-                    Strings.WaiverTitle,
-                    textAlign: TextAlign.center,
-                    style: appTheme.textTheme.headline2,
-                  ),
-                  Text(
-                    Strings.WaiverComplete,
-                    textAlign: TextAlign.center,
-                    style: appTheme.textTheme.headline1,
-                  ),
-                  Row(
-                    mainAxisAlignment:MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        guest.name, 
-                        style: appTheme.textTheme.headline2,
-                        textAlign: TextAlign.center,
-                      ),
-                      Checkbox(
-                        value: waiver,
-                        activeColor: Color.fromRGBO(243,2,211, 1),
-                        onChanged: (bool value) async {
-                          final _bloc = BlocProvider.of<GuestDetailsBloc>(context);
-                          _bloc.add(SignWaiver(guest, ticket, value));
-                          Navigator.pop(context);
-                        },
-                      )
-                    ],
-                  ),
-                ]
-              );
-            }
-          );
+          return showDialog<void>(
+          context: context,
+          barrierDismissible: true,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              scrollable: true,
+              title: Text(
+                Strings.WaiverTitle,
+                textAlign: TextAlign.center,
+                style: appTheme.textTheme.headline2,
+              ),
+              content: Text(
+                Strings.WaiverComplete,
+                textAlign: TextAlign.center,
+                style: appTheme.textTheme.headline1,
+              ),
+              actions: [
+                Row(
+                  mainAxisAlignment:MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      guest.name, 
+                      style: appTheme.textTheme.headline2,
+                      textAlign: TextAlign.center,
+                    ),
+                    Checkbox(
+                      value: waiver,
+                      activeColor: Color.fromRGBO(243,2,211, 1),
+                      onChanged: (bool value) async {
+                        final _bloc = BlocProvider.of<GuestDetailsBloc>(context);
+                        _bloc.add(SignWaiver(guest, ticket, value));
+                        Navigator.pop(context);
+                      },
+                    )
+                  ],
+                ),
+              ],
+            );          
+          });
         }
         else {
           _bloc.add(RedeemTicket(ticket));
@@ -429,7 +429,7 @@ class TicketListRow extends StatelessWidget {
                   Container(
                     width: 100,
                     child: Switch(
-                    value: record.shoudRedeem || record.ticket.redeemed,
+                    value: record.shoudRedeem || record.ticket.redeemed || owner.waiver != null,
                     activeColor: record.ticket.redeemed ? Colors.grey : Color.fromRGBO(243,2,211, 1),
                     onChanged: (bool value) async {
                       if(record.valid) {

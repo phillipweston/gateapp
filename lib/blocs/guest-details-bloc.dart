@@ -40,8 +40,8 @@ class GuestDetailsBloc extends Bloc<GuestEvent, GuestState> {
           if (ticket != null) {
             final Guest guest = await guestRepository.getById(ticket.userId);
             // load guest info for newly assigned ticket
-            // yield GuestLoaded(guest);
-            yield TransferSuccessful(ticket, guest, event.owner);
+            yield GuestLoaded(guest);
+            // yield TransferSuccessful(ticket, guest, event.owner);
           }
           else {
             yield GuestLoaded(event.owner);
@@ -97,18 +97,14 @@ class GuestDetailsBloc extends Bloc<GuestEvent, GuestState> {
       try {
         Guest guest = await guestRepository.signWaiver(event.owner);
         if(guest != null && guest.waiver != null) {
-          Guest updatedGuest = await guestRepository.getById(event.ticket.userId);
-          Ticket ticket = Ticket(event.ticket.ticketId, event.ticket.userId, event.redeem, event.ticket.updatedAt, event.ticket.createdAt);
-           event.owner.contract.records.forEach((element) {
-            if(element.ticket == event.ticket) {
-              element.setShouldRedeem(event.redeem);
-            }
-            else {
-              // ensure that only one ticket can be redeemed at a time
-              element.setShouldRedeem(false);
-            }
-        });
-          yield TicketReadyToRedeem(updatedGuest, ticket);
+          Ticket updatedTicket = await guestRepository.redeemTicket(event.ticket);
+          if(updatedTicket != null && updatedTicket.redeemed) {
+            yield TicketRedeemed(updatedTicket);
+          }
+          else {
+            Guest guest = await guestRepository.getById(event.ticket.userId);
+            yield GuestLoaded(guest);
+          }
         }
         else {
           Guest guest = await guestRepository.getById(event.ticket.userId);

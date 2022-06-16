@@ -16,6 +16,7 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:fnf_guest_list/models/record.dart';
 import 'package:fnf_guest_list/models/ticket.dart';
 import '../models/contract.dart';
+import 'package:fnf_guest_list/string-constants.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 void _fetchGuest (BuildContext context, int userId) {
@@ -121,7 +122,7 @@ class _GuestDetailsState extends State<GuestDetails> {
                 bottomNavigationBar: BlocBuilder<GuestDetailsBloc, GuestState>(
                   builder: (context, state) {
                     if (state is TicketReadyToRedeem) {
-                      return buildCheckInButton(context, state.ticket);
+                      return buildCheckInButton(context, state.ticket, state.guest);
                     }
                     else {
                       return buildDisabledButton();
@@ -145,11 +146,55 @@ MaterialButton buildDisabledButton () {
   );
 }
 
-MaterialButton buildCheckInButton (BuildContext context, Ticket ticket) {
+MaterialButton buildCheckInButton (BuildContext context, Ticket ticket, Guest guest) {
   final _bloc = BlocProvider.of<GuestDetailsBloc>(context);
+  final bool waiver = guest.waiver != null;
   return MaterialButton(
-      onPressed: () {
-        _bloc.add(RedeemTicket(ticket));
+      onPressed: () async {
+        if(!waiver) {
+          await showModalBottomSheet<void>(
+            context: context,
+            isScrollControlled:true,
+            builder: (BuildContext modalContext) {
+              return Column(
+                children: [
+                  Text(
+                    Strings.WaiverTitle,
+                    textAlign: TextAlign.center,
+                    style: appTheme.textTheme.headline2,
+                  ),
+                  Text(
+                    Strings.WaiverComplete,
+                    textAlign: TextAlign.center,
+                    style: appTheme.textTheme.headline1,
+                  ),
+                  Row(
+                    mainAxisAlignment:MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        guest.name, 
+                        style: appTheme.textTheme.headline2,
+                        textAlign: TextAlign.center,
+                      ),
+                      Checkbox(
+                        value: waiver,
+                        activeColor: Color.fromRGBO(243,2,211, 1),
+                        onChanged: (bool value) async {
+                          final _bloc = BlocProvider.of<GuestDetailsBloc>(context);
+                          _bloc.add(SignWaiver(guest, ticket, value));
+                          Navigator.pop(context);
+                        },
+                      )
+                    ],
+                  ),
+                ]
+              );
+            }
+          );
+        }
+        else {
+          _bloc.add(RedeemTicket(ticket));
+        }
       },
       height: 80,
       color: superPink,
@@ -385,7 +430,7 @@ class TicketListRow extends StatelessWidget {
                     width: 100,
                     child: Switch(
                     value: record.shoudRedeem || record.ticket.redeemed,
-                    activeColor: record.ticket.redeemed ? Colors.grey : Colors.pink,
+                    activeColor: record.ticket.redeemed ? Colors.grey : Color.fromRGBO(243,2,211, 1),
                     onChanged: (bool value) async {
                       if(record.valid) {
                         final _bloc = BlocProvider.of<GuestDetailsBloc>(context);

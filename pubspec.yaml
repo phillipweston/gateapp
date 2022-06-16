@@ -38,6 +38,7 @@ flutter:
     - assets/gearhead-ticket.svg
     - assets/gearhead-pink.svg
     - assets/gearhead-white.png
+    - assets/waiver.png
   fonts:
     - family: Corben
       fonts:

@@ -5,6 +5,8 @@ class Record {
   String name;
   bool valid = false;
   bool shoudRedeem = false;
+  bool waiverReady = false;
+  bool healthReady = false;
 
   Map<String, dynamic> toJson() {
     return <String,dynamic>{

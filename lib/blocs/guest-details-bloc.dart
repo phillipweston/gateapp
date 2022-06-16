@@ -63,7 +63,9 @@ class GuestDetailsBloc extends Bloc<GuestEvent, GuestState> {
             element.setShouldRedeem(false);
           }
         });
-        final Guest guest = Guest(event.owner.userId, event.owner.name, event.owner.email, event.owner.phone, event.owner.tickets, event.owner.contract);
+        final Guest guest = Guest(event.owner.userId, event.owner.name, event.owner.email, 
+                                  event.owner.phone, event.owner.tickets, event.owner.contract,
+                                  event.owner.waiver, event.owner.health, event.owner.license);
         if(event.redeem) {
           yield TicketReadyToRedeem(guest, ticket);
         }
@@ -90,5 +92,33 @@ class GuestDetailsBloc extends Bloc<GuestEvent, GuestState> {
         yield GuestsError("Couldn't transfer tickets.");
       }
     }
+
+    else if (event is SignWaiver) {
+      try {
+        Guest guest = await guestRepository.signWaiver(event.owner);
+        if(guest != null && guest.waiver != null) {
+          Guest updatedGuest = await guestRepository.getById(event.ticket.userId);
+          Ticket ticket = Ticket(event.ticket.ticketId, event.ticket.userId, event.redeem, event.ticket.updatedAt, event.ticket.createdAt);
+           event.owner.contract.records.forEach((element) {
+            if(element.ticket == event.ticket) {
+              element.setShouldRedeem(event.redeem);
+            }
+            else {
+              // ensure that only one ticket can be redeemed at a time
+              element.setShouldRedeem(false);
+            }
+        });
+          yield TicketReadyToRedeem(updatedGuest, ticket);
+        }
+        else {
+          Guest guest = await guestRepository.getById(event.ticket.userId);
+          yield GuestLoaded(guest);
+        }
+      }  
+      on NetworkError {
+        yield GuestsError("Couldn't transfer tickets.");
+      }
+    }
+
   }
 }

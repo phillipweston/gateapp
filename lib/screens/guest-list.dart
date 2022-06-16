@@ -120,17 +120,6 @@ class GuestList extends StatelessWidget {
                       ]
                     ),
                     SliverToBoxAdapter(child: SizedBox(height: 12)),
-//                    BlocListener<GuestBloc, GuestState>(
-//                      listener: (context, state) {
-//                        if (state is GuestsError) {
-//                          return Scaffold.of(context).showSnackBar(
-//                            SnackBar(
-//                              content: Text(state.message),
-//                            ),
-//                          );
-//                        }
-//                      }
-//                    ),
                     BlocBuilder<GuestListBloc, GuestState>(
                       builder: (context, state) {
                         if (state is GuestsInitial) {

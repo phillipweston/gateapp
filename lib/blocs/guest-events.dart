@@ -72,9 +72,34 @@ class PrepareToRedeem extends GuestEvent {
   List<Object> get props => [ticket, owner, redeem];
 }
 
+class SignWaiver extends GuestEvent {
+  final Ticket ticket;
+  final Guest owner;
+  final bool redeem;
+  const SignWaiver(this.owner, this.ticket, this.redeem);
+  @override
+  List<Object> get props => [ticket, owner, redeem];
+}
+
+class SignHealth extends GuestEvent {
+  final Ticket ticket;
+  final Guest owner;
+  final bool redeem;
+  const SignHealth(this.owner, this.ticket, this.redeem);
+  @override
+  List<Object> get props => [ticket, owner, redeem];
+}
+
 class RedeemTicket extends GuestEvent {
   final Ticket ticket;
   const RedeemTicket(this.ticket);
+  @override
+  List<Object> get props => [ticket];
+}
+
+class GenerateGuestWaiver extends GuestEvent {
+  final Ticket ticket;
+  const GenerateGuestWaiver(this.ticket);
   @override
   List<Object> get props => [ticket];
 }

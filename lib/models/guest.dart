@@ -11,8 +11,11 @@ class Guest extends Equatable  {
   final String phone;
   final List<Ticket> tickets;
   final Contract contract;
+  final String waiver;
+  final String health;
+  final String license;
 
-  Guest(this.userId, this.name, this.email, this.phone, this.tickets, this.contract);
+  Guest(this.userId, this.name, this.email, this.phone, this.tickets, this.contract, this.waiver, this.health, this.license);
 
   @override
   List<Object> get props => [
@@ -21,7 +24,10 @@ class Guest extends Equatable  {
     email,
     phone,
     tickets,
-    contract
+    contract,
+    waiver,
+    health,
+    license
   ];
 
   int numTickets() {
@@ -54,11 +60,23 @@ class Guest extends Equatable  {
     }
   }
 
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+        "user_id": userId,
+        "name": name,
+        "email": email,
+        "phone": phone,
+        "waiver": waiver,
+        "health": health,
+        "license": license
+      };
+  }
+
   factory Guest.fromJson(dynamic json) {
     var name = json['name'] as String;
 
-    var _tickets = json['tickets'].map((dynamic ticketJson) => Ticket.fromJson(ticketJson)).toList() as List<dynamic>;
-
+    List<dynamic> _tickets = json['tickets'] != null ? json['tickets'].map((dynamic ticketJson) => Ticket.fromJson(ticketJson)).toList() as List<dynamic> : <dynamic>[];
+    
     List<Ticket> tickets = _tickets.cast<Ticket>().toList();
 
     var records = _tickets.map<Record>((dynamic ticket) => Record(ticket as Ticket)).toList();
@@ -74,7 +92,10 @@ class Guest extends Equatable  {
         json['email'] as String,
         json['phone'] as String,
         tickets,
-        contract
+        contract,
+        json['waiver'] as String,
+        json['health'] as String,
+        json['license'] as String
     );
   }
 }

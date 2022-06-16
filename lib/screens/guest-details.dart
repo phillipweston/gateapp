@@ -175,7 +175,6 @@ MaterialButton buildCheckInButton (BuildContext context, Ticket ticket, Guest gu
                     Text(
                       guest.name, 
                       style: appTheme.textTheme.headline2,
-                      textAlign: TextAlign.center,
                     ),
                     Checkbox(
                       value: waiver,
@@ -185,7 +184,12 @@ MaterialButton buildCheckInButton (BuildContext context, Ticket ticket, Guest gu
                         _bloc.add(SignWaiver(guest, ticket, value));
                         Navigator.pop(context);
                       },
-                    )
+                    ),
+                    Text(
+                      "(Agree and Redeem Ticket)", 
+                      style: appTheme.textTheme.headline1,
+                      textAlign: TextAlign.center,
+                    ),
                   ],
                 ),
               ],

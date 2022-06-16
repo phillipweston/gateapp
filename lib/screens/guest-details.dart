@@ -204,7 +204,7 @@ MaterialButton buildCheckInButton (BuildContext context, Ticket ticket, Guest gu
       color: superPink,
       disabledColor: Colors.black12,
       textColor: Colors.white,
-      child: Text('Click here to continue', style: appTheme.textTheme.button)
+      child: Text('Redeem Ticket', style: appTheme.textTheme.button)
   );
 }
 

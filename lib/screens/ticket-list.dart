@@ -186,7 +186,7 @@ SliverToBoxAdapter buildNoTickets() {
 AnimationLimiter buildTicketList(BuildContext context, List<Ticket> tickets) {
   return AnimationLimiter(
       child: SliverFixedExtentList(
-          itemExtent: 80.0,
+          itemExtent: 101.0,
           delegate:
               SliverChildBuilderDelegate((BuildContext context, int index) {
             if (index > tickets.length - 1) return null;
@@ -218,40 +218,53 @@ class TicketListRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        // child: GestureDetector(
-        //     onTap: () => Navigator.push(
-        //       context,
-        //       MaterialPageRoute<void>(
-        //         builder: (context) => GuestDetails(guest: guest),
-        //       ),
-        //     ),
-        child: LimitedBox(
-            maxHeight: 48,
-            child: Row(
-              children: [
-                AspectRatio(
-                  aspectRatio: 1,
-                  child: Container(
-                      //                color: guest.color,
-                      ),
-                ),
-                SizedBox(width: 24),
-                Expanded(
-                  child: Text(ticket.owner.name,
-                      style: Theme.of(context).textTheme.headline1),
-                ),
-                SizedBox(width: 24),
-                Row(children: [
-                  Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 4, vertical: 8),
-                      child: SvgPicture.asset('assets/gearhead-pink.svg',
-                          height: 40,
-                          width: 40,
-                          semanticsLabel: 'An FnF Ticket'))
-                ])
-              ],
-            )));
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        child: Column(children: [
+          // child: GestureDetector(
+          //     onTap: () => Navigator.push(
+          //       context,
+          //       MaterialPageRoute<void>(
+          //         builder: (context) => GuestDetails(guest: guest),
+          //       ),
+          //     ),
+          LimitedBox(
+              maxHeight: 48,
+              child: Row(
+                children: [
+                  SizedBox(width: 24),
+                  Expanded(
+                    child: Text(ticket.owner.name,
+                        style: Theme.of(context).textTheme.headline1),
+                  ),
+                  SizedBox(width: 24),
+                  Row(children: [
+                    buildCheckInButton(context, ticket, ticket.owner),
+                    Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 4, vertical: 8),
+                        child: SvgPicture.asset('assets/gearhead-pink.svg',
+                            height: 40,
+                            width: 40,
+                            semanticsLabel: 'An FnF Ticket'))
+                  ])
+                ],
+              )
+          ),
+          LimitedBox(
+              maxHeight: 48,
+              child: Row(
+                children: [
+                  SizedBox(width: 24),
+                  Expanded(
+                    child: Text(ticket.originalOwner.name,
+                        style: Theme.of(context).textTheme.caption),
+                  ),
+                ],
+              )
+          )
+        ]
+        )
+    );
   }
 }
+

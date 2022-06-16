@@ -53,7 +53,7 @@ class GuestDetailsBloc extends Bloc<GuestEvent, GuestState> {
 
     else if (event is PrepareToRedeem) {
       try {
-        Ticket ticket = Ticket(event.ticket.ticketId, event.ticket.userId, event.redeem, event.ticket.updatedAt, event.ticket.createdAt);
+        Ticket ticket = Ticket(event.ticket.ticketId, event.ticket.userId, event.redeem, event.ticket.updatedAt, event.ticket.createdAt, null, null);
         event.owner.contract.records.forEach((element) {
           if(element.ticket == event.ticket) {
             element.setShouldRedeem(event.redeem);

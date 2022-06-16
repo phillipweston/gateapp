@@ -11,6 +11,7 @@ import '../models/contract.dart';
 
 abstract class GuestRepositoryInterface {
   Future<List<Guest>> refreshAll();
+  Future<List<Ticket>> getTickets();
   Future<Guest> getById(int id);
   Future<Ticket> getTicketById(int id);
   Guest getByIdLocal(int id);
@@ -24,6 +25,8 @@ abstract class GuestRepositoryInterface {
 class GuestRepository implements GuestRepositoryInterface {
   List<Guest> guests;
   List<Guest> _all;
+  List<Ticket> _tickets;
+  List<Ticket> tickets;
 
   @override
   Guest getByIdLocal(int id)  {
@@ -89,6 +92,27 @@ class GuestRepository implements GuestRepositoryInterface {
     return guests;
   }
 
+  Future<List<Ticket>> filterTickets(String search) async {
+    search = search.toLowerCase();
+    var tickets = _tickets.where((ticket) {
+      var ticketString = "";
+      if (ticket.owner.name != null) ticketString += ticket.owner.name.toLowerCase();
+      if (ticket.originalOwner.name != null) ticketString += ticket.originalOwner.name.toLowerCase();
+      return ticketString.contains(search);
+    }).toList();
+    tickets.sort((a, b) {
+      var aYes = a.owner.lastName().toLowerCase().startsWith(search) ? 1 : 0;
+      var bYes = b.owner.lastName().toLowerCase().startsWith(search) ? 1 : 0;
+      return bYes - aYes;
+    });
+    tickets.sort((a, b) {
+      var aYes = a.owner.firstName().toLowerCase().startsWith(search) ? 1 : 0;
+      var bYes = b.owner.firstName().toLowerCase().startsWith(search) ? 1 : 0;
+      return bYes - aYes;
+    });
+    return tickets;
+  }
+
   Future<List<Guest>> filterGuestsByName (String search) async {
     search = search.toLowerCase();
     var guests = _all.where((guest) {
@@ -109,6 +133,8 @@ class GuestRepository implements GuestRepositoryInterface {
     return guests;
   }
 
+
+
   @override
   Future<List<Guest>> refreshAll() async {
     try {
@@ -125,6 +151,31 @@ class GuestRepository implements GuestRepositoryInterface {
         _all = guests;
         print(guests);
         return guests;
+      } else {
+        throw Exception('Failed to load guests');
+      }
+    }
+    catch (e) {
+      throw Exception("Failed to fetch guests ${e.toString()}");
+    }
+  }
+
+  @override
+  Future<List<Ticket>> getTickets() async {
+    try {
+      print("in getTickets");
+      final response = await http.get('http://localhost:7777/tickets', headers: { 'Content-Type' : 'application/json' });
+
+      if (response.statusCode == 200 && response.body.isNotEmpty == true) {
+        var ticketsJson = jsonDecode(response.body) as List<dynamic>;
+        tickets = ticketsJson.map((dynamic ticketJson) =>
+            Ticket.fromFullJson(ticketJson)).toList();
+
+        tickets.sort((a, b) => a.owner.name.compareTo(b.owner.name));
+
+        _tickets = tickets;
+        print(tickets);
+        return tickets;
       } else {
         throw Exception('Failed to load guests');
       }

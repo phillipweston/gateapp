@@ -25,24 +25,21 @@ class TicketListBloc extends Bloc<TicketEvent, TicketState> {
       } on NetworkError {
         yield TicketsError("Couldn't fetch tickets. Is the device online?");
       }
-    }
-    else if (event is GetTickets) {
+    } else if (event is GetTickets) {
       try {
         final tickets = await guestRepository.getTickets();
         yield TicketsLoaded(tickets);
       } on NetworkError {
         yield TicketsError("Couldn't fetch tickets. Is the device online?");
       }
-    }
-
-    else if (event is FilterTickets) {
+    } else if (event is FilterTickets) {
       try {
         print("attempting to filter guests");
-        List<Ticket> tickets = await guestRepository.filterTickets(event.search);
+        List<Ticket> tickets =
+            await guestRepository.filterTickets(event.search);
         if (tickets.isNotEmpty) {
           yield TicketsLoaded(tickets);
-        }
-        else {
+        } else {
           yield NoTicketsMatchSearch();
         }
       } on NetworkError {

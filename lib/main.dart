@@ -39,44 +39,34 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-      providers: [
-        BlocProvider<GuestListBloc>(
-          create: (context) {
+        providers: [
+          BlocProvider<GuestListBloc>(create: (context) {
             var guestBloc = GuestListBloc(this.guestRepository);
             guestBloc.add(GetGuests());
             return guestBloc;
-          }
-        ),
-        BlocProvider<GuestDetailsBloc>(
-          create: (context) {
+          }),
+          BlocProvider<GuestDetailsBloc>(create: (context) {
             var guestBloc = GuestDetailsBloc(this.guestRepository);
             return guestBloc;
-          }
-        ),
-        BlocProvider<TicketListBloc>(
-            create: (context) {
-              var ticketBloc = TicketListBloc(this.guestRepository);
-              return ticketBloc;
-            }
-        ),
-        BlocProvider<AuditListBloc>(
-            create: (context) {
-              var auditBloc = AuditListBloc(this.auditRepository);
-              auditBloc.add(GetAudits());
-              return auditBloc;
-            }
-        ),
-      ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-          theme: appTheme,
-        title: 'FnF Guest List',
-        initialRoute: '/',
-        routes: {
-          '/': (context) => TicketList(),
-          '/audit': (context) => AuditList()
-        }
-      )
-    );
+          }),
+          BlocProvider<TicketListBloc>(create: (context) {
+            var ticketBloc = TicketListBloc(this.guestRepository);
+            return ticketBloc;
+          }),
+          BlocProvider<AuditListBloc>(create: (context) {
+            var auditBloc = AuditListBloc(this.auditRepository);
+            auditBloc.add(GetAudits());
+            return auditBloc;
+          }),
+        ],
+        child: MaterialApp(
+            debugShowCheckedModeBanner: false,
+            theme: appTheme,
+            title: 'FnF Guest List',
+            initialRoute: '/',
+            routes: {
+              '/': (context) => TicketList(),
+              '/audit': (context) => AuditList()
+            }));
   }
 }

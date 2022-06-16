@@ -18,6 +18,7 @@ abstract class GuestRepositoryInterface {
   Future<List<Ticket>> transferTickets(Guest owner);
   Future<Ticket> transferTicket(Record record);
   Future<Ticket> redeemTicket(Ticket ticket);
+  Future<Guest> signWaiver(Guest owner);
 }
 
 class GuestRepository implements GuestRepositoryInterface {
@@ -199,6 +200,26 @@ class GuestRepository implements GuestRepositoryInterface {
       throw Exception("Failed to transfer tickets ${e.toString()}");
     }
   }
+
+  @override
+  Future<Guest> signWaiver(Guest owner) async {
+    try {
+      var body = jsonEncode(owner.toJson());
+      final response = await http.post('http://localhost:7777/users/waiver',
+          headers: { 'Content-Type' : 'application/json' },
+          body: body
+      );
+      if (response.statusCode == 200 && response.body.isNotEmpty == true) {
+        var guestJson = jsonDecode(response.body) as Map<String, dynamic>;
+        var guest = Guest.fromJson(guestJson);
+        return guest;
+      }
+    }
+    catch (e) {
+      throw Exception("Failed to sign waiver ${e.toString()}");
+    }
+  }
+
 
 }
 

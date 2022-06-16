@@ -82,3 +82,10 @@ class TransferSuccessful extends GuestState {
   @override
   List<Object> get props => [ticket, guest, owner];
 }
+
+class WaiverSigned extends GuestState {
+  final Ticket ticket;
+  const WaiverSigned(this.ticket);
+  @override
+  List<Object> get props => [ticket];
+}

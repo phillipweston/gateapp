@@ -160,12 +160,12 @@ MaterialButton buildCheckInButton (BuildContext context, Ticket ticket, Guest gu
               scrollable: true,
               title: Text(
                 Strings.WaiverTitle,
-                textAlign: TextAlign.center,
+                textAlign: TextAlign.left,
                 style: appTheme.textTheme.headline2,
               ),
               content: Text(
                 Strings.WaiverComplete,
-                textAlign: TextAlign.center,
+                textAlign: TextAlign.left,
                 style: appTheme.textTheme.headline1,
               ),
               actions: [

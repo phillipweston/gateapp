@@ -45,6 +45,9 @@ class AuditRepository implements AuditRepositoryInterface {
     var _audits = _all.where((audit) {
       var auditString = "";
       if (audit.action != null) auditString += audit.action.toLowerCase();
+      if (audit.to != null) auditString += audit.to.name.toLowerCase();
+      if (audit.from != null) auditString += audit.from.name.toLowerCase();
+
 //      if (guest.email != null) guestString += guest.email.toLowerCase();
 //      if (guest.phone != null) guestString += guest.phone.toLowerCase();
       return auditString.contains(search);

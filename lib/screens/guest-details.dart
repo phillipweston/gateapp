@@ -433,7 +433,7 @@ class TicketListRow extends StatelessWidget {
                   Container(
                     width: 100,
                     child: Switch(
-                    value: record.shoudRedeem || record.ticket.redeemed || owner.waiver != null,
+                    value: record.shoudRedeem || record.ticket.redeemed,
                     activeColor: record.ticket.redeemed ? Colors.grey : Color.fromRGBO(243,2,211, 1),
                     onChanged: (bool value) async {
                       if(record.valid) {

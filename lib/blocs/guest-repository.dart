@@ -4,7 +4,7 @@ import 'package:fnf_guest_list/models/assigned-ticket.dart';
 import 'package:fnf_guest_list/models/record.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/guest.dart';
 import '../models/ticket.dart';
 import '../models/contract.dart';
@@ -20,6 +20,7 @@ abstract class GuestRepositoryInterface {
   Future<Ticket> transferTicket(Record record);
   Future<Ticket> redeemTicket(Ticket ticket);
   Future<Guest> signWaiver(Guest owner);
+  Future<String> setHost(String host);
 }
 
 class GuestRepository implements GuestRepositoryInterface {
@@ -27,6 +28,13 @@ class GuestRepository implements GuestRepositoryInterface {
   List<Guest> _all;
   List<Ticket> _tickets;
   List<Ticket> tickets;
+
+  @override
+  Future<String> setHost(String host) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('host', host);
+    return host;
+  }
 
   @override
   Guest getByIdLocal(int id)  {

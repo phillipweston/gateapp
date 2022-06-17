@@ -32,6 +32,10 @@ class GuestList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
         return BlocConsumer<GuestListBloc, GuestState>(
+            buildWhen: (prevState, state) {
+              if (prevState == state) return false;
+              else return true;
+            },
             listener: (context, state) {
               if (state is GuestsInitial) {
                 _fetchGuests(context);
@@ -266,9 +270,10 @@ class GuestListRow extends StatelessWidget {
                             Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
                               child: SvgPicture.asset(
-                                'assets/gearhead-pink.svg',
+                                ticket.redeemed ? 'assets/gearhead-white.png' : 'assets/gearhead-pink.svg',
                                 height: 40,
                                 width: 40,
+                                // color: ticket.redeemed ? Colors.black26,
                                 semanticsLabel: 'An FnF Ticket')
                             )
                           ).toList())

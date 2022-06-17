@@ -234,11 +234,11 @@ class TicketListRow extends StatelessWidget {
                   SizedBox(width: 24),
                   Expanded(
                     child: Text(ticket.owner.name,
-                        style: Theme.of(context).textTheme.headline1),
+                        style: Theme.of(context).textTheme.headline2),
                   ),
                   SizedBox(width: 24),
                   Row(children: [
-                    buildCheckInButton(context, ticket, ticket.owner),
+                    ticket.redeemed ? buildDisabledButton() : buildCheckInButton(context, ticket, ticket.owner),
                     Padding(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 4, vertical: 8),

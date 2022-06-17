@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fnf_guest_list/common/theme.dart';
 import 'package:fnf_guest_list/screens/audit-list.dart';
 import 'package:fnf_guest_list/screens/guest-list.dart';
@@ -12,6 +13,7 @@ import 'package:fnf_guest_list/blocs/audit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fnf_guest_list/screens/ticket-list.dart';
 
+import 'blocs/ticket-events.dart';
 import 'blocs/ticket-list-bloc.dart';
 
 void main() {
@@ -42,7 +44,7 @@ class _MyAppState extends State<MyApp> {
         providers: [
           BlocProvider<GuestListBloc>(create: (context) {
             var guestBloc = GuestListBloc(this.guestRepository);
-            guestBloc.add(GetGuests());
+            // guestBloc.add(GetGuests());
             return guestBloc;
           }),
           BlocProvider<GuestDetailsBloc>(create: (context) {
@@ -51,6 +53,7 @@ class _MyAppState extends State<MyApp> {
           }),
           BlocProvider<TicketListBloc>(create: (context) {
             var ticketBloc = TicketListBloc(this.guestRepository);
+            ticketBloc.add(GetTickets());
             return ticketBloc;
           }),
           BlocProvider<AuditListBloc>(create: (context) {

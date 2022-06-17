@@ -57,7 +57,6 @@ class _GuestDetailsState extends State<GuestDetails> {
           builder: (context, state) {
             final _bloc = BlocProvider.of<GuestDetailsBloc>(context);
             if(state is TransferSuccessful) {
-
               _bloc.add(GetGuest(state.owner.userId));
             }
             else if(state is TicketRedeemed) {
@@ -76,6 +75,11 @@ class _GuestDetailsState extends State<GuestDetails> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: <Widget>[
+                                BackButton(
+                                  onPressed: () {
+                                    Navigator.pushNamed(context, '/');
+                                  }
+                                ),
                                 Center(
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
@@ -345,19 +349,19 @@ SliverToBoxAdapter mustAssignTicketsText () {
                       Container(
                         width: 150,
                         child: TextButton(
-                          child: Text("Purchaser", style: TextStyle(color: Colors.black)) 
+                          child: Text("Purchaser", style: TextStyle(color: Colors.black, fontFamily: ".SF UI Text", fontSize: 16))
                         )
                       ),
                       Container(
                         width: 250,
                         child: TextButton(
-                          child: Text("Name", style: TextStyle(color: Colors.black)) 
+                          child: Text("Redeemer", style: TextStyle(color: Colors.black, fontFamily: ".SF UI Text", fontSize: 16))
                         )
                       ),
                       Container(
                         width: 100,
                         child: TextButton(
-                          child: Text("Arrived", style: TextStyle(color: Colors.black)) 
+                          child: Text("Arrived", style: TextStyle(color: Colors.black, fontFamily: ".SF UI Text", fontSize: 16))
                         )
                       ),
                     ]
@@ -381,6 +385,7 @@ class TicketListItem extends StatelessWidget {
 
 class TicketListRow extends StatelessWidget {
   final Guest owner;
+
   final int index;
 
   TicketListRow(this.owner, this.index, {Key key}) : super(key: key);
@@ -394,11 +399,11 @@ class TicketListRow extends StatelessWidget {
       final bool canReassign = owner.name != record.name;
       final GuestDetailsBloc bloc = BlocProvider.of<GuestDetailsBloc>(context);
       return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Row(
-                mainAxisAlignment: MainAxisAlignment.center, 
+                mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[  
                   Container(

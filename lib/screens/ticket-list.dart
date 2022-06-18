@@ -9,10 +9,11 @@ import 'package:fnf_guest_list/blocs/navigator.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fnf_guest_list/models/guest.dart';
+import 'package:fnf_guest_list/models/record.dart';
 import 'package:fnf_guest_list/screens/guest-details.dart';
-import 'package:fnf_guest_list/blocs/guest.dart';
+import 'package:fnf_guest_list/blocs/guest.dart' as guest;
 import 'package:fnf_guest_list/blocs/ticket.dart';
-
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import '../common/theme.dart';
 import '../models/ticket.dart';
 
@@ -28,16 +29,17 @@ void _filterTickets(BuildContext context, String search) {
   ticketBloc.add(FilterTickets(search));
 }
 
-var guestRepository = GuestRepository();
+var guestRepository = guest.GuestRepository();
 
 class TicketList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<GuestListBloc, GuestState>(listener: (context, state) {
-      if (state is GuestsInitial) {
-        _fetchTickets(context);
+    return BlocBuilder<guest.GuestDetailsBloc, guest.GuestState>(
+    builder: (context, state) {
+      if(state is guest.TicketRedeemed || state is guest.TransferSuccessful || state is TicketRedeemed || state is TransferSuccessful) {
+        final _ticketBloc = BlocProvider.of<TicketListBloc>(context);
+        _ticketBloc.add(GetTickets());
       }
-    }, builder: (context, state) {
       return Scaffold(
         body: CustomScrollView(
           slivers: [
@@ -117,7 +119,7 @@ class TicketList extends StatelessWidget {
                   return buildLoading();
                 } else if (state is TicketsLoaded) {
                   return buildTicketList(context, state.tickets);
-                } else if (state is NoGuestsMatchSearch) {
+                } else if (state is guest.NoGuestsMatchSearch) {
                   return buildNoTickets();
                 } else if (state is TicketsError) {
                   return buildError();
@@ -217,24 +219,43 @@ class TicketListRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final String ticketName = ticket.owner.name;
+    final String ticketLabel = "Purchased by ${ticket.originalOwner.firstName()}";
+    Record record = Record(ticket);
+    final bool canReassign = !ticket.redeemed;
     return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
         child: Column(children: [
-          // child: GestureDetector(
-          //     onTap: () => Navigator.push(
-          //       context,
-          //       MaterialPageRoute<void>(
-          //         builder: (context) => GuestDetails(guest: guest),
-          //       ),
-          //     ),
           LimitedBox(
               maxHeight: 48,
               child: Row(
                 children: [
                   SizedBox(width: 24),
                   Expanded(
-                    child: Text(ticket.owner.name,
-                        style: Theme.of(context).textTheme.headline2),
+                    child:  
+                    TextButton(
+                      child: Text( 
+                        ticketName,
+                        textAlign: TextAlign.end ),
+                      style: TextButton.styleFrom(
+                        textStyle: appTheme.textTheme.headline2,
+                        alignment: Alignment.centerLeft
+                      ),
+                      onPressed: () async {
+                        if(!ticket.redeemed) {
+                          await showDialog<ReassignTicketModal>(
+                            context: context,
+                            builder: (BuildContext dialogContext) {
+                              return ReassignTicketModal(
+                                owner: ticket.owner,
+                                record: record,
+                                inputDecoration: ticketLabel
+                              );
+                            },
+                          );
+                        }
+                      },
+                    ),
                   ),
                   SizedBox(width: 24),
                   Row(children: [
@@ -256,7 +277,7 @@ class TicketListRow extends StatelessWidget {
                 children: [
                   SizedBox(width: 24),
                   Expanded(
-                    child: Text(ticket.originalOwner.name,
+                    child: Text("Purchaser: ${ticket.originalOwner.name}",
                         style: Theme.of(context).textTheme.caption),
                   ),
                 ],
@@ -264,6 +285,79 @@ class TicketListRow extends StatelessWidget {
           )
         ]
         )
+    );
+  }
+}
+
+class ReassignTicketModal extends StatefulWidget {
+  const ReassignTicketModal({Key key, this.owner, this.record, this.inputDecoration
+});
+  final Guest owner;
+  final Record record;
+  final String inputDecoration;
+
+  @override
+  _ReassignTicketModalState createState() => _ReassignTicketModalState();
+}
+
+class _ReassignTicketModalState extends State<ReassignTicketModal> {
+  final firstNameController = TextEditingController();
+  final lastNameController = TextEditingController();
+
+  Widget build(BuildContext context) {
+    return Dialog(
+      // backgroundColor: Color(0XFF232426),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+      child: Container(
+        width: 300,
+        height: 250,
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child:TextField(
+                controller: firstNameController,
+                style: appTheme.textTheme.headline1,
+                textCapitalization: TextCapitalization.words,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: "First Name",
+                )
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child:TextField(
+                controller: lastNameController,
+                style: appTheme.textTheme.headline1,
+                textCapitalization: TextCapitalization.words,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: "Last Name",
+                )
+              ),
+            ),
+            Container(
+              width: 150,
+              child: 
+              TextButton(
+                child: Text("Transfer", style: TextStyle(color: Colors.black)),
+                onPressed: () async {
+                  widget.record.setName(firstNameController.text + " " + lastNameController.text);
+                  if(widget.record.valid) {
+                    final _bloc = BlocProvider.of<guest.GuestDetailsBloc>(context);
+                    final List<Record> records = <Record>[widget.record];
+                    _bloc.add(guest.TransferTicket(widget.owner, widget.record));
+                    Navigator.pop(context);
+                  } 
+                },
+              )
+            ),
+      
+          ],
+        ) 
+        
+      )
     );
   }
 }

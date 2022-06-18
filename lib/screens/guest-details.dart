@@ -146,7 +146,7 @@ MaterialButton buildDisabledButton () {
           height: 80,
           disabledColor: Colors.black12,
           textColor: Colors.white,
-          child: Text('Confirm Tickets', style: appTheme.textTheme.button)
+          child: Text('Redeem Ticket', style: appTheme.textTheme.button)
   );
 }
 

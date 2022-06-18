@@ -18,7 +18,7 @@ import '../models/ticket.dart';
 
 var searchController = new TextEditingController();
 
-void _fetchTickets(BuildContext context) {
+void _fetchTickets(BuildContext context) async {
   final ticketBloc = BlocProvider.of<TicketListBloc>(context);
   ticketBloc.add(GetTickets());
 }
@@ -50,20 +50,6 @@ class TicketList extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
-                          IconButton(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 0, vertical: 10),
-                            onPressed: () {
-                              // Navigate to the second screen using a named route.
-                              Navigator.pushNamed(context, '/audit');
-                            },
-                            icon: Icon(
-                              Icons.settings,
-                              color: Colors.white,
-                              size: 30.0,
-                              semanticLabel: 'Look at the audit list',
-                            ),
-                          ),
                           Center(
                               child: GestureDetector(
                                   onTap: () {
@@ -86,7 +72,21 @@ class TicketList extends StatelessWidget {
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .headline6))
-                                  ])))
+                                  ]))),
+                          IconButton(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 0, vertical: 10),
+                            onPressed: () {
+                              // Navigate to the second screen using a named route.
+                              Navigator.pushNamed(context, '/audit');
+                            },
+                            icon: Icon(
+                              Icons.settings,
+                              color: Colors.white,
+                              size: 30.0,
+                              semanticLabel: 'Look at the audit list',
+                            ),
+                          ),
                         ],
                       )
                     ]),

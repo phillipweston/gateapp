@@ -11,6 +11,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fnf_guest_list/blocs/audit.dart';
 import 'package:fnf_guest_list/models/audit.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../common/theme.dart';
 
@@ -71,6 +72,7 @@ class AuditList extends StatelessWidget {
                                                 .textTheme
                                                 .headline6))
                                   ]))),
+                          buildApiHostButton(context),
                         ],
                       )
                     ]),
@@ -146,6 +148,104 @@ class SearchInputField extends StatelessWidget {
       ),
     );
   }
+}
+
+class ApiHostInputField extends StatelessWidget {
+  String host;
+  TextEditingController controller;
+  ApiHostInputField(this.host, this.controller);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+      child: TextField(
+        textAlign: TextAlign.left,
+        // onChanged: (value) => _filterAudits(context, value),
+        controller: controller,
+        style: Theme.of(context).textTheme.caption,
+        decoration: InputDecoration(
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(2.0))),
+          hintStyle: TextStyle(),
+          labelText: 'Host',
+//          hintText: 'Search by name, email, or phone (possibly)',q
+        ),
+      ),
+    );
+  }
+}
+
+class ApiPasswordInputField extends StatelessWidget {
+  TextEditingController password;
+  ApiPasswordInputField(this.password);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+      child: TextField(
+        textAlign: TextAlign.left,
+        // onChanged: (value) => _filterAudits(context, value),
+        controller: password,
+        style: Theme.of(context).textTheme.caption,
+        decoration: InputDecoration(
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(2.0))),
+          hintStyle: TextStyle(),
+          labelText: 'Password',
+//          hintText: 'Search by name, email, or phone (possibly)',q
+        ),
+      ),
+    );
+  }
+}
+
+MaterialButton buildApiHostButton(BuildContext context) {
+  final _bloc = BlocProvider.of<AuditListBloc>(context);
+  return MaterialButton(
+      onPressed: () async {
+        final prefs = await SharedPreferences.getInstance();
+        String host = await prefs.getString('host');
+        TextEditingController controller = new TextEditingController(text: host);
+        TextEditingController password = new TextEditingController();
+
+        return showDialog<void>(
+            context: context,
+            barrierDismissible: true,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                scrollable: true,
+                title: Text(
+                  "Set API Host",
+                  textAlign: TextAlign.left,
+                  style: appTheme.textTheme.headline2,
+                ),
+                content: Column(
+                    children: [new ApiHostInputField(host, controller), new ApiPasswordInputField(password)]),
+                actions: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      MaterialButton(
+                          child: Text("Set Host"),
+                          onPressed: () async {
+                            if (password.text == 'callback') {
+                              await prefs.setString('host', controller.text);
+                              Navigator.pop(context);
+                            }
+                          },
+                      ),
+                    ],
+                  ),
+                ],
+              );
+            });
+      },
+      height: 80,
+      color: superPink,
+      textColor: Colors.white,
+      child: Text('Set API Host'));
 }
 
 SliverToBoxAdapter buildInitial() {
@@ -230,19 +330,21 @@ class AuditListRow extends StatelessWidget {
                   style: Theme.of(context).textTheme.headline2,
                   overflow: TextOverflow.ellipsis),
               SizedBox(width: 4),
-
               SizedBox(width: 4),
               Icon(
                 audit.action == 'transfer' ? Icons.arrow_right : Icons.person,
                 color: superPink,
-                size: audit.action == 'transfer' ?  30.0 : 30.0,
+                size: audit.action == 'transfer' ? 30.0 : 30.0,
                 semanticLabel: 'Text to announce in accessibility modes',
               ),
-              Text(audit.action == 'transfer' ?  "${audit.from.name} to ${audit.to.name}" : '',
+              Text(
+                  audit.action == 'transfer'
+                      ? "${audit.from.name} to ${audit.to.name}"
+                      : '',
                   style: Theme.of(context).textTheme.headline1,
                   overflow: TextOverflow.ellipsis),
               Expanded(
-                child: Text(audit.action != 'transfer' ?  audit.to.name : '',
+                child: Text(audit.action != 'transfer' ? audit.to.name : '',
                     style: Theme.of(context).textTheme.headline1,
                     overflow: TextOverflow.ellipsis),
               ),

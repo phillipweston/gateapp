@@ -2,6 +2,7 @@
 
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/audit.dart';
 
@@ -9,7 +10,6 @@ abstract class AuditRepositoryInterface {
   Future<List<Audit>> refreshAll();
   List<Audit> _all;
   List<Audit> audits;
-
 }
 
 class AuditRepository implements AuditRepositoryInterface {
@@ -19,8 +19,10 @@ class AuditRepository implements AuditRepositoryInterface {
   @override
   Future<List<Audit>> refreshAll() async {
     try {
+      final prefs = await SharedPreferences.getInstance();
+      String host = await prefs.getString('host');
       print("in refreshAll events");
-      final response = await http.get("http://localhost:7777/audit", headers: { 'Content-Type' : 'application/json' });
+      final response = await http.get("$host/audit", headers: { 'Content-Type' : 'application/json' });
 
       if (response.statusCode == 200 && response.body.isNotEmpty == true) {
         var auditsJson = jsonDecode(response.body) as List<dynamic>;

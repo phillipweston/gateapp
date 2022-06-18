@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fnf_guest_list/common/theme.dart';
 import 'package:fnf_guest_list/screens/audit-list.dart';
 import 'package:fnf_guest_list/screens/guest-list.dart';

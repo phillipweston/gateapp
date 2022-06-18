@@ -3,6 +3,7 @@ import 'package:bloc/bloc.dart';
 import '../models/ticket.dart';
 import './ticket.dart';
 import './guest.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TicketListBloc extends Bloc<TicketEvent, TicketState> {
   final GuestRepository guestRepository;
@@ -15,6 +16,13 @@ class TicketListBloc extends Bloc<TicketEvent, TicketState> {
   @override
   Stream<TicketState> mapEventToState(TicketEvent event) async* {
     yield TicketsLoading();
+
+
+    final prefs = await SharedPreferences.getInstance();
+    String host = await prefs.getString('host');
+    if (host.isEmpty) {
+      await prefs.setString('host', 'http://localhost:7777');
+    }
 
     print("event $event");
     // NO SUPPORT FOR A SWITCH STATEMENT ON TYPES IN DART

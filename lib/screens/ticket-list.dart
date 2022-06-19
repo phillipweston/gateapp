@@ -190,7 +190,7 @@ SliverToBoxAdapter buildNoTickets() {
 AnimationLimiter buildTicketList(BuildContext context, List<Ticket> tickets) {
   return AnimationLimiter(
       child: SliverFixedExtentList(
-          itemExtent: 101.0,
+          itemExtent: 120.0,
           delegate:
               SliverChildBuilderDelegate((BuildContext context, int index) {
             if (index > tickets.length - 1) return null;
@@ -226,7 +226,7 @@ class TicketListRow extends StatelessWidget {
     Record record = Record(ticket);
     final bool canReassign = !ticket.redeemed;
     return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
         child: Column(children: [
           LimitedBox(
               maxHeight: 48,
@@ -266,7 +266,7 @@ class TicketListRow extends StatelessWidget {
                             height: 40,
                             width: 40,
                             semanticsLabel: 'An FnF Ticket'))
-                  ])
+                  ]),
                 ],
               )
           ),
@@ -281,7 +281,20 @@ class TicketListRow extends StatelessWidget {
                   ),
                 ],
               )
-          )
+          ),
+          Row(children: [
+            SizedBox(width: 24),
+          Container(
+            child: Text(
+              "License Plate #: ", style: appTheme.textTheme.headline1
+            ),
+          ),
+          Container(
+            child: Text(
+              ticket.owner.license ?? "", style: appTheme.textTheme.headline2
+            ),
+          ),
+        ])
         ]
         )
     );

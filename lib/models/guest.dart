@@ -68,7 +68,7 @@ class Guest extends Equatable  {
         "phone": phone,
         "waiver": waiver,
         "health": health,
-        "license": license
+        "license_plate": license
       };
   }
 
@@ -95,7 +95,7 @@ class Guest extends Equatable  {
         contract,
         json['waiver'] as String,
         json['health'] as String,
-        json['license'] as String
+        json['license_plate'] as String
     );
   }
 }

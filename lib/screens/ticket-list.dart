@@ -310,6 +310,7 @@ class _ReassignTicketModalState extends State<ReassignTicketModal> {
             Container(
               padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
               child:TextField(
+                autofocus: true,
                 controller: firstNameController,
                 style: appTheme.textTheme.headline1,
                 textCapitalization: TextCapitalization.words,

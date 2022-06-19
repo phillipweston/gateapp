@@ -189,14 +189,17 @@ class GuestRepository implements GuestRepositoryInterface {
         tickets = ticketsJson.map((dynamic ticketJson) =>
             Ticket.fromFullJson(ticketJson)).toList();
 
+        //
+        // tickets.sort((a, b) {
+        //   var aYes = a.redeemed ? 1 : 0;
+        //   var bYes = b.redeemed ? 1 : 0;
+        //   return aYes - bYes;
+        // });
+
+
         tickets.sort((a, b) => a.owner.name.compareTo(b.owner.name));
 
 
-        tickets.sort((a, b) {
-          var aYes = a.redeemed ? 1 : 0;
-          var bYes = b.redeemed ? 1 : 0;
-          return aYes - bYes;
-        });
 
         _tickets = tickets;
         print(tickets);

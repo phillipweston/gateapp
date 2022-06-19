@@ -95,7 +95,10 @@ class GuestDetailsBloc extends Bloc<GuestEvent, GuestState> {
 
     else if (event is SignWaiver) {
       try {
-        Guest guest = await guestRepository.signWaiver(event.owner);
+        final Guest guestWithLicense = Guest(event.owner.userId, event.owner.name, event.owner.email, 
+                                  event.owner.phone, event.owner.tickets, event.owner.contract,
+                                  event.owner.waiver, event.owner.health, event.license);
+        Guest guest = await guestRepository.signWaiver(guestWithLicense);
         if(guest != null && guest.waiver != null) {
           Ticket updatedTicket = await guestRepository.redeemTicket(event.ticket);
           if(updatedTicket != null && updatedTicket.redeemed) {

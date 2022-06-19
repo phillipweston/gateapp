@@ -13,6 +13,8 @@ import 'package:fnf_guest_list/models/record.dart';
 import 'package:fnf_guest_list/screens/guest-details.dart';
 import 'package:fnf_guest_list/blocs/guest.dart' as guest;
 import 'package:fnf_guest_list/blocs/ticket.dart';
+import 'package:fnf_guest_list/blocs/audit-list-bloc.dart';
+import 'package:fnf_guest_list/blocs/audit-events.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import '../common/theme.dart';
 import '../models/ticket.dart';
@@ -37,7 +39,7 @@ class TicketList extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<guest.GuestDetailsBloc, guest.GuestState>(
     builder: (context, state) {
-      if(state is guest.TicketRedeemed || state is guest.TransferSuccessful || state is TicketRedeemed || state is TransferSuccessful) {
+      if(state is guest.TicketRedeemed || state is guest.TransferSuccessful || state is TicketRedeemed || state is TransferSuccessful) { 
         final _ticketBloc = BlocProvider.of<TicketListBloc>(context);
         _ticketBloc.add(GetTickets());
         // searchController.value =
@@ -82,6 +84,8 @@ class TicketList extends StatelessWidget {
                                   ]))),
                            MaterialButton(child: Text("Log", style: TextStyle(color: Colors.white)),
                             onPressed: () {
+                              final _bloc = BlocProvider.of<AuditListBloc>(context);
+                              _bloc.add(GetAudits());
                               // Navigate to the second screen using a named route.
                               Navigator.pushNamed(context, '/audit');
                             },
@@ -352,7 +356,6 @@ class _ReassignTicketModalState extends State<ReassignTicketModal> {
                     final List<Record> records = <Record>[widget.record];
                     _bloc.add(guest.TransferTicket(widget.owner, widget.record));
                     Navigator.pop(context);
-
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text("$oldOwner => $newOwner transfer complete!", style: TextStyle(color: Colors.white, fontSize: 24)),

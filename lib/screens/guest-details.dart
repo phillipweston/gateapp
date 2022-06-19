@@ -153,6 +153,7 @@ MaterialButton buildDisabledButton () {
 MaterialButton buildCheckInButton (BuildContext context, Ticket ticket, Guest guest) {
   final _bloc = BlocProvider.of<GuestDetailsBloc>(context);
   final bool waiver = guest.waiver != null;
+  final controller = TextEditingController();
   return MaterialButton(
       onPressed: () async {
         if(!waiver) {
@@ -177,30 +178,44 @@ MaterialButton buildCheckInButton (BuildContext context, Ticket ticket, Guest gu
                   mainAxisAlignment:MainAxisAlignment.center,
                   children: [
                     Text(
-                      guest.name, 
+                      "License Plate:  ", 
                       style: appTheme.textTheme.headline2,
                     ),
-                    Checkbox(
-                      value: waiver,
-                      activeColor: Color.fromRGBO(243,2,211, 1),
-                      onChanged: (bool value) async {
-                        final _bloc = BlocProvider.of<GuestDetailsBloc>(context);
-                        _bloc.add(SignWaiver(guest, ticket, value));
-                        Navigator.pop(context);
-                      },
+                    Container(
+                      width: 200,
+                      child: TextField(
+                      controller: controller,
+                      style: appTheme.textTheme.headline1,
+                      textCapitalization: TextCapitalization.characters,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: "License Plate #",
+                      )
+                    ),
+                    ) 
+                  ]
+                ),
+                Row(
+                  mainAxisAlignment:MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      guest.name, 
+                      style: appTheme.textTheme.headline2,
                     ),
                     MaterialButton(
                       child: Text("Agree and Redeem Ticket"),
                       onPressed: () async {
-                        final _bloc = BlocProvider.of<GuestDetailsBloc>(context);
-                        _bloc.add(SignWaiver(guest, ticket, true));
-                        String name = ticket.owner.name;
-                        Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text("$name checked in!", style: TextStyle(color: Colors.white, fontSize: 24)),
-                          ),
-                        );
+                        if(controller.text.isNotEmpty && controller.text.length == 7) {
+                          final _bloc = BlocProvider.of<GuestDetailsBloc>(context);
+                          _bloc.add(SignWaiver(guest, ticket, true, controller.text));
+                          Navigator.pop(context);
+                          String name = ticket.owner.name;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text("$name checked in!", style: TextStyle(color: Colors.white, fontSize: 24)),
+                            ),
+                          );
+                        }
                       }
                     ),
                   ],

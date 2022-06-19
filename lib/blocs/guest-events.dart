@@ -76,7 +76,8 @@ class SignWaiver extends GuestEvent {
   final Ticket ticket;
   final Guest owner;
   final bool redeem;
-  const SignWaiver(this.owner, this.ticket, this.redeem);
+  final String license;
+  const SignWaiver(this.owner, this.ticket, this.redeem, this.license);
   @override
   List<Object> get props => [ticket, owner, redeem];
 }

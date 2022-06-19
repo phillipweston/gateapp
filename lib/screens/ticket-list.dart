@@ -343,12 +343,21 @@ class _ReassignTicketModalState extends State<ReassignTicketModal> {
                   disabledColor: Colors.black12,
                   textColor: Colors.white,
                 onPressed: () async {
-                  widget.record.setName(firstNameController.text + " " + lastNameController.text);
+                  String oldOwner = widget.owner.name;
+                  String newOwner = firstNameController.text + " " + lastNameController.text;
+
+                  widget.record.setName(newOwner);
                   if(widget.record.valid) {
                     final _bloc = BlocProvider.of<guest.GuestDetailsBloc>(context);
                     final List<Record> records = <Record>[widget.record];
                     _bloc.add(guest.TransferTicket(widget.owner, widget.record));
                     Navigator.pop(context);
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text("$oldOwner => $newOwner transfer complete!", style: TextStyle(color: Colors.white, fontSize: 24)),
+                      ),
+                    );
                   } 
                 },
               )

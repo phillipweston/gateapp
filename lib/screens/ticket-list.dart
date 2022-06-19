@@ -318,7 +318,7 @@ class _ReassignTicketModalState extends State<ReassignTicketModal> {
         child: Column(
           children: [
             Container(
-              padding: const EdgeInsets.symmetric(vertical: 10),
+              padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
               child:TextField(
                 controller: firstNameController,
                 style: appTheme.textTheme.headline1,
@@ -330,7 +330,7 @@ class _ReassignTicketModalState extends State<ReassignTicketModal> {
               ),
             ),
             Container(
-              padding: const EdgeInsets.symmetric(vertical: 10),
+              padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
               child:TextField(
                 controller: lastNameController,
                 style: appTheme.textTheme.headline1,
@@ -344,8 +344,12 @@ class _ReassignTicketModalState extends State<ReassignTicketModal> {
             Container(
               width: 150,
               child: 
-              TextButton(
-                child: Text("Transfer", style: TextStyle(color: Colors.black)),
+              MaterialButton(
+                child: Text("Transfer", style: appTheme.textTheme.button),
+                  height: 50,
+                  color: superPink,
+                  disabledColor: Colors.black12,
+                  textColor: Colors.white,
                 onPressed: () async {
                   widget.record.setName(firstNameController.text + " " + lastNameController.text);
                   if(widget.record.valid) {

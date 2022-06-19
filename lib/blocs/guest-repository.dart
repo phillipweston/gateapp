@@ -120,6 +120,7 @@ class GuestRepository implements GuestRepositoryInterface {
       var bYes = b.owner.firstName().toLowerCase().startsWith(search) ? 1 : 0;
       return bYes - aYes;
     });
+
     return tickets;
   }
 
@@ -186,6 +187,13 @@ class GuestRepository implements GuestRepositoryInterface {
             Ticket.fromFullJson(ticketJson)).toList();
 
         tickets.sort((a, b) => a.owner.name.compareTo(b.owner.name));
+
+
+        tickets.sort((a, b) {
+          var aYes = a.redeemed ? 1 : 0;
+          var bYes = b.redeemed ? 1 : 0;
+          return aYes - bYes;
+        });
 
         _tickets = tickets;
         print(tickets);

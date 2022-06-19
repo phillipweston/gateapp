@@ -189,10 +189,13 @@ MaterialButton buildCheckInButton (BuildContext context, Ticket ticket, Guest gu
                         Navigator.pop(context);
                       },
                     ),
-                    Text(
-                      "(Agree and Redeem Ticket)", 
-                      style: appTheme.textTheme.headline1,
-                      textAlign: TextAlign.center,
+                    MaterialButton(
+                      child: Text("Agree and Redeem Ticket"),
+                      onPressed: () async {
+                        final _bloc = BlocProvider.of<GuestDetailsBloc>(context);
+                        _bloc.add(SignWaiver(guest, ticket, true));
+                        Navigator.pop(context);
+                      }
                     ),
                   ],
                 ),
@@ -472,15 +475,18 @@ class _ReassignModalState extends State<ReassignModal> {
 
   Widget build(BuildContext context) {
     return Dialog(
+
       // backgroundColor: Color(0XFF232426),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
       child: Container(
         width: 300,
         height: 150,
-        child: Column(
+          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 30),
+
+          child: Column(
           children: [
             Container(
-              padding: const EdgeInsets.symmetric(vertical: 10),
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
               child:TypeAheadField(
                 hideOnEmpty: true,
                 textFieldConfiguration: TextFieldConfiguration<Guest>(
@@ -511,7 +517,7 @@ class _ReassignModalState extends State<ReassignModal> {
             ),
             Container(
               width: 150,
-              child: 
+              child:
               TextButton(
                 child: Text("Transfer", style: TextStyle(color: Colors.black)),
                 onPressed: () async {

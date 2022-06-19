@@ -235,32 +235,29 @@ class TicketListRow extends StatelessWidget {
               child: Row(
                 children: [
                   SizedBox(width: 24),
-                  Expanded(
-                    child:  
-                    TextButton(
-                      child: Text( 
-                        ticketName,
-                        textAlign: TextAlign.end ),
-                      style: TextButton.styleFrom(
-                        textStyle: appTheme.textTheme.headline2,
-                        alignment: Alignment.centerLeft
-                      ),
-                      onPressed: () async {
-                        if(!ticket.redeemed) {
-                          await showDialog<ReassignTicketModal>(
-                            context: context,
-                            builder: (BuildContext dialogContext) {
-                              return ReassignTicketModal(
+                  IconButton(
+                    icon: Icon(Icons.drive_file_rename_outline),
+                    onPressed: () async {
+                      if(!ticket.redeemed) {
+                        await showDialog<ReassignTicketModal>(
+                          context: context,
+                          builder: (BuildContext dialogContext) {
+                            return ReassignTicketModal(
                                 owner: ticket.owner,
                                 record: record,
                                 inputDecoration: ticketLabel
-                              );
-                            },
-                          );
-                        }
-                      },
-                    ),
+                            );
+                          },
+                        );
+                      }
+                    },
                   ),
+                  Expanded(
+                      child: Text(
+                        ticketName, style: appTheme.textTheme.headline2
+                      ),
+
+                    ),
                   SizedBox(width: 24),
                   Row(children: [
                     ticket.redeemed ? buildDisabledButton() : buildCheckInButton(context, ticket, ticket.owner),

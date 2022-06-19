@@ -108,8 +108,11 @@ class GuestRepository implements GuestRepositoryInterface {
       var ticketString = "";
       if (ticket.owner.name != null) ticketString += ticket.owner.name.toLowerCase();
       if (ticket.originalOwner.name != null) ticketString += ticket.originalOwner.name.toLowerCase();
+      if (ticket.owner.license_plate != null) ticketString += ticket.owner.license_plate.toLowerCase();
+      if (ticket.owner.license_plate != null) ticketString += ticket.owner.license_plate;
       return ticketString.contains(search);
     }).toList();
+
     tickets.sort((a, b) {
       var aYes = a.owner.lastName().toLowerCase().startsWith(search) ? 1 : 0;
       var bYes = b.owner.lastName().toLowerCase().startsWith(search) ? 1 : 0;

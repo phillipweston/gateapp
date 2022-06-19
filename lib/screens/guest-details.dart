@@ -205,7 +205,7 @@ MaterialButton buildCheckInButton (BuildContext context, Ticket ticket, Guest gu
                     MaterialButton(
                       child: Text("Agree and Redeem Ticket"),
                       onPressed: () async {
-                        if(controller.text.isNotEmpty && controller.text.length == 7) {
+                        if(controller.text.isNotEmpty) {
                           final _bloc = BlocProvider.of<GuestDetailsBloc>(context);
                           _bloc.add(SignWaiver(guest, ticket, true, controller.text));
                           Navigator.pop(context);

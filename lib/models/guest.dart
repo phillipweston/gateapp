@@ -13,9 +13,9 @@ class Guest extends Equatable  {
   final Contract contract;
   final String waiver;
   final String health;
-  final String license;
+  final String license_plate;
 
-  Guest(this.userId, this.name, this.email, this.phone, this.tickets, this.contract, this.waiver, this.health, this.license);
+  Guest(this.userId, this.name, this.email, this.phone, this.tickets, this.contract, this.waiver, this.health, this.license_plate);
 
   @override
   List<Object> get props => [
@@ -27,7 +27,7 @@ class Guest extends Equatable  {
     contract,
     waiver,
     health,
-    license
+    license_plate
   ];
 
   int numTickets() {
@@ -68,7 +68,7 @@ class Guest extends Equatable  {
         "phone": phone,
         "waiver": waiver,
         "health": health,
-        "license_plate": license
+        "license_plate": license_plate
       };
   }
 

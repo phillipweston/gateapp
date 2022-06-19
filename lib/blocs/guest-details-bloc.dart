@@ -65,7 +65,7 @@ class GuestDetailsBloc extends Bloc<GuestEvent, GuestState> {
         });
         final Guest guest = Guest(event.owner.userId, event.owner.name, event.owner.email, 
                                   event.owner.phone, event.owner.tickets, event.owner.contract,
-                                  event.owner.waiver, event.owner.health, event.owner.license);
+                                  event.owner.waiver, event.owner.health, event.owner.license_plate);
         if(event.redeem) {
           yield TicketReadyToRedeem(guest, ticket);
         }

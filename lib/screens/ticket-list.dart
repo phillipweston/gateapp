@@ -121,7 +121,7 @@ class TicketList extends StatelessWidget {
                   return buildLoading();
                 } else if (state is TicketsLoaded) {
                   return buildTicketList(context, state.tickets);
-                } else if (state is guest.NoGuestsMatchSearch) {
+                } else if (state is NoTicketsMatchSearch) {
                   return buildNoTickets();
                 } else if (state is TicketsError) {
                   return buildError();
@@ -291,7 +291,7 @@ class TicketListRow extends StatelessWidget {
           ),
           Container(
             child: Text(
-              ticket.owner.license ?? "", style: appTheme.textTheme.headline2
+              ticket.owner.license_plate ?? "", style: appTheme.textTheme.headline2
             ),
           ),
         ])

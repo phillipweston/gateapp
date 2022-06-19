@@ -194,7 +194,13 @@ MaterialButton buildCheckInButton (BuildContext context, Ticket ticket, Guest gu
                       onPressed: () async {
                         final _bloc = BlocProvider.of<GuestDetailsBloc>(context);
                         _bloc.add(SignWaiver(guest, ticket, true));
+                        String name = ticket.owner.name;
                         Navigator.pop(context);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text("$name checked in!", style: TextStyle(color: Colors.white, fontSize: 24)),
+                          ),
+                        );
                       }
                     ),
                   ],

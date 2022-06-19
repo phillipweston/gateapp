@@ -79,19 +79,12 @@ class TicketList extends StatelessWidget {
                                                 .textTheme
                                                 .headline6))
                                   ]))),
-                          IconButton(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 0, vertical: 10),
+                           MaterialButton(child: Text("Log", style: TextStyle(color: Colors.white)),
                             onPressed: () {
                               // Navigate to the second screen using a named route.
                               Navigator.pushNamed(context, '/audit');
                             },
-                            icon: Icon(
-                              Icons.settings,
-                              color: Colors.white,
-                              size: 30.0,
-                              semanticLabel: 'Look at the audit list',
-                            ),
+
                           ),
                         ],
                       )

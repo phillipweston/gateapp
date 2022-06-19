@@ -39,6 +39,10 @@ class TicketList extends StatelessWidget {
       if(state is guest.TicketRedeemed || state is guest.TransferSuccessful || state is TicketRedeemed || state is TransferSuccessful) {
         final _ticketBloc = BlocProvider.of<TicketListBloc>(context);
         _ticketBloc.add(GetTickets());
+        // searchController.value =
+        //     TextEditingValue(text: "");
+        _filterTickets(context, searchController.text);
+        FocusManager.instance.primaryFocus?.unfocus();
       }
       return Scaffold(
         body: CustomScrollView(

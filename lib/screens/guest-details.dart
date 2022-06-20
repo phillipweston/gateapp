@@ -149,11 +149,12 @@ MaterialButton buildDisabledButton () {
           child: Text('Redeem Ticket', style: appTheme.textTheme.button)
   );
 }
+final license_controller = TextEditingController();
 
 MaterialButton buildCheckInButton (BuildContext context, Ticket ticket, Guest guest) {
   final _bloc = BlocProvider.of<GuestDetailsBloc>(context);
   final bool waiver = guest.waiver != null;
-  final controller = TextEditingController();
+
   return MaterialButton(
       onPressed: () async {
         if(!waiver) {
@@ -178,13 +179,17 @@ MaterialButton buildCheckInButton (BuildContext context, Ticket ticket, Guest gu
                   mainAxisAlignment:MainAxisAlignment.center,
                   children: [
                     Text(
-                      "License Plate:  ", 
+                      "License Plate:  ",
                       style: appTheme.textTheme.headline2,
                     ),
                     Container(
                       width: 200,
                       child: TextField(
-                      controller: controller,
+                        autofocus: true,
+                      controller: license_controller,
+                      onChanged: (update) {
+                          license = license_controller.text;
+                      },
                       style: appTheme.textTheme.headline1,
                       textCapitalization: TextCapitalization.characters,
                       decoration: InputDecoration(
@@ -202,22 +207,9 @@ MaterialButton buildCheckInButton (BuildContext context, Ticket ticket, Guest gu
                       guest.name, 
                       style: appTheme.textTheme.headline2,
                     ),
-                    MaterialButton(
-                      child: Text("Agree and Redeem Ticket"),
-                      onPressed: () async {
-                        if(controller.text.isNotEmpty) {
-                          final _bloc = BlocProvider.of<GuestDetailsBloc>(context);
-                          _bloc.add(SignWaiver(guest, ticket, true, controller.text));
-                          Navigator.pop(context);
-                          String name = ticket.owner.name;
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text("$name checked in!", style: TextStyle(color: Colors.white, fontSize: 24)),
-                            ),
-                          );
-                        }
-                      }
-                    ),
+                    license_controller.text.isEmpty
+                    ? checkInButtonDisabled()
+                    : checkInButton(license_controller, context, ticket, guest)
                   ],
                 ),
               ],
@@ -230,10 +222,40 @@ MaterialButton buildCheckInButton (BuildContext context, Ticket ticket, Guest gu
       },
       height: 80,
       color: superPink,
-      disabledColor: Colors.black12,
       textColor: Colors.white,
       child: Text('Redeem Ticket', style: appTheme.textTheme.button)
   );
+}
+
+MaterialButton checkInButton(TextEditingController controller, BuildContext context, Ticket ticket, Guest guest) {
+  return MaterialButton(
+      child: Text("Agree and Redeem Ticket"),
+      onPressed: () async {
+        if(controller.text.isNotEmpty) {
+          final _bloc = BlocProvider.of<GuestDetailsBloc>(context);
+          _bloc.add(SignWaiver(guest, ticket, true, controller.text));
+          Navigator.pop(context);
+          String name = ticket.owner.name;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("$name checked in!", style: TextStyle(color: Colors.white, fontSize: 24)),
+            ),
+          );
+        }
+      },
+    color: superPink,
+    disabledColor: Colors.black12,
+    textColor: Colors.white,
+  );
+}
+
+MaterialButton checkInButtonDisabled () {
+    return MaterialButton(
+        onPressed: null,
+        disabledColor: Colors.black12,
+        textColor: Colors.white,
+        child: Text('Agree and Redeeem Ticket', style: appTheme.textTheme.button)
+    );
 }
 
 SliverToBoxAdapter buildInitial() {

@@ -258,7 +258,7 @@ class TicketListRow extends StatelessWidget {
                     ),
                   SizedBox(width: 24),
                   Row(children: [
-                    ticket.redeemed ? buildDisabledButton() : buildCheckInButton(context, ticket, ticket.owner),
+                    ticket.redeemed ? buildDisabledButton() : CheckinButton(ticket.owner, ticket),
                     Padding(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 4, vertical: 8),

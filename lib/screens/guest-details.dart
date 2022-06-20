@@ -146,9 +146,10 @@ class CheckinButton extends StatefulWidget {
 class _CheckinButton extends State<CheckinButton> {
   Guest guest;
   Ticket ticket;
+  bool isActive = false;
+
   _CheckinButton(this.guest, this.ticket);
 
-  bool isActive = false;
   final controller = TextEditingController();
 
   @override
@@ -158,12 +159,12 @@ class _CheckinButton extends State<CheckinButton> {
       isActive = controller.text.isNotEmpty;
       setState(() => this.isActive = isActive);
     });
+
   }
 
   @override
   Widget build(BuildContext context) {
     final _bloc = BlocProvider.of<GuestDetailsBloc>(context);
-
     return MaterialButton(
         onPressed: () async {
             return showDialog<void>(
@@ -193,9 +194,6 @@ class _CheckinButton extends State<CheckinButton> {
                           child: TextField(
                               autofocus: true,
                               controller: controller,
-                              onChanged: (value) {
-                                var license = value;
-                              },
                               style: appTheme.textTheme.headline1,
                               textCapitalization: TextCapitalization.characters,
                               decoration: InputDecoration(
@@ -211,7 +209,7 @@ class _CheckinButton extends State<CheckinButton> {
                             guest.name,
                             style: appTheme.textTheme.headline2,
                           ),
-                          MaterialButton(
+                          isActive ? MaterialButton(
                             child: Text("Agree and Redeem Ticket"),
                             onPressed: !this.isActive
                                 ? null
@@ -237,7 +235,7 @@ class _CheckinButton extends State<CheckinButton> {
                             color: superPink,
                             disabledColor: Colors.black12,
                             textColor: Colors.white,
-                          )
+                          ) : checkInButtonDisabled()
                         ],
                       ),
                     ],

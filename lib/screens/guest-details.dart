@@ -149,11 +149,11 @@ MaterialButton buildDisabledButton () {
           child: Text('Redeem Ticket', style: appTheme.textTheme.button)
   );
 }
-final license_controller = TextEditingController();
 
 MaterialButton buildCheckInButton (BuildContext context, Ticket ticket, Guest guest) {
   final _bloc = BlocProvider.of<GuestDetailsBloc>(context);
   final bool waiver = guest.waiver != null;
+  final controller = TextEditingController();
 
   return MaterialButton(
       onPressed: () async {
@@ -186,10 +186,7 @@ MaterialButton buildCheckInButton (BuildContext context, Ticket ticket, Guest gu
                       width: 200,
                       child: TextField(
                         autofocus: true,
-                      controller: license_controller,
-                      onChanged: (update) {
-                          license = license_controller.text;
-                      },
+                      controller: controller,
                       style: appTheme.textTheme.headline1,
                       textCapitalization: TextCapitalization.characters,
                       decoration: InputDecoration(
@@ -207,9 +204,9 @@ MaterialButton buildCheckInButton (BuildContext context, Ticket ticket, Guest gu
                       guest.name, 
                       style: appTheme.textTheme.headline2,
                     ),
-                    license_controller.text.isEmpty
+                    controller.text.isEmpty
                     ? checkInButtonDisabled()
-                    : checkInButton(license_controller, context, ticket, guest)
+                    : checkInButton(controller, context, ticket, guest)
                   ],
                 ),
               ],

@@ -157,71 +157,11 @@ MaterialButton buildCheckInButton (BuildContext context, Ticket ticket, Guest gu
   return MaterialButton(
       onPressed: () async {
         if(!waiver) {
-          return showDialog<void>(
+          return showDialog<RedeemModal>(
           context: context,
           barrierDismissible: true,
           builder: (BuildContext context) {
-            return AlertDialog(
-              scrollable: true,
-              title: Text(
-                Strings.WaiverTitle,
-                textAlign: TextAlign.left,
-                style: appTheme.textTheme.headline2,
-              ),
-              content: Text(
-                Strings.WaiverComplete,
-                textAlign: TextAlign.left,
-                style: appTheme.textTheme.headline1,
-              ),
-              actions: [
-                Row(
-                  mainAxisAlignment:MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "License Plate:  ", 
-                      style: appTheme.textTheme.headline2,
-                    ),
-                    Container(
-                      width: 200,
-                      child: TextField(
-                      controller: controller,
-                      style: appTheme.textTheme.headline1,
-                      textCapitalization: TextCapitalization.characters,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: "License Plate #",
-                      )
-                    ),
-                    ) 
-                  ]
-                ),
-                Row(
-                  mainAxisAlignment:MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      guest.name, 
-                      style: appTheme.textTheme.headline2,
-                    ),
-                    MaterialButton(
-                      child: Text("Agree and Redeem Ticket"),
-                      onPressed: () async {
-                        if(controller.text.isNotEmpty) {
-                          final _bloc = BlocProvider.of<GuestDetailsBloc>(context);
-                          _bloc.add(SignWaiver(guest, ticket, true, controller.text));
-                          Navigator.pop(context);
-                          String name = ticket.owner.name;
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text("$name checked in!", style: TextStyle(color: Colors.white, fontSize: 24)),
-                            ),
-                          );
-                        }
-                      }
-                    ),
-                  ],
-                ),
-              ],
-            );          
+            return RedeemModal(owner: guest, ticket: ticket);
           });
         }
         else {
@@ -492,6 +432,7 @@ class ReassignModal extends StatefulWidget {
 }
 
 class _ReassignModalState extends State<ReassignModal> {
+  
   final textFieldController = TextEditingController();
 
   Widget build(BuildContext context) {
@@ -559,4 +500,94 @@ class _ReassignModalState extends State<ReassignModal> {
       )
     );
   }
+}
+
+
+class RedeemModal extends StatefulWidget {
+  const RedeemModal({Key key, this.owner, this.ticket});
+  
+  final Guest owner;
+  final Ticket ticket;
+
+  @override
+  _RedeemModalState createState() => _RedeemModalState();
+}
+
+class _RedeemModalState extends State<RedeemModal> {
+  bool isActive = false;
+  final textFieldController = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    textFieldController.addListener(() {
+      isActive = textFieldController.text.isNotEmpty;
+      setState(() => this.isActive = isActive);
+    });
+
+  }
+  Widget build(BuildContext context) {
+            return AlertDialog(
+              scrollable: true,
+              title: Text(
+                Strings.WaiverTitle,
+                textAlign: TextAlign.left,
+                style: appTheme.textTheme.headline2,
+              ),
+              content: Text(
+                Strings.WaiverComplete,
+                textAlign: TextAlign.left,
+                style: appTheme.textTheme.headline1,
+              ),
+              actions: [
+                Row(
+                  mainAxisAlignment:MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "License Plate:  ", 
+                      style: appTheme.textTheme.headline2,
+                    ),
+                    Container(
+                      width: 200,
+                      child: TextField(
+                      controller: textFieldController,
+                      style: appTheme.textTheme.headline1,
+                      textCapitalization: TextCapitalization.characters,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: "License Plate #",
+                      )
+                    ),
+                    ) 
+                  ]
+                ),
+                Row(
+                  mainAxisAlignment:MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      widget.owner.name, 
+                      style: appTheme.textTheme.headline2,
+                    ),
+                    MaterialButton(
+                      color: this.isActive ? superPink : Colors.white,
+                      textColor:  this.isActive ? Colors.white : Colors.grey,
+                      child: Text("Agree and Redeem Ticket"),
+                      onPressed: () async {
+                        if(textFieldController.text.isNotEmpty) {
+                          final _bloc = BlocProvider.of<GuestDetailsBloc>(context);
+                          _bloc.add(SignWaiver(widget.owner, widget.ticket, true, textFieldController.text));
+                          Navigator.pop(context);
+                          String name = widget.owner.name;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text("$name checked in!", style: TextStyle(color: Colors.white, fontSize: 24)),
+                            ),
+                          );
+                        }
+                      }
+                    ),
+                  ],
+                ),
+              ],
+            );          
+        }
 }

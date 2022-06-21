@@ -339,7 +339,7 @@ class AuditListRow extends StatelessWidget {
               ),
               Text(
                   audit.action == 'transfer'
-                      ? "${audit.from.name} to ${audit.to.name}"
+                      ? "${audit.from.name} -> ${audit.to.name}"
                       : '',
                   style: Theme.of(context).textTheme.headline1,
                   overflow: TextOverflow.ellipsis),

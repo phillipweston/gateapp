@@ -579,7 +579,7 @@ class _RedeemModalState extends State<RedeemModal> {
                           String name = widget.owner.name;
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text("$name checked in!", style: TextStyle(color: Colors.white, fontSize: 24)),
+                              content: Text("Welcome, $name! You're now checked in!", style: TextStyle(color: Colors.white, fontSize: 24)),
                             ),
                           );
                         }

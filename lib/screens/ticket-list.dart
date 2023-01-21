@@ -151,7 +151,7 @@ class SearchInputField extends StatelessWidget {
               borderRadius: BorderRadius.all(Radius.circular(8.0))),
           suffixIcon: Icon(Icons.search),
           hintStyle: TextStyle(),
-          labelText: 'Search by guest name',
+          labelText: 'Search by guest name or license plate.',
 //          hintText: 'Search by name, email, or phone (possibly)',
         ),
       ),

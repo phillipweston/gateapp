@@ -21,7 +21,7 @@ class TicketListBloc extends Bloc<TicketEvent, TicketState> {
     final prefs = await SharedPreferences.getInstance();
     String host = await prefs.getString('host');
     if (host == null) {
-      await prefs.setString('host', 'http://localhost:7777');
+      await prefs.setString('host', 'http://127.0.0.1:7777');
     }
 
     print("event $event");

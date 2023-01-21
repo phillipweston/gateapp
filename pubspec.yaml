@@ -23,6 +23,8 @@ dependencies:
   shared_preferences: ^2.0.15
 
 dev_dependencies:
+  integration_test:
+    sdk: flutter
   flutter_test:
     sdk: flutter
   pedantic: ^1.8.0

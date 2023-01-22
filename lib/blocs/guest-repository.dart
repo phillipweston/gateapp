@@ -165,7 +165,6 @@ class GuestRepository implements GuestRepositoryInterface {
         guests.sort((a, b) => a.name.compareTo(b.name));
 
         _all = guests;
-        print(guests);
         return guests;
       } else {
         throw Exception('Failed to load guests');
@@ -202,7 +201,6 @@ class GuestRepository implements GuestRepositoryInterface {
 
 
         _tickets = tickets;
-        print(tickets);
         return tickets;
       } else {
         throw Exception('Failed to load guests');

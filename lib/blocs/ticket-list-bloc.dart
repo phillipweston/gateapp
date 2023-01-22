@@ -24,7 +24,6 @@ class TicketListBloc extends Bloc<TicketEvent, TicketState> {
       await prefs.setString('host', 'http://127.0.0.1:7777');
     }
 
-    print("event $event");
     // NO SUPPORT FOR A SWITCH STATEMENT ON TYPES IN DART
     if (event is GetTicket) {
       try {
@@ -42,7 +41,6 @@ class TicketListBloc extends Bloc<TicketEvent, TicketState> {
       }
     } else if (event is FilterTickets) {
       try {
-        print("attempting to filter guests");
         List<Ticket> tickets =
             await guestRepository.filterTickets(event.search);
         if (tickets.isNotEmpty) {

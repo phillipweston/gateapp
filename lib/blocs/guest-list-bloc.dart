@@ -15,7 +15,6 @@ class GuestListBloc extends Bloc<GuestEvent, GuestState> {
   Stream<GuestState> mapEventToState(GuestEvent event) async* {
     yield GuestsLoading();
 
-    print("event $event");
     // NO SUPPORT FOR A SWITCH STATEMENT ON TYPES IN DART
     if (event is GetGuest) {
       try {

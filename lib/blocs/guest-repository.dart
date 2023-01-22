@@ -152,7 +152,6 @@ class GuestRepository implements GuestRepositoryInterface {
   @override
   Future<List<Guest>> refreshAll() async {
     try {
-      print("in refreshAll");
       final prefs = await SharedPreferences.getInstance();
       String host = await prefs.getString('host');
       final response = await http.get("$host/users", headers: { 'Content-Type' : 'application/json' });
@@ -178,7 +177,6 @@ class GuestRepository implements GuestRepositoryInterface {
   @override
   Future<List<Ticket>> getTickets() async {
     try {
-      print("in getTickets");
       final prefs = await SharedPreferences.getInstance();
       String host = await prefs.getString('host');
       final response = await http.get("$host/tickets", headers: { 'Content-Type' : 'application/json' });
@@ -216,7 +214,7 @@ class GuestRepository implements GuestRepositoryInterface {
     try {
       final prefs = await SharedPreferences.getInstance();
       String host = await prefs.getString('host');
-      print("in transferTickets ${owner.contract.records.toString()}");
+      // print("in transferTickets ${owner.contract.records.toString()}");
       var body = jsonEncode(owner.contract);
       var response = await http.post("$host/tickets/transfer",
           headers: { 'Content-Type' : 'application/json' },
@@ -226,7 +224,6 @@ class GuestRepository implements GuestRepositoryInterface {
       if (response.statusCode == 200 && response.body.isNotEmpty == true) {
         var ticketsJson = jsonDecode(response.body) as List<dynamic>;
         var tickets = ticketsJson.map((dynamic ticketJson) => Ticket.fromJson(ticketJson)).toList();
-        print(tickets);
         return tickets;
       } else {
         throw Exception('Failed to transfer tickets');

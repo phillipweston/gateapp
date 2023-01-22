@@ -15,7 +15,6 @@ class AuditListBloc extends Bloc<AuditEvent, AuditState> {
   Stream<AuditState> mapEventToState(AuditEvent event) async* {
     yield AuditsLoading();
 
-    print("event $event");
     // NO SUPPORT FOR A SWITCH STATEMENT ON TYPES IN DART
 
     if (event is GetAudits) {

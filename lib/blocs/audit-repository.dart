@@ -21,7 +21,6 @@ class AuditRepository implements AuditRepositoryInterface {
     try {
       final prefs = await SharedPreferences.getInstance();
       String host = await prefs.getString('host');
-      print("in refreshAll events");
       final response = await http.get("$host/audit", headers: { 'Content-Type' : 'application/json' });
 
       if (response.statusCode == 200 && response.body.isNotEmpty == true) {
@@ -29,7 +28,6 @@ class AuditRepository implements AuditRepositoryInterface {
         audits = auditsJson.map((dynamic auditJson) =>
             Audit.fromJson(auditJson)).toList();
 
-        print(audits);
         _all = audits;
         return audits;
       } else {

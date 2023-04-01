@@ -16,7 +16,7 @@ dependencies:
   http: ^0.12.0+4
   battery: ^0.3.1+9
   row_collection: ^0.2.4
-  flutter_typeahead: ^1.8.0
+  flutter_typeahead: ^4.3.7
   equatable: ^1.1.1
   flutter_bloc: ^3.2.0
   flutter_staggered_animations: ^0.1.2
@@ -55,4 +55,3 @@ flutter:
       fonts:
         - asset: fonts/RedRock/RedRock.ttf
           weight: 500
-

@@ -15,7 +15,6 @@ import 'package:fnf_guest_list/common/theme.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:fnf_guest_list/models/record.dart';
 import 'package:fnf_guest_list/models/ticket.dart';
-import '../models/contract.dart';
 import 'package:fnf_guest_list/string-constants.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -408,7 +407,7 @@ class _ReassignModalState extends State<ReassignModal> {
                       const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                   child: TypeAheadField(
                     hideOnEmpty: true,
-                    textFieldConfiguration: TextFieldConfiguration(
+                    textFieldConfiguration: TextFieldConfiguration<Guest>(
                         controller: textFieldController,
                         style: appTheme.textTheme.headline1,
                         textCapitalization: TextCapitalization.words,

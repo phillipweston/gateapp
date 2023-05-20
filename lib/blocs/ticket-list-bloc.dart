@@ -17,7 +17,6 @@ class TicketListBloc extends Bloc<TicketEvent, TicketState> {
   Stream<TicketState> mapEventToState(TicketEvent event) async* {
     yield TicketsLoading();
 
-
     final prefs = await SharedPreferences.getInstance();
     String host = await prefs.getString('host');
     if (host == null) {
@@ -35,7 +34,8 @@ class TicketListBloc extends Bloc<TicketEvent, TicketState> {
     } else if (event is GetTickets) {
       try {
         final tickets = await guestRepository.getTickets();
-        yield TicketsLoaded(tickets);
+        yield TicketsLoaded(
+            tickets, guestRepository.total, guestRepository.redeemed);
       } on NetworkError {
         yield TicketsError("Couldn't fetch tickets. Is the device online?");
       }
@@ -44,7 +44,8 @@ class TicketListBloc extends Bloc<TicketEvent, TicketState> {
         List<Ticket> tickets =
             await guestRepository.filterTickets(event.search);
         if (tickets.isNotEmpty) {
-          yield TicketsLoaded(tickets);
+          yield TicketsLoaded(
+              tickets, guestRepository.total, guestRepository.redeemed);
         } else {
           yield NoTicketsMatchSearch();
         }

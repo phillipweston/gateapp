@@ -21,6 +21,7 @@ dependencies:
   flutter_bloc: ^3.2.0
   flutter_staggered_animations: ^0.1.2
   shared_preferences: ^2.0.15
+  shelf_router:
 
 dev_dependencies:
   integration_test:

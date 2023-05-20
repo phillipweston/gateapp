@@ -1,6 +1,5 @@
 // ignore_for_file: missing_return, unnecessary_statements
 
-import 'package:fnf_guest_list/models/assigned-ticket.dart';
 import 'package:fnf_guest_list/models/record.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -26,8 +25,16 @@ abstract class GuestRepositoryInterface {
 class GuestRepository implements GuestRepositoryInterface {
   List<Guest> guests;
   List<Guest> _all;
-  List<Ticket> _tickets;
-  List<Ticket> tickets;
+  List<Ticket> _tickets = [];
+  List<Ticket> tickets = [];
+
+  int get total {
+    return _tickets.length;
+  }
+
+  int get redeemed {
+    return _tickets.where((ticket) => ticket.redeemed).length;
+  }
 
   @override
   Future<String> setHost(String host) async {

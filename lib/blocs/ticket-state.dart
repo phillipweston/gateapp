@@ -32,7 +32,9 @@ class TicketLoading extends TicketState {
 
 class TicketsLoaded extends TicketState {
   final List<Ticket> tickets;
-  const TicketsLoaded(this.tickets);
+  final int total;
+  final int redeemed;
+  const TicketsLoaded(this.tickets, this.total, this.redeemed);
   @override
   List<Object> get props => [tickets];
 }

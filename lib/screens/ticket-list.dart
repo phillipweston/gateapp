@@ -33,13 +33,15 @@ void _filterTickets(BuildContext context, String search) {
 
 var guestRepository = guest.GuestRepository();
 
-
 class TicketList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<guest.GuestDetailsBloc, guest.GuestState>(
-    builder: (context, state) {
-      if(state is guest.TicketRedeemed || state is guest.TransferSuccessful || state is TicketRedeemed || state is TransferSuccessful) { 
+        builder: (context, state) {
+      if (state is guest.TicketRedeemed ||
+          state is guest.TransferSuccessful ||
+          state is TicketRedeemed ||
+          state is TransferSuccessful) {
         final _ticketBloc = BlocProvider.of<TicketListBloc>(context);
         _ticketBloc.add(GetTickets());
         // searchController.value =
@@ -80,19 +82,39 @@ class TicketList extends StatelessWidget {
                                         child: Text('FnF Guest List',
                                             style: Theme.of(context)
                                                 .textTheme
-                                                .headline6))
+                                                .headline6)),
                                   ]))),
-                           MaterialButton(child: Text("Log", style: TextStyle(color: Colors.white)),
+                          BlocBuilder<TicketListBloc, TicketState>(
+                            builder: (context, state) {
+                              if (state is TicketsLoaded) {
+                                return Padding(
+                                    padding: EdgeInsets.only(
+                                        left: 35, top: 0, bottom: 0, right: 30),
+                                    child: Text(
+                                        "Guests: ${state.redeemed} of ${state.total}",
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            fontFamily: 'Roboto')));
+                              }
+                              return Container();
+                            },
+                          ),
+                          MaterialButton(
+                            child: Text("Logs",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 20,
+                                    fontFamily: 'Roboto')),
                             onPressed: () {
-                              final _bloc = BlocProvider.of<AuditListBloc>(context);
+                              final _bloc =
+                                  BlocProvider.of<AuditListBloc>(context);
                               _bloc.add(GetAudits());
                               // Navigate to the second screen using a named route.
                               Navigator.pushNamed(context, '/audit');
                             },
-
                           ),
                         ],
-                      )
+                      ),
                     ]),
                 floating: true,
                 actions: [
@@ -120,7 +142,8 @@ class TicketList extends StatelessWidget {
                 } else if (state is TicketsLoading) {
                   return buildLoading();
                 } else if (state is TicketsLoaded) {
-                  return buildTicketList(context, state.tickets);
+                  return buildTicketList(
+                      context, state.tickets, state.total, state.redeemed);
                 } else if (state is NoTicketsMatchSearch) {
                   return buildNoTickets();
                 } else if (state is TicketsError) {
@@ -187,7 +210,8 @@ SliverToBoxAdapter buildNoTickets() {
   ));
 }
 
-AnimationLimiter buildTicketList(BuildContext context, List<Ticket> tickets) {
+AnimationLimiter buildTicketList(
+    BuildContext context, List<Ticket> tickets, int total, int redeemed) {
   return AnimationLimiter(
       child: SliverFixedExtentList(
           itemExtent: 120.0,
@@ -222,7 +246,8 @@ class TicketListRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final String ticketName = ticket.owner.name;
-    final String ticketLabel = "Purchased by ${ticket.originalOwner.firstName()}";
+    final String ticketLabel =
+        "Purchased by ${ticket.originalOwner.firstName()}";
     Record record = Record(ticket);
     final bool canReassign = !ticket.redeemed;
     return Padding(
@@ -236,29 +261,28 @@ class TicketListRow extends StatelessWidget {
                   IconButton(
                     icon: Icon(Icons.drive_file_rename_outline),
                     onPressed: () async {
-                      if(!ticket.redeemed) {
+                      if (!ticket.redeemed) {
                         await showDialog<ReassignTicketModal>(
                           context: context,
                           builder: (BuildContext dialogContext) {
                             return ReassignTicketModal(
                                 owner: ticket.owner,
                                 record: record,
-                                inputDecoration: ticketLabel
-                            );
+                                inputDecoration: ticketLabel);
                           },
                         );
                       }
                     },
                   ),
                   Expanded(
-                      child: Text(
-                        ticketName, style: appTheme.textTheme.headline2
-                      ),
-
-                    ),
+                    child:
+                        Text(ticketName, style: appTheme.textTheme.headline2),
+                  ),
                   SizedBox(width: 24),
                   Row(children: [
-                    ticket.redeemed ? buildDisabledButton() : buildCheckInButton(context, ticket, ticket.owner),
+                    ticket.redeemed
+                        ? buildDisabledButton()
+                        : buildCheckInButton(context, ticket, ticket.owner),
                     Padding(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 4, vertical: 8),
@@ -268,8 +292,7 @@ class TicketListRow extends StatelessWidget {
                             semanticsLabel: 'An FnF Ticket'))
                   ]),
                 ],
-              )
-          ),
+              )),
           LimitedBox(
               maxHeight: 48,
               child: Row(
@@ -280,30 +303,25 @@ class TicketListRow extends StatelessWidget {
                         style: Theme.of(context).textTheme.caption),
                   ),
                 ],
-              )
-          ),
+              )),
           Row(children: [
             SizedBox(width: 24),
-          Container(
-            child: Text(
-              "License Plate #: ", style: appTheme.textTheme.headline1
+            Container(
+              child: Text("License Plate #: ",
+                  style: appTheme.textTheme.headline1),
             ),
-          ),
-          Container(
-            child: Text(
-              ticket.owner.license_plate ?? "", style: appTheme.textTheme.headline2
+            Container(
+              child: Text(ticket.owner.license_plate ?? "",
+                  style: appTheme.textTheme.headline2),
             ),
-          ),
-        ])
-        ]
-        )
-    );
+          ])
+        ]));
   }
 }
 
 class ReassignTicketModal extends StatefulWidget {
-  const ReassignTicketModal({Key key, this.owner, this.record, this.inputDecoration
-});
+  const ReassignTicketModal(
+      {Key key, this.owner, this.record, this.inputDecoration});
   final Guest owner;
   final Record record;
   final String inputDecoration;
@@ -318,72 +336,72 @@ class _ReassignTicketModalState extends State<ReassignTicketModal> {
 
   Widget build(BuildContext context) {
     return Dialog(
-      // backgroundColor: Color(0XFF232426),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-      child: Container(
-        width: 300,
-        height: 250,
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-              child:TextField(
-                autofocus: true,
-                controller: firstNameController,
-                style: appTheme.textTheme.headline1,
-                textCapitalization: TextCapitalization.words,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: "First Name",
-                )
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-              child:TextField(
-                controller: lastNameController,
-                style: appTheme.textTheme.headline1,
-                textCapitalization: TextCapitalization.words,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: "Last Name",
-                )
-              ),
-            ),
-            Container(
-              width: 150,
-              child: 
-              MaterialButton(
-                child: Text("Transfer", style: appTheme.textTheme.button),
-                  height: 50,
-                  color: superPink,
-                  disabledColor: Colors.black12,
-                  textColor: Colors.white,
-                onPressed: () async {
-                  String oldOwner = widget.owner.name;
-                  String newOwner = firstNameController.text + " " + lastNameController.text;
+        // backgroundColor: Color(0XFF232426),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+        child: Container(
+            width: 300,
+            height: 250,
+            child: Column(
+              children: [
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                  child: TextField(
+                      autofocus: true,
+                      controller: firstNameController,
+                      style: appTheme.textTheme.headline1,
+                      textCapitalization: TextCapitalization.words,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: "First Name",
+                      )),
+                ),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                  child: TextField(
+                      controller: lastNameController,
+                      style: appTheme.textTheme.headline1,
+                      textCapitalization: TextCapitalization.words,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: "Last Name",
+                      )),
+                ),
+                Container(
+                    width: 150,
+                    child: MaterialButton(
+                      child: Text("Transfer", style: appTheme.textTheme.button),
+                      height: 50,
+                      color: superPink,
+                      disabledColor: Colors.black12,
+                      textColor: Colors.white,
+                      onPressed: () async {
+                        String oldOwner = widget.owner.name;
+                        String newOwner = firstNameController.text +
+                            " " +
+                            lastNameController.text;
 
-                  widget.record.setName(newOwner);
-                  if(widget.record.valid) {
-                    final _bloc = BlocProvider.of<guest.GuestDetailsBloc>(context);
-                    final List<Record> records = <Record>[widget.record];
-                    _bloc.add(guest.TransferTicket(widget.owner, widget.record));
-                    Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text("$oldOwner => $newOwner transfer complete!", style: TextStyle(color: Colors.white, fontSize: 24)),
-                      ),
-                    );
-                  } 
-                },
-              )
-            ),
-      
-          ],
-        ) 
-        
-      )
-    );
+                        widget.record.setName(newOwner);
+                        if (widget.record.valid) {
+                          final _bloc =
+                              BlocProvider.of<guest.GuestDetailsBloc>(context);
+                          final List<Record> records = <Record>[widget.record];
+                          _bloc.add(guest.TransferTicket(
+                              widget.owner, widget.record));
+                          Navigator.pop(context);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                  "$oldOwner => $newOwner transfer complete!",
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 24)),
+                            ),
+                          );
+                        }
+                      },
+                    )),
+              ],
+            )));
   }
 }
-

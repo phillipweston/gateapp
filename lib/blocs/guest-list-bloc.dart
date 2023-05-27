@@ -6,7 +6,7 @@ import './guest.dart';
 class GuestListBloc extends Bloc<GuestEvent, GuestState> {
   final GuestRepository guestRepository;
 
-  GuestListBloc(this.guestRepository);
+  GuestListBloc(this.guestRepository) : super(GuestsInitial());
 
   @override
   GuestState get initialState => GuestsInitial();
@@ -23,54 +23,45 @@ class GuestListBloc extends Bloc<GuestEvent, GuestState> {
       } on NetworkError {
         yield GuestsError("Couldn't fetch guest. Is the device online?");
       }
-    }
-
-    else if (event is GetGuestLocal) {
+    } else if (event is GetGuestLocal) {
       try {
         final guest = guestRepository.getByIdLocal(event.userId);
         yield GuestLoaded(guest);
       } on NetworkError {
         yield GuestsError("Couldn't fetch guest. Is the device online?");
       }
-    }
-    else if (event is GetGuests) {
+    } else if (event is GetGuests) {
       try {
         final guests = await guestRepository.refreshAll();
         yield GuestsLoaded(guests);
       } on NetworkError {
         yield GuestsError("Couldn't fetch guests. Is the device online?");
       }
-    }
-
-    else if (event is FilterGuests) {
+    } else if (event is FilterGuests) {
       try {
         print("attempting to filter guests");
         List<Guest> guests = await guestRepository.filterGuests(event.search);
         if (guests.isNotEmpty) {
           yield GuestsLoaded(guests);
-        }
-        else {
+        } else {
           yield NoGuestsMatchSearch();
         }
       } on NetworkError {
         yield GuestsError("Couldn't fetch guests. Is the device online?");
       }
-    }
-
-    else if (event is FilterGuestsByName) {
+    } else if (event is FilterGuestsByName) {
       try {
         print("attempting to filter guests");
-        List<Guest> guests = await guestRepository.filterGuestsByName(
-            event.search);
+        List<Guest> guests =
+            await guestRepository.filterGuestsByName(event.search);
         if (guests.isNotEmpty) {
           yield GuestsLoaded(guests);
-        }
-        else {
+        } else {
           yield NoGuestsMatchSearch();
         }
       } on NetworkError {
         yield GuestsError("Couldn't fetch guests. Is the device online?");
       }
     }
-   }
+  }
 }

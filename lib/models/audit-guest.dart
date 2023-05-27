@@ -4,21 +4,19 @@ import 'ticket.dart';
 import 'contract.dart';
 import 'record.dart';
 
-class AuditGuest extends Equatable  {
+class AuditGuest extends Equatable {
   final int userId;
   final String name;
   final String email;
-  final String phone;
 
-  AuditGuest(this.userId, this.name, this.email, this.phone);
+  AuditGuest(this.userId, this.name, this.email);
 
   @override
   List<Object> get props => [
-    userId,
-    name,
-    email,
-    phone,
-  ];
+        userId,
+        name,
+        email,
+      ];
 
   String firstName() {
     if (this.name != null) {
@@ -41,11 +39,7 @@ class AuditGuest extends Equatable  {
   }
 
   factory AuditGuest.fromJson(dynamic json) {
-    return AuditGuest(
-        json['user_id'] as int,
-        json['name'] as String,
-        json['email'] as String,
-        json['phone'] as String
-    );
+    return AuditGuest(json['user_id'] as int, json['name'] as String,
+        json['email'] as String);
   }
 }

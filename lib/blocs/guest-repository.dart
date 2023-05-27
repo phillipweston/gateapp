@@ -23,8 +23,8 @@ abstract class GuestRepositoryInterface {
 }
 
 class GuestRepository implements GuestRepositoryInterface {
-  List<Guest> guests;
-  List<Guest> _all;
+  late List<Guest> guests;
+  late List<Guest> _all;
   List<Ticket> _tickets = [];
   List<Ticket> tickets = [];
 
@@ -46,9 +46,10 @@ class GuestRepository implements GuestRepositoryInterface {
   @override
   Guest getByIdLocal(int id) {
     try {
-      return _all.firstWhere((guest) {
-        guest.userId == id;
+      Guest guest = _all.firstWhere((guest) {
+        return guest.userId == id;
       });
+      return guest;
     } catch (e) {
       throw Exception("Failed to lookup local guest $id ${e.toString()}");
     }
@@ -58,14 +59,16 @@ class GuestRepository implements GuestRepositoryInterface {
   Future<Guest> getById(int id) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      String host = await prefs.getString('host');
-      final response = await http.get("$host/users/$id" as Uri);
+      String? host = prefs.getString('host');
+      final response = await http.get(Uri.parse("$host/users/$id"),
+          headers: {'Content-Type': 'application/json'});
 
       if (response.statusCode == 200 && response.body.isNotEmpty == true) {
         var guestJson = jsonDecode(response.body) as Map<String, dynamic>;
         var guest = Guest.fromJson(guestJson);
         return guest;
       }
+      throw Exception("Failed to lookup guest $id");
     } catch (e) {
       throw Exception("Failed to fetch guests ${e.toString()}");
     }
@@ -75,14 +78,15 @@ class GuestRepository implements GuestRepositoryInterface {
   Future<Ticket> getTicketById(int id) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      String host = await prefs.getString('host');
-      final response = await http.get("$host/tickets/$id");
+      String? host = prefs.getString('host');
+      final response = await http.get(Uri.parse("$host/tickets/$id"));
 
       if (response.statusCode == 200 && response.body.isNotEmpty == true) {
         var ticketJson = jsonDecode(response.body) as Map<String, dynamic>;
         var ticket = Ticket.fromJson(ticketJson);
         return ticket;
       }
+      throw Exception("Failed to lookup ticket $id");
     } catch (e) {
       throw Exception("Failed to fetch guests ${e.toString()}");
     }
@@ -117,9 +121,9 @@ class GuestRepository implements GuestRepositoryInterface {
       if (ticket.originalOwner.name != null)
         ticketString += ticket.originalOwner.name.toLowerCase();
       if (ticket.owner.license_plate != null)
-        ticketString += ticket.owner.license_plate.toLowerCase();
+        ticketString += "${ticket.owner.license_plate}".toLowerCase();
       if (ticket.owner.license_plate != null)
-        ticketString += ticket.owner.license_plate;
+        ticketString += "${ticket.owner.license_plate}".toLowerCase();
       return ticketString.contains(search);
     }).toList();
 
@@ -161,9 +165,9 @@ class GuestRepository implements GuestRepositoryInterface {
   Future<List<Guest>> refreshAll() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      String host = await prefs.getString('host');
-      final response = await http
-          .get("$host/users", headers: {'Content-Type': 'application/json'});
+      String? host = prefs.getString('host');
+      final response = await http.get(Uri.parse("$host/users"),
+          headers: {'Content-Type': 'application/json'});
 
       if (response.statusCode == 200 && response.body.isNotEmpty == true) {
         var guestsJson = jsonDecode(response.body) as List<dynamic>;
@@ -187,9 +191,9 @@ class GuestRepository implements GuestRepositoryInterface {
   Future<List<Ticket>> getTickets() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      String host = await prefs.getString('host');
-      final response = await http
-          .get("$host/tickets", headers: {'Content-Type': 'application/json'});
+      String? host = prefs.getString('host');
+      final response = await http.get(Uri.parse("$host/tickets"),
+          headers: {'Content-Type': 'application/json'});
 
       if (response.statusCode == 200 && response.body.isNotEmpty == true) {
         var ticketsJson = jsonDecode(response.body) as List<dynamic>;
@@ -209,10 +213,12 @@ class GuestRepository implements GuestRepositoryInterface {
         _tickets = tickets;
         return tickets;
       } else {
-        throw Exception('Failed to load guests');
+        // throw Exception('Failed to load guests');
+        return [];
       }
     } catch (e) {
-      throw Exception("Failed to fetch guests ${e.toString()}");
+      // throw Exception("Failed to fetch guests ${e.toString()}");
+      return [];
     }
   }
 
@@ -220,10 +226,10 @@ class GuestRepository implements GuestRepositoryInterface {
   Future<List<Ticket>> transferTickets(Guest owner) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      String host = await prefs.getString('host');
+      String? host = await prefs.getString('host');
       // print("in transferTickets ${owner.contract.records.toString()}");
       var body = jsonEncode(owner.contract);
-      var response = await http.post("$host/tickets/transfer",
+      var response = await http.post(Uri.parse("$host/tickets/transfer"),
           headers: {'Content-Type': 'application/json'}, body: body);
 
       if (response.statusCode == 200 && response.body.isNotEmpty == true) {
@@ -244,11 +250,11 @@ class GuestRepository implements GuestRepositoryInterface {
   Future<Ticket> transferTicket(Record record) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      String host = await prefs.getString('host');
+      String? host = await prefs.getString('host');
       print("in transferTickets ${record.toString()}");
       Contract contract = Contract(<Record>[record]);
       var body = jsonEncode(contract);
-      var response = await http.post("$host/tickets/transfer",
+      var response = await http.post(Uri.parse("$host/tickets/transfer"),
           headers: {'Content-Type': 'application/json'}, body: body);
 
       if (response.statusCode == 200 && response.body.isNotEmpty == true) {
@@ -269,15 +275,16 @@ class GuestRepository implements GuestRepositoryInterface {
   Future<Ticket> redeemTicket(Ticket ticket) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      String host = await prefs.getString('host');
+      String? host = await prefs.getString('host');
       final int id = ticket.ticketId;
-      final response = await http.get("$host/tickets/redeem/$id");
+      final response = await http.get(Uri.parse("$host/tickets/redeem/$id"));
 
       if (response.statusCode == 200 && response.body.isNotEmpty == true) {
         var ticketJson = jsonDecode(response.body) as Map<String, dynamic>;
         var ticket = Ticket.fromJson(ticketJson);
         return ticket;
       }
+      throw Exception("Failed to lookup ticket $id");
     } catch (e) {
       throw Exception("Failed to transfer tickets ${e.toString()}");
     }
@@ -287,15 +294,16 @@ class GuestRepository implements GuestRepositoryInterface {
   Future<Guest> signWaiver(Guest owner) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      String host = await prefs.getString('host');
+      String? host = prefs.getString('host');
       var body = jsonEncode(owner.toJson());
-      final response = await http.post("$host/users/waiver",
+      final response = await http.post(Uri.parse("$host/users/waiver"),
           headers: {'Content-Type': 'application/json'}, body: body);
       if (response.statusCode == 200 && response.body.isNotEmpty == true) {
         var guestJson = jsonDecode(response.body) as Map<String, dynamic>;
         var guest = Guest.fromJson(guestJson);
         return guest;
       }
+      throw Exception("Failed to sign waiver");
     } catch (e) {
       throw Exception("Failed to sign waiver ${e.toString()}");
     }

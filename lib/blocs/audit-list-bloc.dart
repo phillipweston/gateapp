@@ -6,7 +6,7 @@ import './audit.dart';
 class AuditListBloc extends Bloc<AuditEvent, AuditState> {
   final AuditRepository auditRepository;
 
-  AuditListBloc(this.auditRepository);
+  AuditListBloc(this.auditRepository) : super(AuditsInitial());
 
   @override
   AuditState get initialState => AuditsInitial();
@@ -24,38 +24,31 @@ class AuditListBloc extends Bloc<AuditEvent, AuditState> {
       } on NetworkError {
         yield AuditsError("Couldn't fetch audits. Is the device online?");
       }
-    }
-
-    else if (event is FilterAudits) {
+    } else if (event is FilterAudits) {
       try {
         print("attempting to filter audits");
         List<Audit> audits = await auditRepository.filterAudits(event.search);
         if (audits.isNotEmpty) {
           yield AuditsLoaded(audits);
-        }
-        else {
+        } else {
           yield NoAuditsMatchSearch();
         }
       } on NetworkError {
         yield AuditsError("Couldn't fetch audits. Is the device online?");
       }
-    }
-
-    else if (event is FilterAuditsByName) {
+    } else if (event is FilterAuditsByName) {
       try {
         print("attempting to filter audits");
-        List<Audit> audits = await auditRepository.filterAuditsByName(
-            event.search);
+        List<Audit> audits =
+            await auditRepository.filterAuditsByName(event.search);
         if (audits.isNotEmpty) {
           yield AuditsLoaded(audits);
-        }
-        else {
+        } else {
           yield NoAuditsMatchSearch();
         }
       } on NetworkError {
         yield AuditsError("Couldn't fetch audits. Is the device online?");
       }
     }
-
   }
 }

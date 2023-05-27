@@ -5,7 +5,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
-import 'package:fnf_guest_list/blocs/navigator.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fnf_guest_list/models/guest.dart';
@@ -15,7 +14,6 @@ import 'package:fnf_guest_list/blocs/guest.dart' as guest;
 import 'package:fnf_guest_list/blocs/ticket.dart';
 import 'package:fnf_guest_list/blocs/audit-list-bloc.dart';
 import 'package:fnf_guest_list/blocs/audit-events.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
 import '../common/theme.dart';
 import '../models/ticket.dart';
 
@@ -89,9 +87,9 @@ class TicketList extends StatelessWidget {
                               if (state is TicketsLoaded) {
                                 return Padding(
                                     padding: EdgeInsets.only(
-                                        left: 35, top: 0, bottom: 0, right: 30),
+                                        left: 25, top: 0, bottom: 0, right: 30),
                                     child: Text(
-                                        "Guests: ${state.redeemed} of ${state.total}",
+                                        "Guests: ${state.redeemed} of ${state.total}  ::  ${((state.redeemed / state.total) * 100).round()}%",
                                         style: TextStyle(
                                             fontSize: 20,
                                             fontFamily: 'Roboto')));
@@ -106,6 +104,7 @@ class TicketList extends StatelessWidget {
                                     fontSize: 20,
                                     fontFamily: 'Roboto')),
                             onPressed: () {
+                              // ignore: close_sinks
                               final _bloc =
                                   BlocProvider.of<AuditListBloc>(context);
                               _bloc.add(GetAudits());
@@ -175,7 +174,6 @@ class SearchInputField extends StatelessWidget {
           suffixIcon: Icon(Icons.search),
           hintStyle: TextStyle(),
           labelText: 'Search by guest name or license plate.',
-//          hintText: 'Search by name, email, or phone (possibly)',
         ),
       ),
     );
@@ -230,7 +228,10 @@ AnimationLimiter buildTicketList(
                     child: Container(
                         alignment: Alignment.center,
                         child: Column(children: <Widget>[
-                          TicketListRow(tickets[index]),
+                          TicketListRow(
+                            tickets[index],
+                            key: Key(tickets[index].ticketId.toString()),
+                          ),
                           Divider()
                         ]))),
               ),
@@ -241,14 +242,14 @@ AnimationLimiter buildTicketList(
 class TicketListRow extends StatelessWidget {
   final Ticket ticket;
 
-  TicketListRow(this.ticket, {Key key}) : super(key: key);
+  TicketListRow(this.ticket, {required Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final String ticketName = ticket.owner.name;
     final String ticketLabel =
         "Purchased by ${ticket.originalOwner.firstName()}";
-    Record record = Record(ticket);
+    Record record = Record(ticket, ticket.owner.name, false);
     final bool canReassign = !ticket.redeemed;
     return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
@@ -264,11 +265,15 @@ class TicketListRow extends StatelessWidget {
                       if (!ticket.redeemed) {
                         await showDialog<ReassignTicketModal>(
                           context: context,
-                          builder: (BuildContext dialogContext) {
+                          builder: (dialogContext) {
                             return ReassignTicketModal(
-                                owner: ticket.owner,
-                                record: record,
-                                inputDecoration: ticketLabel);
+                              owner: ticket.owner,
+                              record: record,
+                              inputDecoration: ticketLabel,
+                              key: Key(ticket.owner.userId.toString() +
+                                  ticket.ticketId.toString() +
+                                  "reassign"),
+                            );
                           },
                         );
                       }
@@ -280,6 +285,18 @@ class TicketListRow extends StatelessWidget {
                   ),
                   SizedBox(width: 24),
                   Row(children: [
+                    ticket.owner.early_arrival != false
+                        ? Column(children: [
+                            Text("Early Arrival",
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold)),
+                            Text(
+                              ticket.owner.early_arrival_role ?? "",
+                            )
+                          ])
+                        : Container(),
                     ticket.redeemed
                         ? buildDisabledButton()
                         : buildCheckInButton(context, ticket, ticket.owner),
@@ -321,7 +338,10 @@ class TicketListRow extends StatelessWidget {
 
 class ReassignTicketModal extends StatefulWidget {
   const ReassignTicketModal(
-      {Key key, this.owner, this.record, this.inputDecoration});
+      {required Key key,
+      required this.owner,
+      required this.record,
+      required this.inputDecoration});
   final Guest owner;
   final Record record;
   final String inputDecoration;

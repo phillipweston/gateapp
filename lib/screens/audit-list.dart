@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
@@ -117,6 +116,8 @@ class AuditList extends StatelessWidget {
                   return buildNoAudits();
                 } else if (state is AuditsError) {
                   return buildError();
+                } else {
+                  return buildInitial();
                 }
               },
             ),
@@ -143,7 +144,6 @@ class SearchInputField extends StatelessWidget {
           suffixIcon: Icon(Icons.search),
           hintStyle: TextStyle(),
           labelText: 'Search audit log',
-//          hintText: 'Search by name, email, or phone (possibly)',q
         ),
       ),
     );
@@ -169,7 +169,6 @@ class ApiHostInputField extends StatelessWidget {
               borderRadius: BorderRadius.all(Radius.circular(2.0))),
           hintStyle: TextStyle(),
           labelText: 'Host',
-//          hintText: 'Search by name, email, or phone (possibly)',q
         ),
       ),
     );
@@ -194,7 +193,6 @@ class ApiPasswordInputField extends StatelessWidget {
               borderRadius: BorderRadius.all(Radius.circular(2.0))),
           hintStyle: TextStyle(),
           labelText: 'Password',
-//          hintText: 'Search by name, email, or phone (possibly)',q
         ),
       ),
     );
@@ -206,8 +204,9 @@ MaterialButton buildApiHostButton(BuildContext context) {
   return MaterialButton(
       onPressed: () async {
         final prefs = await SharedPreferences.getInstance();
-        String host = await prefs.getString('host');
-        TextEditingController controller = new TextEditingController(text: host);
+        String? host = await prefs.getString('host');
+        TextEditingController controller =
+            new TextEditingController(text: host);
         TextEditingController password = new TextEditingController();
 
         return showDialog<void>(
@@ -221,20 +220,22 @@ MaterialButton buildApiHostButton(BuildContext context) {
                   textAlign: TextAlign.left,
                   style: appTheme.textTheme.headline2,
                 ),
-                content: Column(
-                    children: [new ApiHostInputField(host, controller), new ApiPasswordInputField(password)]),
+                content: Column(children: [
+                  ApiHostInputField(host!, controller),
+                  ApiPasswordInputField(password)
+                ]),
                 actions: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       MaterialButton(
-                          child: Text("Set Host"),
-                          onPressed: () async {
-                            if (password.text == 'callback') {
-                              await prefs.setString('host', controller.text);
-                              Navigator.pop(context);
-                            }
-                          },
+                        child: Text("Set Host"),
+                        onPressed: () async {
+                          if (password.text == 'callback') {
+                            await prefs.setString('host', controller.text);
+                            Navigator.pop(context);
+                          }
+                        },
                       ),
                     ],
                   ),
@@ -295,7 +296,10 @@ AnimationLimiter buildAuditList(BuildContext context, List<Audit> audits) {
                     child: Container(
                         alignment: Alignment.center,
                         child: Column(children: <Widget>[
-                          AuditListRow(audits[index]),
+                          AuditListRow(
+                            audits[index],
+                            key: Key(audits[index].id.toString()),
+                          ),
                           Divider()
                         ]))),
               ),
@@ -306,7 +310,7 @@ AnimationLimiter buildAuditList(BuildContext context, List<Audit> audits) {
 class AuditListRow extends StatelessWidget {
   final Audit audit;
 
-  AuditListRow(this.audit, {Key key}) : super(key: key);
+  AuditListRow(this.audit, {required Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

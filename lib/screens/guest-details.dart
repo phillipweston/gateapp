@@ -31,14 +31,14 @@ Future<List<Guest>> _filterGuestsByName(BuildContext context, String search) {
 class GuestDetails extends StatefulWidget {
   final Guest guest;
 
-  GuestDetails({Key key, @required this.guest}) : super(key: key);
+  GuestDetails({required Key key, required this.guest}) : super(key: key);
 
   @override
   _GuestDetailsState createState() => _GuestDetailsState(guest);
 }
 
 class _GuestDetailsState extends State<GuestDetails> {
-  GuestRepository guestRepository;
+  late GuestRepository guestRepository;
   final Guest guest;
 
   _GuestDetailsState(this.guest);
@@ -141,11 +141,15 @@ MaterialButton buildCheckInButton(
   return MaterialButton(
       onPressed: () async {
         if (!waiver) {
-          return showDialog<RedeemModal>(
+          await showDialog<RedeemModal>(
               context: context,
               barrierDismissible: true,
-              builder: (BuildContext context) {
-                return RedeemModal(owner: guest, ticket: ticket);
+              builder: (context) {
+                return RedeemModal(
+                  owner: guest,
+                  ticket: ticket,
+                  key: ticket.userId as Key,
+                );
               });
         } else {
           _bloc.add(RedeemTicket(ticket));
@@ -197,7 +201,11 @@ AnimationLimiter buildGuestTickets(BuildContext context, Guest guest) {
                     child: Container(
                         alignment: Alignment.center,
                         child: Column(children: <Widget>[
-                          TicketListRow(guest, index),
+                          TicketListRow(
+                            guest,
+                            index,
+                            key: Key(guest.userId as String),
+                          ),
                           Divider()
                         ]))),
               ),
@@ -274,6 +282,7 @@ SliverToBoxAdapter mustAssignTicketsText() {
                       Container(
                           width: 150,
                           child: TextButton(
+                              onPressed: () {},
                               child: Text("Purchaser",
                                   style: TextStyle(
                                       color: Colors.black,
@@ -282,6 +291,7 @@ SliverToBoxAdapter mustAssignTicketsText() {
                       Container(
                           width: 250,
                           child: TextButton(
+                              onPressed: () {},
                               child: Text("Redeemer",
                                   style: TextStyle(
                                       color: Colors.black,
@@ -290,6 +300,7 @@ SliverToBoxAdapter mustAssignTicketsText() {
                       Container(
                           width: 100,
                           child: TextButton(
+                              onPressed: () {},
                               child: Text("Arrived",
                                   style: TextStyle(
                                       color: Colors.black,
@@ -303,8 +314,10 @@ class TicketListItem extends StatelessWidget {
   final Guest owner;
   final int index;
 
-  TicketListItem(this.owner, this.index, {Key key}) : super(key: key);
-  Widget build(BuildContext context) {}
+  TicketListItem(this.owner, this.index, {required Key key}) : super(key: key);
+  Widget build(BuildContext context) {
+    return Row();
+  }
 }
 
 class TicketListRow extends StatelessWidget {
@@ -312,7 +325,7 @@ class TicketListRow extends StatelessWidget {
 
   final int index;
 
-  TicketListRow(this.owner, this.index, {Key key}) : super(key: key);
+  TicketListRow(this.owner, this.index, {required Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -348,9 +361,11 @@ class TicketListRow extends StatelessWidget {
                             context: context,
                             builder: (BuildContext dialogContext) {
                               return ReassignModal(
-                                  owner: owner,
-                                  record: record,
-                                  inputDecoration: ticketLabel);
+                                owner: owner,
+                                record: record,
+                                inputDecoration: ticketLabel,
+                                key: owner.userId as Key,
+                              );
                             },
                           );
                         }
@@ -368,7 +383,7 @@ class TicketListRow extends StatelessWidget {
                         final _bloc =
                             BlocProvider.of<GuestDetailsBloc>(context);
                         _bloc.add(PrepareToRedeem(
-                            owner, owner.tickets[index], value));
+                            owner, owner.tickets[index], false, owner));
                       }
                     },
                   ),
@@ -379,7 +394,11 @@ class TicketListRow extends StatelessWidget {
 }
 
 class ReassignModal extends StatefulWidget {
-  const ReassignModal({Key key, this.owner, this.record, this.inputDecoration});
+  const ReassignModal(
+      {required Key key,
+      required this.owner,
+      required this.record,
+      required this.inputDecoration});
   final Guest owner;
   final Record record;
   final String inputDecoration;
@@ -407,7 +426,7 @@ class _ReassignModalState extends State<ReassignModal> {
                       const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                   child: TypeAheadField(
                     hideOnEmpty: true,
-                    textFieldConfiguration: TextFieldConfiguration<Guest>(
+                    textFieldConfiguration: TextFieldConfiguration(
                         controller: textFieldController,
                         style: appTheme.textTheme.headline1,
                         textCapitalization: TextCapitalization.words,
@@ -452,7 +471,8 @@ class _ReassignModalState extends State<ReassignModal> {
 }
 
 class RedeemModal extends StatefulWidget {
-  const RedeemModal({Key key, this.owner, this.ticket});
+  const RedeemModal(
+      {required Key key, required this.owner, required this.ticket});
 
   final Guest owner;
   final Ticket ticket;

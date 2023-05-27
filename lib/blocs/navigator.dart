@@ -2,10 +2,9 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-
-class NavigatorBloc extends Bloc<NagivatorAction, dynamic>{
+class NavigatorBloc extends Bloc<NagivatorAction, dynamic> {
   final GlobalKey<NavigatorState> navigatorKey;
-  NavigatorBloc({this.navigatorKey});
+  NavigatorBloc({required this.navigatorKey}) : super(null);
 
   @override
   dynamic get initialState => 0;
@@ -13,7 +12,7 @@ class NavigatorBloc extends Bloc<NagivatorAction, dynamic>{
   @override
   Stream<dynamic> mapEventToState(NagivatorAction event) async* {
     if (event is NavigateToGuestDetails) {
-      navigatorKey.currentState.pushNamed('/');
+      await navigatorKey.currentState?.pushNamed('/');
     }
   }
 }
@@ -23,15 +22,12 @@ class Navigation extends StatefulWidget {
   State<StatefulWidget> createState() => NavigationState();
 }
 
-
 class NavigationState extends State<Navigation> {
-
   @override
   Widget build(BuildContext context) {
-
+    return Row();
   }
 }
-
 
 abstract class NagivatorAction extends Equatable {
   const NagivatorAction();
@@ -50,4 +46,3 @@ class NavigateToGuestDetails extends NagivatorAction {
   @override
   List<Object> get props => [];
 }
-

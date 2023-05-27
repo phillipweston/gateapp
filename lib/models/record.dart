@@ -9,13 +9,10 @@ class Record {
   bool healthReady = false;
 
   Map<String, dynamic> toJson() {
-    return <String,dynamic>{
-       "name" : name, 
-       "ticket_id" : ticket.ticketId
-    };
+    return <String, dynamic>{"name": name, "ticket_id": ticket.ticketId};
   }
 
-  void setName (String name) {
+  void setName(String name) {
     this.name = name;
     this.valid = false;
 
@@ -24,14 +21,12 @@ class Record {
       var first = names.elementAt(0);
       var last = names.elementAt(1);
       this.valid = (first.length > 1 && last.length > 1);
-    }
-    else if (names.length == 3) {
+    } else if (names.length == 3) {
       var first = names.elementAt(0);
       var middle = names.elementAt(1);
       var last = names.elementAt(2);
       this.valid = (first.length > 1 && last.length > 1);
-    }
-    else if (names.length > 3) {
+    } else if (names.length > 3) {
       this.valid = true;
     }
   }
@@ -41,5 +36,5 @@ class Record {
   }
 
   bool willCall;
-  Record(this.ticket);
+  Record(this.ticket, this.name, this.willCall);
 }

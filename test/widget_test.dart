@@ -9,7 +9,9 @@ import 'package:fnf_guest_list/main.dart';
 void main() {
   testWidgets('smoke test', (tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(MyApp());
+    await tester.pumpWidget(MyApp(
+      key: Key("hi"),
+    ));
 
     // Navigating through login page.
     await tester.tap(find.text('ENTER'));

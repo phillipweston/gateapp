@@ -8,9 +8,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 class TicketListBloc extends Bloc<TicketEvent, TicketState> {
   final GuestRepository guestRepository;
 
-  TicketListBloc(this.guestRepository);
+  TicketListBloc(this.guestRepository) : super(TicketsInitial());
 
-  @override
   TicketState get initialState => TicketsInitial();
 
   @override
@@ -18,7 +17,7 @@ class TicketListBloc extends Bloc<TicketEvent, TicketState> {
     yield TicketsLoading();
 
     final prefs = await SharedPreferences.getInstance();
-    String host = await prefs.getString('host');
+    String? host = prefs.getString('host');
     if (host == null) {
       await prefs.setString('host', 'http://127.0.0.1:7777');
     }

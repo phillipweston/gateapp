@@ -1,6 +1,4 @@
 PODS:
-  - battery (0.0.1):
-    - Flutter
   - Flutter (1.0.0)
   - flutter_keyboard_visibility (0.0.1):
     - Flutter
@@ -10,15 +8,12 @@ PODS:
     - Flutter
 
 DEPENDENCIES:
-  - battery (from `.symlinks/plugins/battery/ios`)
   - Flutter (from `Flutter`)
   - flutter_keyboard_visibility (from `.symlinks/plugins/flutter_keyboard_visibility/ios`)
   - integration_test (from `.symlinks/plugins/integration_test/ios`)
   - shared_preferences_ios (from `.symlinks/plugins/shared_preferences_ios/ios`)
 
 EXTERNAL SOURCES:
-  battery:
-    :path: ".symlinks/plugins/battery/ios"
   Flutter:
     :path: Flutter
   flutter_keyboard_visibility:
@@ -29,12 +24,11 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/shared_preferences_ios/ios"
 
 SPEC CHECKSUMS:
-  battery: 6b19dafdbba590f03b1f0cd2f1224e3ffedadbe6
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   flutter_keyboard_visibility: 0339d06371254c3eb25eeb90ba8d17dca8f9c069
-  integration_test: a1e7d09bd98eca2fc37aefd79d4f41ad37bdbbe5
+  integration_test: 13825b8a9334a850581300559b8839134b124670
   shared_preferences_ios: 548a61f8053b9b8a49ac19c1ffbc8b92c50d68ad
 
 PODFILE CHECKSUM: b712841fadc6b1f7c784d2b4c1368ae4feb7134d
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.11.2

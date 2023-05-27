@@ -5,8 +5,6 @@
 import 'package:flutter/material.dart';
 import 'package:fnf_guest_list/common/theme.dart';
 import 'package:fnf_guest_list/screens/audit-list.dart';
-import 'package:fnf_guest_list/screens/guest-list.dart';
-import 'package:battery/battery.dart';
 import 'package:fnf_guest_list/blocs/guest.dart';
 import 'package:fnf_guest_list/blocs/audit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,19 +13,21 @@ import 'blocs/ticket-events.dart';
 import 'blocs/ticket-list-bloc.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(MyApp(
+    key: Key("app"),
+  ));
 }
 
 class MyApp extends StatefulWidget {
-  MyApp({Key key}) : super(key: key);
+  MyApp({required Key key}) : super(key: key);
 
   @override
   _MyAppState createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
-  GuestRepository guestRepository;
-  AuditRepository auditRepository;
+  late GuestRepository guestRepository;
+  late AuditRepository auditRepository;
 
   @override
   void initState() {

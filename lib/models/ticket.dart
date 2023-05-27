@@ -4,7 +4,7 @@ class Ticket {
   final int ticketId;
   final int userId;
   final bool redeemed;
-  final String updatedAt;
+  final String? updatedAt;
   final String createdAt;
   final Guest owner;
   final Guest originalOwner;
@@ -14,14 +14,13 @@ class Ticket {
 
   factory Ticket.fromJson(dynamic json) {
     return Ticket(
-      json['ticket_id'] as int,
-      json['user_id'] as int,
-      json['redeemed'] as bool,
-      json['updated_at'] as String,
-      json['created_at'] as String,
-      null,
-      null,
-    );
+        json['ticket_id'] as int,
+        json['user_id'] as int,
+        json['redeemed'] as bool,
+        json['updated_at'] as String?,
+        json['created_at'] as String,
+        Guest.fromJson(json['owner']),
+        Guest.fromJson(json['originalOwner']));
   }
 
   factory Ticket.fromFullJson(dynamic json) {
@@ -32,7 +31,7 @@ class Ticket {
         json['ticket_id'] as int,
         json['user_id'] as int,
         json['redeemed'] as bool,
-        json['updated_at'] as String,
+        json['updated_at'] as String?,
         json['created_at'] as String,
         owner,
         originalOwner);

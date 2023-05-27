@@ -8,8 +8,8 @@ import '../models/audit.dart';
 
 abstract class AuditRepositoryInterface {
   Future<List<Audit>> refreshAll();
-  List<Audit> _all;
-  List<Audit> audits;
+  late List<Audit> _all;
+  late List<Audit> audits;
 }
 
 class AuditRepository implements AuditRepositoryInterface {
@@ -20,25 +20,25 @@ class AuditRepository implements AuditRepositoryInterface {
   Future<List<Audit>> refreshAll() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      String host = await prefs.getString('host');
-      final response = await http.get("$host/audit", headers: { 'Content-Type' : 'application/json' });
+      String? host = await prefs.getString('host');
+      final response = await http.get(Uri.parse("$host/audit"),
+          headers: {'Content-Type': 'application/json'});
 
       if (response.statusCode == 200 && response.body.isNotEmpty == true) {
         var auditsJson = jsonDecode(response.body) as List<dynamic>;
-        audits = auditsJson.map((dynamic auditJson) =>
-            Audit.fromJson(auditJson)).toList();
+        audits = auditsJson
+            .map((dynamic auditJson) => Audit.fromJson(auditJson))
+            .toList();
 
         _all = audits;
         return audits;
       } else {
         throw Exception('Failed to load audit log');
       }
-    }
-    catch (e) {
-      throw Exception("Failed to fetch events ${e.toString()}");
+    } catch (e) {
+      return [];
     }
   }
-
 
   Future<List<Audit>> filterAudits(String search) async {
     search = search.toLowerCase();
@@ -62,7 +62,7 @@ class AuditRepository implements AuditRepositoryInterface {
     return _audits;
   }
 
-  Future<List<Audit>> filterAuditsByName (String search) async {
+  Future<List<Audit>> filterAuditsByName(String search) async {
     search = search.toLowerCase();
     var _audits = _all.where((audit) {
       var auditString = "";
@@ -81,8 +81,6 @@ class AuditRepository implements AuditRepositoryInterface {
     });
     return _audits;
   }
-
 }
-
 
 class NetworkError extends Error {}

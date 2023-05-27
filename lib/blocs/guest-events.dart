@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:fnf_guest_list/models/ticket.dart';
 import 'package:fnf_guest_list/models/guest.dart';
 import 'package:fnf_guest_list/models/record.dart';
+
 abstract class GuestEvent extends Equatable {
   const GuestEvent();
 }
@@ -66,8 +67,10 @@ class TransferTicket extends GuestEvent {
 class PrepareToRedeem extends GuestEvent {
   final Ticket ticket;
   final Guest owner;
+  final Guest originalOwner;
   final bool redeem;
-  const PrepareToRedeem(this.owner, this.ticket, this.redeem);
+  const PrepareToRedeem(
+      this.owner, this.ticket, this.redeem, this.originalOwner);
   @override
   List<Object> get props => [ticket, owner, redeem];
 }
@@ -111,4 +114,3 @@ class RedeemTickets extends GuestEvent {
   @override
   List<Object> get props => [owner];
 }
-

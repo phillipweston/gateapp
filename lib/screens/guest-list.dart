@@ -228,7 +228,7 @@ class GuestListRow extends StatelessWidget {
                   MaterialPageRoute<void>(
                     builder: (context) => GuestDetails(
                       guest: guest,
-                      key: guest.userId as Key,
+                      key: Key(guest.userId.toString()),
                     ),
                   ),
                 ),

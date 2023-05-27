@@ -15,8 +15,12 @@ import 'package:fnf_guest_list/common/theme.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:fnf_guest_list/models/record.dart';
 import 'package:fnf_guest_list/models/ticket.dart';
+import 'package:fnf_guest_list/screens/ticket-list.dart';
 import 'package:fnf_guest_list/string-constants.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../blocs/ticket-events.dart' as TicketEvents;
+import '../blocs/ticket-list-bloc.dart';
 
 void _fetchGuest(BuildContext context, int userId) {
   final _bloc = BlocProvider.of<GuestDetailsBloc>(context);
@@ -148,7 +152,7 @@ MaterialButton buildCheckInButton(
                 return RedeemModal(
                   owner: guest,
                   ticket: ticket,
-                  key: ticket.userId as Key,
+                  key: Key(ticket.userId.toString()),
                 );
               });
         } else {
@@ -364,7 +368,7 @@ class TicketListRow extends StatelessWidget {
                                 owner: owner,
                                 record: record,
                                 inputDecoration: ticketLabel,
-                                key: owner.userId as Key,
+                                key: Key(owner.userId.toString()),
                               );
                             },
                           );
@@ -459,8 +463,8 @@ class _ReassignModalState extends State<ReassignModal> {
                           final _bloc =
                               BlocProvider.of<GuestDetailsBloc>(context);
                           final List<Record> records = <Record>[widget.record];
-                          _bloc
-                              .add(TransferTicket(widget.owner, widget.record));
+                          _bloc.add(TransferTicket(widget.owner, widget.record)
+                              as GuestEvent);
                           Navigator.pop(context);
                         }
                       },
@@ -540,6 +544,7 @@ class _RedeemModalState extends State<RedeemModal> {
                     final _bloc = BlocProvider.of<GuestDetailsBloc>(context);
                     _bloc.add(SignWaiver(widget.owner, widget.ticket, true,
                         textFieldController.text));
+
                     Navigator.pop(context);
                     String name = widget.owner.name;
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -549,6 +554,14 @@ class _RedeemModalState extends State<RedeemModal> {
                                 TextStyle(color: Colors.white, fontSize: 24)),
                       ),
                     );
+
+                    final _ticketsBloc =
+                        BlocProvider.of<TicketListBloc>(context);
+
+                    await Future<void>.delayed(
+                        const Duration(milliseconds: 10));
+                    fetchTickets(context);
+                    _ticketsBloc.add(TicketEvents.GetTickets());
                   }
                 }),
           ],

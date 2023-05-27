@@ -13,8 +13,9 @@ dependencies:
   flutter_svg: ^0.20.0-nullsafety.3
   # Import the provider package.
   provider: ^6.0.2
+  image_picker: ^0.8.7+5
   intl:
-  http: ^1.0.0
+  http: ^0.13.0
   flutter_typeahead: ^4.3.7
   equatable: ^2.0.5
   flutter_bloc: ^7.2.0

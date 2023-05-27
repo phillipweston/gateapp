@@ -16,10 +16,11 @@ import 'package:fnf_guest_list/blocs/audit-list-bloc.dart';
 import 'package:fnf_guest_list/blocs/audit-events.dart';
 import '../common/theme.dart';
 import '../models/ticket.dart';
+import 'components/new-ticket-modal.dart';
 
 var searchController = new TextEditingController();
 
-void _fetchTickets(BuildContext context) async {
+void fetchTickets(BuildContext context) async {
   final ticketBloc = BlocProvider.of<TicketListBloc>(context);
   ticketBloc.add(GetTickets());
 }
@@ -64,7 +65,7 @@ class TicketList extends StatelessWidget {
                                   onTap: () {
                                     searchController.value =
                                         TextEditingValue(text: "");
-                                    _fetchTickets(context);
+                                    fetchTickets(context);
                                   },
                                   child: Row(children: <Widget>[
                                     SvgPicture.asset(
@@ -87,7 +88,7 @@ class TicketList extends StatelessWidget {
                               if (state is TicketsLoaded) {
                                 return Padding(
                                     padding: EdgeInsets.only(
-                                        left: 25, top: 0, bottom: 0, right: 30),
+                                        left: 20, top: 0, bottom: 0, right: 10),
                                     child: Text(
                                         "Guests: ${state.redeemed} of ${state.total}  ::  ${((state.redeemed / state.total) * 100).round()}%",
                                         style: TextStyle(
@@ -97,31 +98,37 @@ class TicketList extends StatelessWidget {
                               return Container();
                             },
                           ),
-                          MaterialButton(
-                            child: Text("Logs",
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 20,
-                                    fontFamily: 'Roboto')),
-                            onPressed: () {
-                              // ignore: close_sinks
-                              final _bloc =
-                                  BlocProvider.of<AuditListBloc>(context);
-                              _bloc.add(GetAudits());
-                              // Navigate to the second screen using a named route.
-                              Navigator.pushNamed(context, '/audit');
-                            },
-                          ),
                         ],
                       ),
                     ]),
                 floating: true,
                 actions: [
                   IconButton(
+                    icon: Icon(Icons.list_sharp),
+                    onPressed: () {
+                      // ignore: close_sinks
+                      final _bloc = BlocProvider.of<AuditListBloc>(context);
+                      _bloc.add(GetAudits());
+                      // Navigate to the second screen using a named route.
+                      Navigator.pushNamed(context, '/audit');
+                    },
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      showDialog<NewTicketModal>(
+                        context: context,
+                        builder: (context) {
+                          return NewTicketModal();
+                        },
+                      );
+                    },
+                    icon: Icon(Icons.add),
+                  ),
+                  IconButton(
                       icon: Icon(Icons.refresh),
                       onPressed: () {
                         searchController.value = TextEditingValue(text: "");
-                        _fetchTickets(context);
+                        fetchTickets(context);
                       },
                       color: Colors.white)
                 ]),
@@ -250,7 +257,6 @@ class TicketListRow extends StatelessWidget {
     final String ticketLabel =
         "Purchased by ${ticket.originalOwner.firstName()}";
     Record record = Record(ticket, ticket.owner.name, false);
-    final bool canReassign = !ticket.redeemed;
     return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
         child: Column(children: [
@@ -284,30 +290,40 @@ class TicketListRow extends StatelessWidget {
                         Text(ticketName, style: appTheme.textTheme.headline2),
                   ),
                   SizedBox(width: 24),
-                  Row(children: [
-                    ticket.owner.early_arrival != false
-                        ? Column(children: [
-                            Text("Early Arrival",
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold)),
-                            Text(
-                              ticket.owner.early_arrival_role ?? "",
-                            )
-                          ])
-                        : Container(),
-                    ticket.redeemed
-                        ? buildDisabledButton()
-                        : buildCheckInButton(context, ticket, ticket.owner),
-                    Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 4, vertical: 8),
-                        child: SvgPicture.asset('assets/gearhead-pink.svg',
-                            height: 40,
-                            width: 40,
-                            semanticsLabel: 'An FnF Ticket'))
-                  ]),
+                  Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        ticket.owner.early_arrival != false
+                            ? Padding(
+                                padding: EdgeInsets.only(right: 15),
+                                child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text("Early Arrival",
+                                          style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 20,
+                                              fontFamily: 'Redrock',
+                                              fontWeight: FontWeight.bold)),
+                                      Text(
+                                        ticket.owner.early_arrival_role ?? "",
+                                      )
+                                    ]))
+                            : Container(),
+                        ticket.redeemed
+                            ? buildDisabledButton()
+                            : buildCheckInButton(context, ticket, ticket.owner),
+                        Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 4, vertical: 8),
+                            child: SvgPicture.asset('assets/gearhead-pink.svg',
+                                height: 40,
+                                width: 40,
+                                semanticsLabel: 'An FnF Ticket'))
+                      ]),
                 ],
               )),
           LimitedBox(
@@ -406,9 +422,8 @@ class _ReassignTicketModalState extends State<ReassignTicketModal> {
                         if (widget.record.valid) {
                           final _bloc =
                               BlocProvider.of<guest.GuestDetailsBloc>(context);
-                          final List<Record> records = <Record>[widget.record];
-                          _bloc.add(guest.TransferTicket(
-                              widget.owner, widget.record));
+                          _bloc.add(TransferTicket(widget.owner, widget.record)
+                              as guest.GuestEvent);
                           Navigator.pop(context);
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(

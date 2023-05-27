@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
+import 'package:fnf_guest_list/blocs/ticket-events.dart' as TicketEvents;
 import 'package:fnf_guest_list/models/guest.dart';
 import 'package:fnf_guest_list/models/ticket.dart';
 import './guest.dart';

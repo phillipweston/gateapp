@@ -64,24 +64,6 @@ class TransferTicket extends TicketEvent {
   List<Object> get props => [owner, record];
 }
 
-class PrepareToRedeem extends TicketEvent {
-  final Ticket ticket;
-  final Guest owner;
-  final bool redeem;
-  const PrepareToRedeem(this.owner, this.ticket, this.redeem);
-  @override
-  List<Object> get props => [ticket, owner, redeem];
-}
-
-class SignWaiver extends TicketEvent {
-  final Ticket ticket;
-  final Guest owner;
-  final bool redeem;
-  const SignWaiver(this.owner, this.ticket, this.redeem);
-  @override
-  List<Object> get props => [ticket, owner, redeem];
-}
-
 class SignHealth extends TicketEvent {
   final Ticket ticket;
   final Guest owner;
@@ -91,23 +73,9 @@ class SignHealth extends TicketEvent {
   List<Object> get props => [ticket, owner, redeem];
 }
 
-class RedeemTicket extends TicketEvent {
-  final Ticket ticket;
-  const RedeemTicket(this.ticket);
-  @override
-  List<Object> get props => [ticket];
-}
-
 class GenerateGuestWaiver extends TicketEvent {
   final Ticket ticket;
   const GenerateGuestWaiver(this.ticket);
   @override
   List<Object> get props => [ticket];
-}
-
-class RedeemTickets extends TicketEvent {
-  final Guest owner;
-  const RedeemTickets(this.owner);
-  @override
-  List<Object> get props => [owner];
 }

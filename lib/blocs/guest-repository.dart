@@ -275,7 +275,7 @@ class GuestRepository implements GuestRepositoryInterface {
   Future<Ticket> redeemTicket(Ticket ticket) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      String? host = await prefs.getString('host');
+      String? host = prefs.getString('host');
       final int id = ticket.ticketId;
       final response = await http.get(Uri.parse("$host/tickets/redeem/$id"));
 

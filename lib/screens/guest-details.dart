@@ -559,7 +559,7 @@ class _RedeemModalState extends State<RedeemModal> {
                         BlocProvider.of<TicketListBloc>(context);
 
                     await Future<void>.delayed(
-                        const Duration(milliseconds: 10));
+                        const Duration(milliseconds: 100));
                     fetchTickets(context);
                     _ticketsBloc.add(TicketEvents.GetTickets());
                   }

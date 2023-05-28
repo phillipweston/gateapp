@@ -88,9 +88,9 @@ class TicketList extends StatelessWidget {
                               if (state is TicketsLoaded) {
                                 return Padding(
                                     padding: EdgeInsets.only(
-                                        left: 20, top: 0, bottom: 0, right: 10),
+                                        left: 15, top: 0, bottom: 0, right: 5),
                                     child: Text(
-                                        "Guests: ${state.redeemed} of ${state.total}  ::  ${((state.redeemed / state.total) * 100).round()}%",
+                                        "${state.redeemed} of ${state.total}  ::  ${((state.redeemed / state.total) * 100).round()}%",
                                         style: TextStyle(
                                             fontSize: 20,
                                             fontFamily: 'Roboto')));

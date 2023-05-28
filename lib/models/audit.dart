@@ -1,29 +1,25 @@
 import 'package:equatable/equatable.dart';
 
-import 'guest.dart';
-import 'ticket.dart';
 import 'audit-guest.dart';
 
-class Audit extends Equatable  {
+class Audit extends Equatable {
   final int id;
   final String action;
   final AuditGuest to;
   final AuditGuest from;
-  // final Ticket ticket;
-  final String created_at ;
+  final String created_at;
 
   Audit(this.id, this.action, this.to, this.from, this.created_at);
 
   @override
   List<Object> get props => [
-    id,
-    action,
-    to,
-    from,
-    // ticket,
-    created_at
-  ];
-
+        id,
+        action,
+        to,
+        from,
+        // ticket,
+        created_at
+      ];
 
   factory Audit.fromJson(dynamic json) {
     var id = json['id'] as int;
@@ -40,7 +36,6 @@ class Audit extends Equatable  {
         to,
         from,
         // ticket,
-        created_at
-    );
+        created_at);
   }
 }

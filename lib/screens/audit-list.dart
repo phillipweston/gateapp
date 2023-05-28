@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
@@ -280,7 +281,7 @@ SliverToBoxAdapter buildNoAudits() {
 AnimationLimiter buildAuditList(BuildContext context, List<Audit> audits) {
   return AnimationLimiter(
       child: SliverFixedExtentList(
-          itemExtent: 93.0,
+          itemExtent: 100,
           delegate:
               SliverChildBuilderDelegate((BuildContext context, int index) {
             if (index > audits.length - 1) return null;
@@ -328,6 +329,7 @@ class AuditListRow extends StatelessWidget {
                 // ),
               ])),
           LimitedBox(
+            maxWidth: double.infinity,
             maxHeight: 48,
             child: Row(children: [
               Text(audit.action,
@@ -348,12 +350,94 @@ class AuditListRow extends StatelessWidget {
                   style: Theme.of(context).textTheme.headline1,
                   overflow: TextOverflow.ellipsis),
               Expanded(
-                child: Text(audit.action != 'transfer' ? audit.to.name : '',
-                    style: Theme.of(context).textTheme.headline1,
-                    overflow: TextOverflow.ellipsis),
-              ),
+                  child: Text(
+                audit.action != 'transfer' ? audit.to.name : '',
+                style: Theme.of(context).textTheme.headline1,
+              )
+                  // overflow: TextOverflow.ellipsis),
+                  ),
+              audit.action == 'create' ? Text(audit.to.email) : Container(),
+              audit.action == 'create'
+                  ? HeroAnimation(
+                      'http://localhost:7777/${audit.to.userId}.png',
+                      audit.to.name)
+                  : Container(),
             ]),
           ),
         ]));
+  }
+}
+
+class PhotoHero extends StatelessWidget {
+  const PhotoHero(
+      {required Key key,
+      required this.photo,
+      required this.onTap,
+      required this.width})
+      : super(key: key);
+
+  final String photo;
+  final VoidCallback onTap;
+  final double width;
+
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: width,
+      child: Hero(
+        tag: photo,
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onTap,
+            child: Image.network(
+              photo,
+              fit: BoxFit.contain,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ignore: must_be_immutable
+class HeroAnimation extends StatelessWidget {
+  String image;
+  String name;
+
+  HeroAnimation(this.image, this.name);
+
+  Widget build(BuildContext context) {
+    timeDilation = 2.0; // 1.0 means normal animation speed.
+
+    return PhotoHero(
+      photo: image,
+      key: Key("${image}1"),
+      width: 300.0,
+      onTap: () {
+        Navigator.of(context)
+            .push(MaterialPageRoute<void>(builder: (BuildContext context) {
+          return Scaffold(
+            appBar: AppBar(
+              title: Text(name),
+            ),
+            body: Container(
+              // The blue background emphasizes that it's a new route.
+              color: Colors.white,
+              padding: const EdgeInsets.all(16.0),
+              alignment: Alignment.topLeft,
+              child: PhotoHero(
+                key: Key(image),
+                photo: image,
+                width: double.infinity,
+                onTap: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ),
+          );
+        }));
+      },
+    );
   }
 }

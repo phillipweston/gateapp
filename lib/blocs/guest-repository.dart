@@ -250,7 +250,7 @@ class GuestRepository implements GuestRepositoryInterface {
   Future<Ticket> transferTicket(Record record) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      String? host = await prefs.getString('host');
+      String? host = prefs.getString('host');
       print("in transferTickets ${record.toString()}");
       Contract contract = Contract(<Record>[record]);
       var body = jsonEncode(contract);

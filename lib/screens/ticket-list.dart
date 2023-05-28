@@ -11,6 +11,7 @@ import 'package:fnf_guest_list/models/guest.dart';
 import 'package:fnf_guest_list/models/record.dart';
 import 'package:fnf_guest_list/screens/guest-details.dart';
 import 'package:fnf_guest_list/blocs/guest.dart' as guest;
+
 import 'package:fnf_guest_list/blocs/ticket.dart';
 import 'package:fnf_guest_list/blocs/audit-list-bloc.dart';
 import 'package:fnf_guest_list/blocs/audit-events.dart';
@@ -43,8 +44,6 @@ class TicketList extends StatelessWidget {
           state is TransferSuccessful) {
         final _ticketBloc = BlocProvider.of<TicketListBloc>(context);
         _ticketBloc.add(GetTickets());
-        // searchController.value =
-        //     TextEditingValue(text: "");
         _filterTickets(context, searchController.text);
         FocusManager.instance.primaryFocus?.unfocus();
       }

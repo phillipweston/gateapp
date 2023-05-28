@@ -1,12 +1,17 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:dio/dio.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../blocs/ticket-list-bloc.dart';
 import '../../common/theme.dart';
 import '../../models/guest.dart';
+import '../ticket-list.dart';
+import 'package:fnf_guest_list/blocs/ticket-events.dart' as TicketEvents;
 
 class NewTicketModal extends StatefulWidget {
   @override
@@ -16,12 +21,14 @@ class NewTicketModal extends StatefulWidget {
 class _NewTicketModalState extends State<NewTicketModal> {
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
+  TextEditingController phoneController = TextEditingController();
+
   File? photoIdFile;
 
   Future<void> _openFileExplorer() async {
     final picker = ImagePicker();
     // ignore: deprecated_member_use
-    PickedFile? pickedFile = await picker.getImage(source: ImageSource.gallery);
+    PickedFile? pickedFile = await picker.getImage(source: ImageSource.camera);
 
     if (pickedFile != null) {
       File file = File(pickedFile.path);
@@ -41,13 +48,13 @@ class _NewTicketModalState extends State<NewTicketModal> {
           child: Padding(
               padding: EdgeInsets.all(20),
               child: Column(children: [
-                Text('New Ticket Holder Details',
-                    style: TextStyle(fontSize: 20, fontFamily: 'Roboto')),
                 SvgPicture.asset('assets/gearhead-heart.svg',
                     color: Colors.white,
                     height: 100,
                     width: 100,
                     semanticsLabel: 'A heart with gearheads'),
+                Text('1 Friends and Family Ticket',
+                    style: TextStyle(fontSize: 20, fontFamily: 'Roboto')),
               ]))),
       content: Column(
         mainAxisSize: MainAxisSize.min,
@@ -70,6 +77,15 @@ class _NewTicketModalState extends State<NewTicketModal> {
             controller: emailController,
             decoration: InputDecoration(
                 labelText: 'Email',
+                labelStyle: TextStyle(
+                    color: Colors.black, fontFamily: 'Roboto', fontSize: 20)),
+          ),
+          TextField(
+            style: TextStyle(
+                color: Colors.black, fontFamily: 'Roboto', fontSize: 20),
+            controller: phoneController,
+            decoration: InputDecoration(
+                labelText: 'Phone',
                 labelStyle: TextStyle(
                     color: Colors.black, fontFamily: 'Roboto', fontSize: 20)),
           ),
@@ -110,11 +126,22 @@ class _NewTicketModalState extends State<NewTicketModal> {
           onPressed: () async {
             String name = nameController.text;
             String email = emailController.text;
+            String phone = phoneController.text;
 
-            Guest guest = await createUserAndTicket(name, email);
+            Guest guest = await createUserAndTicket(name, email, phone);
             await uploadPhotos([photoIdFile!.path], guest.userId);
 
             Navigator.of(context).pop();
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text("Ticket created for $name!",
+                    style: TextStyle(color: Colors.white, fontSize: 24)),
+              ),
+            );
+            final _ticketsBloc = BlocProvider.of<TicketListBloc>(context);
+
+            await Future<void>.delayed(const Duration(milliseconds: 100));
+            _ticketsBloc.add(TicketEvents.GetTickets());
           },
           child: Text('Create', style: TextStyle(color: Colors.white)),
         ),
@@ -123,17 +150,21 @@ class _NewTicketModalState extends State<NewTicketModal> {
   }
 }
 
-Future<Guest> createUserAndTicket(String name, String email) async {
-  var user = await Dio()
-      .post<Map<String, dynamic>>('http://localhost:7777/tickets', data: {
-    'name': name,
-    'email': email,
-  });
+Future<Guest> createUserAndTicket(
+    String name, String email, String phone) async {
+  final prefs = await SharedPreferences.getInstance();
+  String? host = prefs.getString('host');
+
+  var user = await Dio().post<Map<String, dynamic>>('$host/tickets',
+      data: {'name': name, 'email': email, 'phone': phone});
   var guest = Guest.fromJson(user.data as Map<String, dynamic>);
   return guest;
 }
 
 Future<dynamic> uploadPhotos(List<String> paths, int userId) async {
+  final prefs = await SharedPreferences.getInstance();
+  String? host = prefs.getString('host');
+
   List<MultipartFile> files = [];
   for (var path in paths) {
     files.add(await MultipartFile.fromFile(path));
@@ -146,11 +177,7 @@ Future<dynamic> uploadPhotos(List<String> paths, int userId) async {
   FormData formData = FormData.fromMap(map);
 
   var response = await Dio().post<Map<String, dynamic>>(
-      'http://127.0.0.1:7777/tickets/upload/${userId}',
+      '$host/tickets/upload/$userId',
       data: formData);
-  print('\n\n');
-  print('RESPONSE WITH DIO');
-  print(response.data);
-  print('\n\n');
   return response.data;
 }

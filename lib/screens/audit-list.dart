@@ -15,7 +15,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../common/theme.dart';
 
-var searchController = new TextEditingController();
+var searchController = TextEditingController();
 
 void _fetchAudits(BuildContext context) {
   final auditBloc = BlocProvider.of<AuditListBloc>(context);
@@ -72,12 +72,12 @@ class AuditList extends StatelessWidget {
                                                 .textTheme
                                                 .headline6))
                                   ]))),
-                          buildApiHostButton(context),
                         ],
                       )
                     ]),
                 floating: true,
                 actions: [
+                  buildApiHostButton(context),
                   IconButton(
                       icon: Icon(Icons.refresh),
                       onPressed: () {
@@ -200,54 +200,51 @@ class ApiPasswordInputField extends StatelessWidget {
   }
 }
 
-MaterialButton buildApiHostButton(BuildContext context) {
+IconButton buildApiHostButton(BuildContext context) {
   final _bloc = BlocProvider.of<AuditListBloc>(context);
-  return MaterialButton(
-      onPressed: () async {
-        final prefs = await SharedPreferences.getInstance();
-        String? host = await prefs.getString('host');
-        TextEditingController controller =
-            new TextEditingController(text: host);
-        TextEditingController password = new TextEditingController();
+  return IconButton(
+    icon: Icon(Icons.settings),
+    onPressed: () async {
+      final prefs = await SharedPreferences.getInstance();
+      String? host = prefs.getString('host');
+      TextEditingController controller = TextEditingController(text: host);
+      TextEditingController password = TextEditingController();
 
-        return showDialog<void>(
-            context: context,
-            barrierDismissible: true,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                scrollable: true,
-                title: Text(
-                  "Set API Host",
-                  textAlign: TextAlign.left,
-                  style: appTheme.textTheme.headline2,
+      return showDialog<void>(
+          context: context,
+          barrierDismissible: true,
+          builder: (context) {
+            return AlertDialog(
+              scrollable: true,
+              title: Text(
+                "Set API Host",
+                textAlign: TextAlign.left,
+                style: appTheme.textTheme.headline2,
+              ),
+              content: Column(children: [
+                ApiHostInputField(host!, controller),
+                ApiPasswordInputField(password)
+              ]),
+              actions: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    MaterialButton(
+                      child: Text("Set Host"),
+                      onPressed: () async {
+                        if (password.text == 'callback') {
+                          await prefs.setString('host', controller.text);
+                          Navigator.pop(context);
+                        }
+                      },
+                    ),
+                  ],
                 ),
-                content: Column(children: [
-                  ApiHostInputField(host!, controller),
-                  ApiPasswordInputField(password)
-                ]),
-                actions: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      MaterialButton(
-                        child: Text("Set Host"),
-                        onPressed: () async {
-                          if (password.text == 'callback') {
-                            await prefs.setString('host', controller.text);
-                            Navigator.pop(context);
-                          }
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              );
-            });
-      },
-      height: 80,
-      color: superPink,
-      textColor: Colors.white,
-      child: Text('Set API Host'));
+              ],
+            );
+          });
+    },
+  );
 }
 
 SliverToBoxAdapter buildInitial() {
@@ -308,13 +305,40 @@ AnimationLimiter buildAuditList(BuildContext context, List<Audit> audits) {
           })));
 }
 
-class AuditListRow extends StatelessWidget {
+class AuditListRow extends StatefulWidget {
   final Audit audit;
 
-  AuditListRow(this.audit, {required Key key}) : super(key: key);
+  AuditListRow(this.audit, {Key? key}) : super(key: key);
+
+  @override
+  State<AuditListRow> createState() => _AuditListRowState(this.audit);
+}
+
+class _AuditListRowState extends State<AuditListRow> {
+  String? host;
+  final Audit audit;
+
+  _AuditListRowState(this.audit);
+
+  Future<void> getHost() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? h = prefs.getString('host');
+    setState(() {
+      host = h;
+    });
+  }
+
+  @override
+  void initState() {
+    getHost();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (host == null) {
+      return Container();
+    }
     return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 4),
         child: Column(children: [
@@ -332,7 +356,7 @@ class AuditListRow extends StatelessWidget {
             maxWidth: double.infinity,
             maxHeight: 48,
             child: Row(children: [
-              Text(audit.action,
+              Text(audit.action == 'create' ? 'Create Ticket' : audit.action,
                   style: Theme.of(context).textTheme.headline2,
                   overflow: TextOverflow.ellipsis),
               SizedBox(width: 4),
@@ -356,11 +380,17 @@ class AuditListRow extends StatelessWidget {
               )
                   // overflow: TextOverflow.ellipsis),
                   ),
-              audit.action == 'create' ? Text(audit.to.email) : Container(),
               audit.action == 'create'
-                  ? HeroAnimation(
-                      'http://localhost:7777/${audit.to.userId}.png',
-                      audit.to.name)
+                  ? Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [Text(audit.to.email), Text(audit.to.phone!)])
+                  : Container(),
+              // audit.action == 'create' && audit.to.phone != null
+              //     ? Text(audit.to.phone.toString())
+              //     : Container(),
+              audit.action == 'create'
+                  ? HeroAnimation('$host/${audit.to.userId}.png', audit.to.name)
                   : Container(),
             ]),
           ),

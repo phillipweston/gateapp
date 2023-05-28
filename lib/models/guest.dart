@@ -8,6 +8,7 @@ class Guest extends Equatable {
   final int userId;
   final String name;
   final String email;
+  final String? phone;
   final List<Ticket> tickets;
   final Contract contract;
   final String? waiver;
@@ -23,6 +24,7 @@ class Guest extends Equatable {
       this.userId,
       this.name,
       this.email,
+      this.phone,
       this.tickets,
       this.contract,
       this.waiver,
@@ -36,6 +38,7 @@ class Guest extends Equatable {
         userId,
         name,
         email,
+        phone,
         tickets,
         contract,
         waiver,
@@ -81,6 +84,7 @@ class Guest extends Equatable {
       "user_id": userId,
       "name": name,
       "email": email,
+      "phone": phone,
       "waiver": waiver,
       "health": health,
       "license_plate": license_plate,
@@ -114,6 +118,7 @@ class Guest extends Equatable {
         json['user_id'] as int,
         name,
         json['email'] as String,
+        json['phone'] as String?,
         tickets,
         contract,
         json['waiver'] as String?,

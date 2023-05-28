@@ -20,7 +20,8 @@ class AuditRepository implements AuditRepositoryInterface {
   Future<List<Audit>> refreshAll() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      String? host = await prefs.getString('host');
+      String? host = prefs.getString('host');
+
       final response = await http.get(Uri.parse("$host/audit"),
           headers: {'Content-Type': 'application/json'});
 

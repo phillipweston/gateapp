@@ -487,24 +487,35 @@ class RedeemModal extends StatefulWidget {
 
 class _RedeemModalState extends State<RedeemModal> {
   bool isActive = false;
+  bool isPassenger = false;
+
   final textFieldController = TextEditingController();
   @override
   void initState() {
     super.initState();
     textFieldController.addListener(() {
-      isActive = textFieldController.text.isNotEmpty;
+      isActive = textFieldController.text.isNotEmpty || isPassenger;
       setState(() => this.isActive = isActive);
+    });
+  }
+
+  void onChanged(bool value) {
+    setState(() {
+      isPassenger = value;
+      isActive = textFieldController.text.isNotEmpty || isPassenger;
     });
   }
 
   Widget build(BuildContext context) {
     return AlertDialog(
       scrollable: true,
-      title: Text(
-        Strings.WaiverTitle,
-        textAlign: TextAlign.left,
-        style: appTheme.textTheme.headline2,
-      ),
+      title: Padding(
+          padding: EdgeInsets.all(10),
+          child: Text(
+            Strings.WaiverTitle,
+            textAlign: TextAlign.left,
+            style: appTheme.textTheme.headline2,
+          )),
       content: Text(
         Strings.WaiverComplete,
         textAlign: TextAlign.left,
@@ -512,35 +523,41 @@ class _RedeemModalState extends State<RedeemModal> {
       ),
       actions: [
         Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-          Text(
-            "License Plate:  ",
-            style: appTheme.textTheme.headline2,
-          ),
-          Container(
-            width: 200,
-            child: TextField(
-                controller: textFieldController,
-                style: appTheme.textTheme.headline1,
-                textCapitalization: TextCapitalization.characters,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: "License Plate #",
-                )),
-          )
+          Padding(
+              padding: EdgeInsets.all(10),
+              child: Text(
+                widget.owner.name,
+                style: appTheme.textTheme.headline2,
+              )),
+          Switch(
+              value: isPassenger, onChanged: onChanged, activeColor: superPink),
+          Text('Passenger'),
         ]),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              widget.owner.name,
-              style: appTheme.textTheme.headline2,
+            Container(
+              width: 200,
+              height: 70,
+              child: TextField(
+                  autofocus: true,
+                  controller: textFieldController,
+                  style: appTheme.textTheme.headline1,
+                  textCapitalization: TextCapitalization.characters,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: "License Plate #",
+                  )),
             ),
-            MaterialButton(
-                color: this.isActive ? superPink : Colors.white,
-                textColor: this.isActive ? Colors.white : Colors.grey,
-                child: Text("Agree and Redeem Ticket"),
-                onPressed: () async {
-                  if (textFieldController.text.isNotEmpty) {
+            SizedBox(height: 10, width: 10),
+            Padding(
+              padding: EdgeInsets.only(bottom: 10),
+              child: MaterialButton(
+                  padding: EdgeInsets.all(12),
+                  color: this.isActive ? superPink : Colors.white,
+                  textColor: this.isActive ? Colors.white : Colors.grey,
+                  child: Text("Agree and Redeem Ticket"),
+                  onPressed: () async {
                     final _bloc = BlocProvider.of<GuestDetailsBloc>(context);
                     _bloc.add(SignWaiver(widget.owner, widget.ticket, true,
                         textFieldController.text));
@@ -562,10 +579,17 @@ class _RedeemModalState extends State<RedeemModal> {
                         const Duration(milliseconds: 100));
                     fetchTickets(context);
                     _ticketsBloc.add(TicketEvents.GetTickets());
-                  }
-                }),
+                  }),
+            )
           ],
         ),
+        Row(
+          children: [
+            SizedBox(
+              height: 20,
+            )
+          ],
+        )
       ],
     );
   }

@@ -12,6 +12,7 @@ import '../../common/theme.dart';
 import '../../models/guest.dart';
 import '../ticket-list.dart';
 import 'package:fnf_guest_list/blocs/ticket-events.dart' as TicketEvents;
+import 'package:safe_device/safe_device.dart';
 
 class NewTicketModal extends StatefulWidget {
   @override
@@ -23,12 +24,20 @@ class _NewTicketModalState extends State<NewTicketModal> {
   TextEditingController emailController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
 
+  bool get isPopulated =>
+      photoIdFile != null &&
+      nameController.text.isNotEmpty &&
+      emailController.text.isNotEmpty &&
+      phoneController.text.isNotEmpty;
+
   File? photoIdFile;
 
   Future<void> _openFileExplorer() async {
     final picker = ImagePicker();
     // ignore: deprecated_member_use
-    PickedFile? pickedFile = await picker.getImage(source: ImageSource.camera);
+    // bool isRealDevice = await SafeDevice.isRealDevice;
+
+    XFile? pickedFile = await picker.pickImage(source: ImageSource.camera);
 
     if (pickedFile != null) {
       File file = File(pickedFile.path);
@@ -93,7 +102,7 @@ class _NewTicketModalState extends State<NewTicketModal> {
           MaterialButton(
               color: superPink,
               onPressed: _openFileExplorer,
-              child: Text("Snap photo of their ID",
+              child: Text("Snap photo of their ID last to enable Create",
                   style: TextStyle(
                       color: Colors.white,
                       fontFamily: 'Roboto',
@@ -123,26 +132,29 @@ class _NewTicketModalState extends State<NewTicketModal> {
         ),
         MaterialButton(
           color: superPink,
-          onPressed: () async {
-            String name = nameController.text;
-            String email = emailController.text;
-            String phone = phoneController.text;
+          disabledColor: Colors.grey,
+          onPressed: !isPopulated
+              ? null
+              : () async {
+                  String name = nameController.text;
+                  String email = emailController.text;
+                  String phone = phoneController.text;
 
-            Guest guest = await createUserAndTicket(name, email, phone);
-            await uploadPhotos([photoIdFile!.path], guest.userId);
+                  Guest guest = await createUserAndTicket(name, email, phone);
+                  await uploadPhotos([photoIdFile!.path], guest.userId);
 
-            Navigator.of(context).pop();
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text("Ticket created for $name!",
-                    style: TextStyle(color: Colors.white, fontSize: 24)),
-              ),
-            );
-            final _ticketsBloc = BlocProvider.of<TicketListBloc>(context);
+                  Navigator.of(context).pop();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text("Ticket created for $name!",
+                          style: TextStyle(color: Colors.white, fontSize: 24)),
+                    ),
+                  );
+                  final _ticketsBloc = BlocProvider.of<TicketListBloc>(context);
 
-            await Future<void>.delayed(const Duration(milliseconds: 100));
-            _ticketsBloc.add(TicketEvents.GetTickets());
-          },
+                  await Future<void>.delayed(const Duration(milliseconds: 100));
+                  _ticketsBloc.add(TicketEvents.GetTickets());
+                },
           child: Text('Create', style: TextStyle(color: Colors.white)),
         ),
       ],

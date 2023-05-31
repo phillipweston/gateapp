@@ -34,7 +34,7 @@ class _NewTicketModalState extends State<NewTicketModal> {
   Future<void> _openFileExplorer() async {
     final picker = ImagePicker();
 
-    XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    XFile? pickedFile = await picker.pickImage(source: ImageSource.camera);
 
     if (pickedFile != null) {
       File file = File(pickedFile.path);

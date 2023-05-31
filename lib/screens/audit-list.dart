@@ -399,7 +399,7 @@ class _AuditListRowState extends State<AuditListRow> {
                                 ]),
                                 SizedBox(height: 2),
                                 Text(audit.to.reason!,
-                                    overflow: TextOverflow.ellipsis)
+                                    overflow: TextOverflow.visible)
                               ]))
                       : Container(),
                   audit.action == 'create'

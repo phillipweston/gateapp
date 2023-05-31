@@ -218,7 +218,7 @@ AnimationLimiter buildTicketList(
     BuildContext context, List<Ticket> tickets, int total, int redeemed) {
   return AnimationLimiter(
       child: SliverFixedExtentList(
-          itemExtent: 120.0,
+          itemExtent: 122.0,
           delegate:
               SliverChildBuilderDelegate((BuildContext context, int index) {
             if (index > tickets.length - 1) return null;
@@ -257,10 +257,10 @@ class TicketListRow extends StatelessWidget {
         "Purchased by ${ticket.originalOwner.firstName()}";
     Record record = Record(ticket, ticket.owner.name, false);
     return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 0),
         child: Column(children: [
           LimitedBox(
-              maxHeight: 48,
+              maxHeight: 50,
               child: Row(
                 children: [
                   SizedBox(width: 24),
@@ -294,23 +294,27 @@ class TicketListRow extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         ticket.owner.early_arrival != false
-                            ? Padding(
-                                padding: EdgeInsets.only(right: 15),
-                                child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text("Early Arrival",
-                                          style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 20,
-                                              fontFamily: 'Redrock',
-                                              fontWeight: FontWeight.bold)),
-                                      Text(
-                                        ticket.owner.early_arrival_role ?? "",
-                                      )
-                                    ]))
+                            ? Container(
+                                height: 100,
+                                child: Padding(
+                                    padding: EdgeInsets.only(right: 15),
+                                    child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text("Early Arrival",
+                                              style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 20,
+                                                  fontFamily: 'Redrock',
+                                                  fontWeight: FontWeight.bold)),
+                                          Text(
+                                            ticket.owner.early_arrival_role ??
+                                                "",
+                                          )
+                                        ])))
                             : Container(),
                         ticket.redeemed
                             ? buildDisabledButton()

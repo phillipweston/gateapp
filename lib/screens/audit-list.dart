@@ -355,44 +355,58 @@ class _AuditListRowState extends State<AuditListRow> {
           LimitedBox(
             maxWidth: double.infinity,
             maxHeight: 48,
-            child: Row(children: [
-              Text(audit.action == 'create' ? 'Create Ticket' : audit.action,
-                  style: Theme.of(context).textTheme.headline2,
-                  overflow: TextOverflow.ellipsis),
-              SizedBox(width: 4),
-              SizedBox(width: 4),
-              Icon(
-                audit.action == 'transfer' ? Icons.arrow_right : Icons.person,
-                color: superPink,
-                size: audit.action == 'transfer' ? 30.0 : 30.0,
-                semanticLabel: 'Text to announce in accessibility modes',
-              ),
-              Text(
-                  audit.action == 'transfer'
-                      ? "${audit.from.name} -> ${audit.to.name}"
-                      : '',
-                  style: Theme.of(context).textTheme.headline1,
-                  overflow: TextOverflow.ellipsis),
-              Expanded(
-                  child: Text(
-                audit.action != 'transfer' ? audit.to.name : '',
-                style: Theme.of(context).textTheme.headline1,
-              )
-                  // overflow: TextOverflow.ellipsis),
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(audit.action,
+                      style: Theme.of(context).textTheme.headline2,
+                      overflow: TextOverflow.ellipsis),
+                  SizedBox(width: 4),
+                  SizedBox(width: 4),
+                  Icon(
+                    audit.action == 'transfer'
+                        ? Icons.arrow_right
+                        : Icons.person,
+                    color: superPink,
+                    size: audit.action == 'transfer' ? 30.0 : 30.0,
+                    semanticLabel: 'Text to announce in accessibility modes',
                   ),
-              audit.action == 'create'
-                  ? Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [Text(audit.to.email), Text(audit.to.phone!)])
-                  : Container(),
-              // audit.action == 'create' && audit.to.phone != null
-              //     ? Text(audit.to.phone.toString())
-              //     : Container(),
-              audit.action == 'create'
-                  ? HeroAnimation('$host/${audit.to.userId}.png', audit.to.name)
-                  : Container(),
-            ]),
+                  Padding(
+                      padding: EdgeInsets.only(right: 20),
+                      child: audit.action == 'transfer'
+                          ? Text(
+                              audit.action == 'transfer'
+                                  ? "${audit.from.name} -> ${audit.to.name}"
+                                  : '',
+                              style: Theme.of(context).textTheme.headline1,
+                              overflow: TextOverflow.ellipsis)
+                          : Text(
+                              audit.action != 'transfer' ? audit.to.name : '',
+                              style: Theme.of(context).textTheme.headline1,
+                            )),
+                  audit.action == 'create'
+                      ? SizedBox(
+                          width: 300,
+                          child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(children: [
+                                  Text(audit.to.email),
+                                  SizedBox(width: 10),
+                                  Text(audit.to.phone!)
+                                ]),
+                                SizedBox(height: 2),
+                                Text(audit.to.reason!,
+                                    overflow: TextOverflow.ellipsis)
+                              ]))
+                      : Container(),
+                  audit.action == 'create'
+                      ? HeroAnimation('$host/${audit.to.userId}.png',
+                          audit.to.name, audit.to.reason)
+                      : Container(),
+                ]),
           ),
         ]));
   }
@@ -434,8 +448,9 @@ class PhotoHero extends StatelessWidget {
 class HeroAnimation extends StatelessWidget {
   String image;
   String name;
+  String? reason;
 
-  HeroAnimation(this.image, this.name);
+  HeroAnimation(this.image, this.name, this.reason);
 
   Widget build(BuildContext context) {
     timeDilation = 2.0; // 1.0 means normal animation speed.
@@ -443,28 +458,28 @@ class HeroAnimation extends StatelessWidget {
     return PhotoHero(
       photo: image,
       key: Key("${image}1"),
-      width: 300.0,
+      width: 100.0,
       onTap: () {
-        Navigator.of(context)
-            .push(MaterialPageRoute<void>(builder: (BuildContext context) {
+        Navigator.of(context).push(MaterialPageRoute<void>(builder: (context) {
           return Scaffold(
             appBar: AppBar(
               title: Text(name),
             ),
             body: Container(
-              // The blue background emphasizes that it's a new route.
-              color: Colors.white,
-              padding: const EdgeInsets.all(16.0),
-              alignment: Alignment.topLeft,
-              child: PhotoHero(
-                key: Key(image),
-                photo: image,
-                width: double.infinity,
-                onTap: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ),
+                // The blue background emphasizes that it's a new route.
+                color: Colors.white,
+                padding: const EdgeInsets.all(16.0),
+                alignment: Alignment.topLeft,
+                child: Column(children: [
+                  PhotoHero(
+                    key: Key(image),
+                    photo: image,
+                    width: double.infinity,
+                    onTap: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ])),
           );
         }));
       },

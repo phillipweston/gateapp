@@ -19,6 +19,7 @@ class Guest extends Equatable {
   final bool? early_arrival;
   // ignore: non_constant_identifier_names
   final String? early_arrival_role;
+  final String? reason;
 
   Guest(
       this.userId,
@@ -31,7 +32,8 @@ class Guest extends Equatable {
       this.health,
       this.license_plate,
       this.early_arrival,
-      this.early_arrival_role);
+      this.early_arrival_role,
+      this.reason);
 
   @override
   List<Object?> get props => [
@@ -45,7 +47,8 @@ class Guest extends Equatable {
         health,
         license_plate,
         early_arrival,
-        early_arrival_role
+        early_arrival_role,
+        reason
       ];
 
   int numTickets() {
@@ -90,6 +93,7 @@ class Guest extends Equatable {
       "license_plate": license_plate,
       "early_arrival": early_arrival,
       "early_arrival_role": early_arrival_role,
+      "reason": reason
     };
   }
 
@@ -125,6 +129,7 @@ class Guest extends Equatable {
         json['health'] as String?,
         json['license_plate'] as String?,
         json['early_arrival'] as bool?,
-        json['early_arrival_role'] as String?);
+        json['early_arrival_role'] as String?,
+        json['reason'] as String?);
   }
 }

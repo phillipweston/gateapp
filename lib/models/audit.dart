@@ -27,8 +27,8 @@ class Audit extends Equatable {
     var created_at = json['created_at'] as String;
 
     // Ticket ticket = Ticket.fromJson(json['ticket']) as Ticket;
-    AuditGuest to = AuditGuest.fromJson(json['to']) as AuditGuest;
-    AuditGuest from = AuditGuest.fromJson(json['from']) as AuditGuest;
+    AuditGuest to = AuditGuest.fromJson(json['to']);
+    AuditGuest from = AuditGuest.fromJson(json['from']);
 
     return Audit(
         id,

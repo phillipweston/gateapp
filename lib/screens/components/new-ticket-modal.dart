@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,9 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../blocs/ticket-list-bloc.dart';
 import '../../common/theme.dart';
 import '../../models/guest.dart';
-import '../ticket-list.dart';
 import 'package:fnf_guest_list/blocs/ticket-events.dart' as TicketEvents;
-import 'package:safe_device/safe_device.dart';
 
 class NewTicketModal extends StatefulWidget {
   @override
@@ -23,21 +20,21 @@ class _NewTicketModalState extends State<NewTicketModal> {
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
+  TextEditingController reasonController = TextEditingController();
 
   bool get isPopulated =>
       photoIdFile != null &&
       nameController.text.isNotEmpty &&
       emailController.text.isNotEmpty &&
-      phoneController.text.isNotEmpty;
+      phoneController.text.isNotEmpty &&
+      reasonController.text.isNotEmpty;
 
   File? photoIdFile;
 
   Future<void> _openFileExplorer() async {
     final picker = ImagePicker();
-    // ignore: deprecated_member_use
-    // bool isRealDevice = await SafeDevice.isRealDevice;
 
-    XFile? pickedFile = await picker.pickImage(source: ImageSource.camera);
+    XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
       File file = File(pickedFile.path);
@@ -98,6 +95,15 @@ class _NewTicketModalState extends State<NewTicketModal> {
                 labelStyle: TextStyle(
                     color: Colors.black, fontFamily: 'Roboto', fontSize: 20)),
           ),
+          TextField(
+            style: TextStyle(
+                color: Colors.black, fontFamily: 'Roboto', fontSize: 20),
+            controller: reasonController,
+            decoration: InputDecoration(
+                labelText: 'Short reason',
+                labelStyle: TextStyle(
+                    color: Colors.black, fontFamily: 'Roboto', fontSize: 20)),
+          ),
           SizedBox(height: 16),
           MaterialButton(
               color: superPink,
@@ -139,8 +145,10 @@ class _NewTicketModalState extends State<NewTicketModal> {
                   String name = nameController.text;
                   String email = emailController.text;
                   String phone = phoneController.text;
+                  String reason = reasonController.text;
 
-                  Guest guest = await createUserAndTicket(name, email, phone);
+                  Guest guest =
+                      await createUserAndTicket(name, email, phone, reason);
                   await uploadPhotos([photoIdFile!.path], guest.userId);
 
                   Navigator.of(context).pop();
@@ -163,12 +171,12 @@ class _NewTicketModalState extends State<NewTicketModal> {
 }
 
 Future<Guest> createUserAndTicket(
-    String name, String email, String phone) async {
+    String name, String email, String phone, String reason) async {
   final prefs = await SharedPreferences.getInstance();
   String? host = prefs.getString('host');
 
   var user = await Dio().post<Map<String, dynamic>>('$host/tickets',
-      data: {'name': name, 'email': email, 'phone': phone});
+      data: {'name': name, 'email': email, 'phone': phone, 'reason': reason});
   var guest = Guest.fromJson(user.data as Map<String, dynamic>);
   return guest;
 }

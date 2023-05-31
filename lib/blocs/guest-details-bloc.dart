@@ -72,7 +72,8 @@ class GuestDetailsBloc extends Bloc<GuestEvent, GuestState> {
             event.owner.health,
             event.owner.license_plate,
             event.owner.early_arrival,
-            event.owner.early_arrival_role);
+            event.owner.early_arrival_role,
+            event.owner.reason);
         if (event.redeem) {
           yield TicketReadyToRedeem(guest, ticket);
         } else {
@@ -106,7 +107,8 @@ class GuestDetailsBloc extends Bloc<GuestEvent, GuestState> {
             event.owner.health,
             event.license,
             event.owner.early_arrival,
-            event.owner.early_arrival_role);
+            event.owner.early_arrival_role,
+            event.owner.reason);
         Guest guest = await guestRepository.signWaiver(guestWithLicense);
         if (guest != null && guest.waiver != null) {
           Ticket updatedTicket =
